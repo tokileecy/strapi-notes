@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_custom_ck_wysiwygs",
+  "info": {
+    "displayName": "ck_wysiwyg",
+    "icon": "bars"
+  },
+  "options": {},
+  "attributes": {
+    "content": {
+      "type": "ck_wysiwyg"
+    }
+  }
+}
