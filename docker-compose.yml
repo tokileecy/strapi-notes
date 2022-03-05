@@ -27,6 +27,7 @@ services:
   postgres:
     image: postgres
     env_file: .env
+    container_name: postgres
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USERNAME}
@@ -35,3 +36,14 @@ services:
       - '5432:5432'
     volumes:
       - ./postgres:/var/lib/postgresql/data
+  blog:
+    build:
+      context: ./docker/nextjs
+      args:
+        NODE_VERSION: 16
+      dockerfile: Dockerfile
+    container_name: blog
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./blog:/srv/app
