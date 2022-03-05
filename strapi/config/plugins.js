@@ -1,7 +1,7 @@
 module.exports = {
-  'wysiwyg': {
+  'plugin-wysiwyg': {
     enabled: true,
-    resolve: './src/plugins/wysiwyg' // path to plugin folder
+    resolve: './packages/plugin-wysiwyg' // path to plugin folder
   },
 }
  
