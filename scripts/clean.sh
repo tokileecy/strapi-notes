@@ -1,4 +1,3 @@
 #!/bin/sh
 
-rm -rf ../strapi/node_modules && 
-rm -rf ../blog/node_modules
+find . | grep /node_modules$ | grep -v /node_modules/ | xargs rm -fR
