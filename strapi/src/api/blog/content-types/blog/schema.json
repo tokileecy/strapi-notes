@@ -1,19 +1,21 @@
 {
   "kind": "collectionType",
-  "collectionName": "posts",
+  "collectionName": "blogs",
   "info": {
-    "singularName": "post",
-    "pluralName": "posts",
-    "displayName": "Post",
-    "description": ""
+    "singularName": "blog",
+    "pluralName": "blogs",
+    "displayName": "Blog"
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "article": {
+    "content": {
       "type": "richtext"
+    },
+    "name": {
+      "type": "string"
     }
   }
 }
