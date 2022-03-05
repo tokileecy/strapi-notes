@@ -159,4 +159,4 @@ dist
 # custom
 
 postgres/
-docker-compose.yml
+.env
