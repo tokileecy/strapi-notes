@@ -1,0 +1,9 @@
+/public
+/src/public
+/node_modules/*
+/**/*.css
+package.json
+/**/*.test.js
+
+next.config.js
+.eslintrc.js
