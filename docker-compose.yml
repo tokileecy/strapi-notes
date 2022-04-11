@@ -6,7 +6,7 @@ services:
       context: ./docker/strapi
       args:
         NODE_VERSION: 16
-        STRAPI_VERSION: 4.1.2
+        STRAPI_VERSION: 4.1.7
       dockerfile: Dockerfile
     container_name: strapi-app
     restart: unless-stopped
