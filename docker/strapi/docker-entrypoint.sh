@@ -22,19 +22,17 @@ if [ "$1" = "strapi" ]; then
       --dbssl=$DATABASE_SSL \
       $EXTRA_ARGS
 
-  elif [ ! -d "node_modules" ] || [ ! "$(ls -qAL node_modules 2>/dev/null)" ]; then
+fi
 
-    echo "Node modules not installed. Installing..."
+if [ -f "package.json" ]; then
 
-    if [ -f "yarn.lock" ]; then
+  if [ -f "yarn.lock" ]; then
 
-      yarn install
+    yarn install
 
-    else
+  else
 
-      npm install
-
-    fi
+    npm install
 
   fi
 
