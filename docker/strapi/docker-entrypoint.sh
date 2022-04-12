@@ -22,6 +22,7 @@ if [ "$1" = "strapi" ]; then
       --dbssl=$DATABASE_SSL \
       $EXTRA_ARGS
 
+  fi
 fi
 
 if [ -f "package.json" ]; then
