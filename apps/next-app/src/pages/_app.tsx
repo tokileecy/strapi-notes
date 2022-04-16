@@ -4,8 +4,27 @@ import store from '@/redux/store'
 import Head from 'next/head'
 import { Provider } from 'react-redux'
 import CssBaseline from '@mui/material/CssBaseline'
+import { useEffect } from 'react'
+import getConfig from 'next/config'
+import api from '@/lib/api'
+
+declare global {
+  interface Window {
+    api: typeof api
+  }
+}
+
+const { publicRuntimeConfig } = getConfig()
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
+  useEffect(() => {
+    const { APP_ENV } = publicRuntimeConfig
+
+    if (APP_ENV === 'development') {
+      window.api = api
+    }
+  }, [])
+
   return (
     <Provider store={store}>
       <Head>

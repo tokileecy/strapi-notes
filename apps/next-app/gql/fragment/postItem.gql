@@ -1,0 +1,23 @@
+fragment PostItem on Post {
+  name
+  
+  category {
+    data {
+      attributes {
+        name
+      }
+    }
+  }
+  tags {
+    data {
+    	attributes {
+        name
+      }
+  	}
+  }
+  publishedAt
+  createdAt
+  updatedAt
+  locale
+  content
+}

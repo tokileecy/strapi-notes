@@ -1,6 +1,8 @@
 #!/bin/sh
 set -ea
 
+echo "Node modules not installed. Installing..."
+
 if [ -f "package.json" ]; then
 
   if [ -f "yarn.lock" ]; then
@@ -15,6 +17,6 @@ if [ -f "package.json" ]; then
 
 fi
 
-echo "Starting Blog..."
+echo "Starting App..."
 
 exec "$@"

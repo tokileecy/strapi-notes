@@ -7,3 +7,4 @@ package.json
 
 next.config.js
 .eslintrc.js
+/types/strapi-types.ts

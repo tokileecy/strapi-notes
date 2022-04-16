@@ -70,6 +70,7 @@ module.exports = {
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
     "@typescript-eslint/no-explicit-any": "off",
+    '@typescript-eslint/no-var-requires': 0,
     'padding-line-between-statements': [
       'error',
       {

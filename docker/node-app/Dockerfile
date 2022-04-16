@@ -1,8 +1,5 @@
-ARG NODE_VERSION
+ARG NODE_VERSION=16
 FROM node:${NODE_VERSION}
-
-ARG STRAPI_VERSION
-RUN yarn global add @strapi/strapi@${STRAPI_VERSION}
 
 RUN mkdir /srv/app && chown 1000:1000 -R /srv/app
 
@@ -14,4 +11,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod 777 /usr/local/bin/docker-entrypoint.sh 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["strapi", "develop"]
+CMD ["yarn", "dev"]

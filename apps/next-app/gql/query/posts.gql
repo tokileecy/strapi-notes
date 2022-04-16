@@ -1,0 +1,18 @@
+#import '../fragment/postItem.gql'
+
+query GetPosts (
+  $publicationState: PublicationState
+  $pagination: PaginationArg
+) {
+  posts (
+    pagination: $pagination
+    publicationState: $publicationState
+  ) {
+    data {
+      id
+      attributes {
+        ...PostItem
+      }
+    }
+  }
+}

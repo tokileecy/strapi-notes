@@ -5,5 +5,13 @@
  */
 
 const { createCoreRouter } = require('@strapi/strapi').factories;
+const { customRouter } = require('../../../utils')
 
-module.exports = createCoreRouter('api::post.post');
+const defaultRouter  =  createCoreRouter('api::post.post')
+
+module.exports = customRouter(defaultRouter, [
+{
+    method: "GET",
+    path: "/custom/posts",
+    handler: "api::post.post.customPost",
+}]);

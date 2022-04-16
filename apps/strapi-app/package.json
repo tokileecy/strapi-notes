@@ -8,12 +8,14 @@
   ],
   "scripts": {
     "develop:frontend": "strapi develop --watch-admin",
+    "build:ts": "openapi-typescript src/extensions/documentation/documentation/1.0.0/full_documentation.json --output strapi-types.ts",
     "develop": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi"
   },
   "dependencies": {
+    "@strapi/plugin-documentation": "^4.1.8",
     "@strapi/plugin-graphql": "^4.1.7",
     "@strapi/plugin-i18n": "4.1.7",
     "@strapi/plugin-users-permissions": "4.1.7",
@@ -31,5 +33,8 @@
     "npm": ">=6.0.0"
   },
   "license": "MIT",
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.2.0",
+  "devDependencies": {
+    "openapi-typescript": "^5.2.0"
+  }
 }

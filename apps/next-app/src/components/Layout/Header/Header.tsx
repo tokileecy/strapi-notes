@@ -13,7 +13,7 @@ const Header = () => {
                 width: 254,
               }}
             >
-              Next-App
+              Toki Notes
             </Box>
           </Toolbar>
         </Container>
