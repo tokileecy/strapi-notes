@@ -22,16 +22,17 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_CLIENT: postgres
-      DATABASE_NAME: ${DATABASE_NAME:-strapi}
-      DATABASE_HOST: postgres
-      DATABASE_PORT: ${DATABASE_PORT:-5432}
-      DATABASE_USERNAME: ${DATABASE_USERNAME:-strapi}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-strapi}
-      APP_KEYS: ${APP_KEYS:-someSecret,anotherSecret}
+      - NODE_ENV=${APP_ENV:-development}
+      - DATABASE_CLIENT=postgres
+      - DATABASE_NAME=${DATABASE_NAME:-strapi}
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=${DATABASE_PORT:-5432}
+      - DATABASE_USERNAME=${DATABASE_USERNAME:-strapi}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-strapi}
+      - APP_KEYS=${APP_KEYS:-someSecret,anotherSecret}
     command: >
       /bin/sh -c "
-        if [ ${APP_ENV:-development} == \"production\" ]; then yarn build && yarn start; else yarn develop; fi
+        if [ ${APP_ENV:-development} = \"production\" ]; then yarn build && yarn start; else yarn develop; fi
       "
     volumes:
       - ./apps/strapi-app:/srv/app
@@ -44,9 +45,9 @@ services:
     env_file: .env
     container_name: postgres
     environment:
-      POSTGRES_DB: ${DATABASE_NAME:-strapi}
-      POSTGRES_USER: ${DATABASE_USERNAME:-strapi}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-strapi}
+      - POSTGRES_DB=${DATABASE_NAME:-strapi}
+      - POSTGRES_USER=${DATABASE_USERNAME:-strapi}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-strapi}
     ports:
       - '5432:5432'
     volumes:
@@ -54,12 +55,13 @@ services:
   next-app:
     <<: *default
     environment:
+      - NODE_ENV=${APP_ENV:-development}
       - SERVER_STRAPI_URL=http://strapi-app:1337/}
       - PUBLIC_STRAPI_URL=${PUBLIC_STRAPI_URL:-http://127.0.0.1:1337}
       - APP_ENV=${APP_ENV:-development}
     command: >
       /bin/sh -c "
-        if [ ${APP_ENV:-development} == \"production\" ]; then yarn build && yarn start; else yarn dev; fi
+        if [ ${APP_ENV:-development} = \"production\" ]; then yarn build && yarn start; else yarn dev; fi
       "
     ports:
       - '3000:3000'
