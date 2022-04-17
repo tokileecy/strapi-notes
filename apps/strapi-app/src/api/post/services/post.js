@@ -25,7 +25,7 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
     }
     
     groupPostId = groupPostId.groupBy('posts_tags_links.post_id')
-    .as('group_post_tags')
+      .as('group_post_tags')
 
     const data = await knex.select([
       'id',
@@ -38,12 +38,13 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
       'updated_by_id',
       'tag_ids',
     ]).from('posts')
+      .whereNot('published_at', null)
       .rightJoin(
         groupPostId,
         'group_post_tags.post_id', 
         'posts.id',
       )
-      
+
     return data
   },
 }));
