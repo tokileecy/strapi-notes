@@ -1,15 +1,15 @@
 import Stack from '@mui/material/Stack'
-import Chip from '@mui/material/Chip'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-
+import Tag from '../../base/Tag'
 export interface TagsBlockProps {
   selectedTags: Record<string, boolean>
-  onClick?: (isSelected: boolean, id: string) => void
+  onTagSelected?: (isSelected: boolean, id: string) => void
+  onAllSelected?: () => void
 }
 
 const TagsBlock = (props: TagsBlockProps): JSX.Element => {
-  const { selectedTags, onClick } = props
+  const { selectedTags, onTagSelected, onAllSelected } = props
   const tags = useSelector((state: RootState) => state.tags)
 
   const tagNodes = tags.ids.map((tagId) => {
@@ -17,34 +17,19 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
     const name = tags.itemById[id].attributes.name
     const isSelected = selectedTags[id] ?? false
 
-    const backgroundColor = isSelected
-      ? 'tagBgColorPrimary.main'
-      : 'tagBgColorDefault.main'
-
-    const color = isSelected ? 'tagColorPrimary.main' : 'tagColorDefault.main'
-
     return (
-      <Chip
+      <Tag
         key={id}
         label={name}
-        sx={[
-          {
-            '&:hover': {
-              color: 'tagColorPrimary.main',
-              backgroundColor: 'tagBgColorPrimary.main',
-            },
-          },
-          {
-            backgroundColor,
-            color,
-          },
-        ]}
         onClick={() => {
-          onClick?.(isSelected, id)
+          onTagSelected?.(isSelected, id)
         }}
+        isSelected={isSelected}
       />
     )
   })
+
+  const isAllSelected = [...Object.keys(selectedTags)].length === 0
 
   return (
     <Stack
@@ -55,6 +40,13 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
         pb: 3,
       }}
     >
+      <Tag
+        label="All"
+        onClick={() => {
+          onAllSelected?.()
+        }}
+        isSelected={isAllSelected}
+      />
       {tagNodes}
     </Stack>
   )

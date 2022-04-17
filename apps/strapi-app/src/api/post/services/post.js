@@ -10,7 +10,7 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
   async customPost(tagIds = []) {
     const knex = strapi.db.connection
 
-    const groupPostId = knex.select([
+    let groupPostId = knex.select([
       'posts_tags_links.post_id',
       knex.raw(`
         json_agg(
@@ -19,9 +19,13 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
       `),
     ]).from('posts_tags_links')
       .leftJoin('posts', 'posts_tags_links.post_id', 'posts.id')
-      .whereIn('tag_id', tagIds)
-      .groupBy('posts_tags_links.post_id')
-      .as('group_post_tags')
+
+    if(tagIds.length !== 0) {
+      groupPostId = groupPostId.whereIn('tag_id', tagIds)
+    }
+    
+    groupPostId = groupPostId.groupBy('posts_tags_links.post_id')
+    .as('group_post_tags')
 
     const data = await knex.select([
       'id',

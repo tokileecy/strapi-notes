@@ -1,15 +1,34 @@
-import Box from '@mui/material/Box'
+import Chip, { ChipProps } from '@mui/material/Chip'
 
-const Tag = () => {
+export interface TagProps extends ChipProps {
+  isSelected: boolean
+}
+
+const Tag = (inProps: TagProps): JSX.Element => {
+  const { isSelected, ...props } = inProps
+
+  const backgroundColor = isSelected
+    ? 'tagBgColorPrimary.main'
+    : 'tagBgColorDefault.main'
+
+  const color = isSelected ? 'tagColorPrimary.main' : 'tagColorDefault.main'
+
   return (
-    <Box
-      sx={{
-        display: 'inline-flex',
-        backgroundColor: 'green',
-      }}
-    >
-      tag
-    </Box>
+    <Chip
+      sx={[
+        {
+          '&:hover': {
+            color: 'tagColorPrimary.main',
+            backgroundColor: 'tagBgColorPrimary.main',
+          },
+        },
+        {
+          backgroundColor,
+          color,
+        },
+      ]}
+      {...props}
+    />
   )
 }
 

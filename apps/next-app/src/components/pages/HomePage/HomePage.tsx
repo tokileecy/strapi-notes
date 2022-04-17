@@ -10,13 +10,12 @@ import {
 import { setTags, Tag } from '@/redux/features/tags/tagSlice'
 import { setPosts, Post } from '@/redux/features/posts/postSlice'
 import {
-  setCategory,
-  clearCategory,
+  clearTags,
   removeTags,
   addTags,
 } from '@/redux/features/global/globalSlice'
 import api from '@/lib/api'
-import CategoryBlock from './CategoryBlock'
+// import CategoryBlock from './CategoryBlock'
 import TagsBlock from './TagsBlock'
 import PostBlock from './PostBlock'
 
@@ -33,9 +32,9 @@ const HomePage = (props: HomePageProps): JSX.Element => {
     (state: RootState) => state.global.selectedTags
   )
 
-  const selectedCategory = useSelector(
-    (state: RootState) => state.global.selectedCategory
-  )
+  // const selectedCategory = useSelector(
+  //   (state: RootState) => state.global.selectedCategory
+  // )
 
   useEffect(() => {
     const tagIds: string[] = []
@@ -97,7 +96,10 @@ const HomePage = (props: HomePageProps): JSX.Element => {
       >
         <TagsBlock
           selectedTags={selectedTags}
-          onClick={(isSelected, id) => {
+          onAllSelected={() => {
+            dispatch(clearTags())
+          }}
+          onTagSelected={(isSelected, id) => {
             if (isSelected) {
               dispatch(removeTags([id]))
             } else {
