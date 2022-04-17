@@ -4,14 +4,14 @@ import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
 import { Post } from '@/redux/features/posts/postSlice'
 import Markdown from '@/components/base/Markdown'
-export interface VideoCardProps {
+export interface PostCardProps {
   post: Post
   onClick?: CardProps['onClick']
 }
 
 const limitContentLength = 110
 
-const VideoCard = (props: VideoCardProps): JSX.Element => {
+const PostCard = (props: PostCardProps): JSX.Element => {
   const { post, onClick } = props
 
   const { content } = post
@@ -79,4 +79,4 @@ const VideoCard = (props: VideoCardProps): JSX.Element => {
   )
 }
 
-export default VideoCard
+export default PostCard
