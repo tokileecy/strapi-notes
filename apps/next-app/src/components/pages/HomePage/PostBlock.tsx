@@ -28,18 +28,17 @@ const PostBlock = () => {
   return (
     <Box
       sx={{
-        pt: 2,
-        pb: 2,
         flex: 1,
-        height: '100%',
+        width: '100%',
+        height: 0,
+        pt: 4,
       }}
     >
       <Box
         sx={{
           height: '100%',
           overflowY: 'auto',
-          pt: 2,
-          pb: 2,
+          pb: 4,
           pl: 4,
           pr: 4,
         }}

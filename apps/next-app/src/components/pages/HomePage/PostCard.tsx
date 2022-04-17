@@ -42,11 +42,18 @@ const PostCard = (props: PostCardProps): JSX.Element => {
 
   return (
     <Card
-      sx={{
-        width: '90%',
-        boxShadow: 'rgb(200 255 230 / 10%) 0px 0px 20px 10px',
-        cursor: 'pointer',
-      }}
+      sx={[
+        {
+          '&:hover': {
+            backgroundColor: 'rgb(255 255 255 / 95%)',
+          },
+        },
+        {
+          width: '90%',
+          boxShadow: 'rgb(200 255 230 / 10%) 0px 0px 20px 10px',
+          cursor: 'pointer',
+        },
+      ]}
       onClick={onClick}
     >
       {bannerProps.src && (

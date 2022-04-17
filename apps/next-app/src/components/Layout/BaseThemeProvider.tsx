@@ -19,8 +19,11 @@ declare module '@mui/material/styles/createPalette' {
 
 const theme = createTheme({
   palette: {
+    primary: {
+      main: 'rgb(3, 147, 187)',
+    },
     tagBgColorPrimary: {
-      main: '#1976d2',
+      main: 'rgb(3, 147, 187)',
     },
     tagColorPrimary: {
       main: '#ffffff',

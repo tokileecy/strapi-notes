@@ -1,22 +1,35 @@
 import AppBar from '@mui/material/AppBar'
-import { Container, Toolbar, Box } from '@mui/material'
+import Toolbar from '@mui/material/Toolbar'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 
 const Header = () => {
   return (
     <AppBar>
-      <Box>
-        <Container>
-          <Toolbar>
-            <Box
-              component="a"
+      <Box
+        sx={{
+          pl: 4,
+          pr: 4,
+        }}
+      >
+        <Toolbar>
+          <Box
+            component="a"
+            sx={{
+              width: 254,
+            }}
+          >
+            <Typography
               sx={{
-                width: 254,
+                fontSize: '24px',
+                color: 'white',
+                fontWeight: 'bold',
               }}
             >
               Toki Notes
-            </Box>
-          </Toolbar>
-        </Container>
+            </Typography>
+          </Box>
+        </Toolbar>
       </Box>
     </AppBar>
   )

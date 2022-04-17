@@ -44,7 +44,6 @@ const PostDialog = (inProps: PostDialogProps): JSX.Element => {
           pl: 4,
           pr: 4,
           wordBreak: 'break-all',
-          userSelect: 'none',
         }}
       >
         <Markdown>{targetContent}</Markdown>

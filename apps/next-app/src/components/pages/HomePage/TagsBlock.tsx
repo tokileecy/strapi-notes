@@ -36,8 +36,10 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
       direction="row"
       spacing={2}
       sx={{
-        pt: 3,
-        pb: 3,
+        width: '100%',
+        justifyContent: 'center',
+        p: 4,
+        pb: 0,
       }}
     >
       <Tag
