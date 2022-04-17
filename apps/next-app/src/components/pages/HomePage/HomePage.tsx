@@ -90,8 +90,6 @@ const HomePage = (props: HomePageProps): JSX.Element => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          pl: 8,
-          pr: 8,
         }}
       >
         <TagsBlock

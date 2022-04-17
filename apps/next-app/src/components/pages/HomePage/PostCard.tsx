@@ -1,5 +1,4 @@
-import Card from '@mui/material/Card'
-import Typography from '@mui/material/Typography'
+import Card, { CardProps } from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
@@ -7,12 +6,13 @@ import { Post } from '@/redux/features/posts/postSlice'
 import Markdown from '@/components/base/Markdown'
 export interface VideoCardProps {
   post: Post
+  onClick?: CardProps['onClick']
 }
 
 const limitContentLength = 110
 
 const VideoCard = (props: VideoCardProps): JSX.Element => {
-  const { post } = props
+  const { post, onClick } = props
 
   const { content } = post
 
@@ -45,7 +45,9 @@ const VideoCard = (props: VideoCardProps): JSX.Element => {
       sx={{
         width: '90%',
         boxShadow: 'rgb(200 255 230 / 10%) 0px 0px 20px 10px',
+        cursor: 'pointer',
       }}
+      onClick={onClick}
     >
       {bannerProps.src && (
         <CardMedia component="img" height="130" image={bannerProps.src} />
@@ -67,6 +69,7 @@ const VideoCard = (props: VideoCardProps): JSX.Element => {
           sx={{
             maxHeight: '400px',
             wordBreak: 'break-all',
+            userSelect: 'none',
           }}
         >
           <Markdown>{ellipsisContent}</Markdown>
