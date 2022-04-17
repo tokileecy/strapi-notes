@@ -25,6 +25,7 @@ const Tag = (inProps: TagProps): JSX.Element => {
         {
           backgroundColor,
           color,
+          fontWeight: 'bold',
         },
       ]}
       {...props}
