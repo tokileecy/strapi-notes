@@ -1,4 +1,4 @@
-import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import Tag from '../../base/Tag'
@@ -32,14 +32,16 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
   const isAllSelected = [...Object.keys(selectedTags)].length === 0
 
   return (
-    <Stack
-      direction="row"
-      spacing={2}
+    <Box
       sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
         width: '100%',
-        justifyContent: 'center',
-        p: 4,
-        pb: 0,
+        justifyContent: 'flex-start',
+        p: { xs: 2, sm: 2 },
+        gap: 2,
+        borderBottom: '1px dashed white',
       }}
     >
       <Tag
@@ -50,7 +52,7 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
         isSelected={isAllSelected}
       />
       {tagNodes}
-    </Stack>
+    </Box>
   )
 }
 

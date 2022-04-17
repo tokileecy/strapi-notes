@@ -19,10 +19,14 @@ const PostBlock = () => {
     setSelectePost(null)
   }
 
-  let repeatCol = 4
+  const getRepeatCol = (limit: number) => {
+    let repeatCol = limit
 
-  if (posts.ids.length < 4) {
-    repeatCol = posts.ids.length
+    if (posts.ids.length < limit) {
+      repeatCol = posts.ids.length
+    }
+
+    return repeatCol
   }
 
   return (
@@ -54,13 +58,20 @@ const PostBlock = () => {
           }}
         />
         <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${repeatCol}, 1fr)`,
-            justifyItems: 'center',
-            width: '100%',
-            rowGap: 4,
-          }}
+          sx={[
+            {
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: `repeat(1, 1fr)`,
+                md: `repeat(${getRepeatCol(2)}, 1fr)`,
+                lg: `repeat(${getRepeatCol(3)}, 1fr)`,
+                xl: `repeat(${getRepeatCol(4)}, 1fr)`,
+              },
+              justifyItems: 'center',
+              width: '100%',
+              rowGap: 4,
+            },
+          ]}
         >
           {posts.ids.map((id) => {
             return (

@@ -50,7 +50,8 @@ const PostCard = (props: PostCardProps): JSX.Element => {
         },
         {
           width: '90%',
-          boxShadow: 'rgb(200 255 230 / 10%) 0px 0px 20px 10px',
+          margin: 1,
+          boxShadow: 'rgb(200 255 230 / 10%) 0px 0px 6px 3px',
           cursor: 'pointer',
         },
       ]}

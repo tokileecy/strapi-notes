@@ -17,7 +17,10 @@ const Main = (props: MainProps) => {
         alignItems: 'start',
         justifyContent: 'start',
         overflowY: 'auto',
-        marginTop: '64px',
+        marginTop: {
+          xs: '56px',
+          sm: '64px',
+        },
       }}
     >
       {children}

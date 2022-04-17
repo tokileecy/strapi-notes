@@ -90,7 +90,10 @@ const HomePage = (props: HomePageProps): JSX.Element => {
           width: '100%',
           height: '100%',
           display: 'flex',
-          flexDirection: 'row',
+          flexDirection: {
+            xs: 'column',
+            md: 'row',
+          },
           alignItems: 'center',
         }}
       >
@@ -114,8 +117,14 @@ const HomePage = (props: HomePageProps): JSX.Element => {
             justifyContent: 'flex-start',
             alignItems: 'center',
             flexGrow: 1,
-            height: '100%',
-            width: 0,
+            height: {
+              xs: 0,
+              md: '100%',
+            },
+            width: {
+              xs: 'initial',
+              md: 0,
+            },
           }}
         >
           <TagsBlock
