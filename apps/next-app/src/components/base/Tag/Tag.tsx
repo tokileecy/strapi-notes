@@ -13,13 +13,21 @@ const Tag = (inProps: TagProps): JSX.Element => {
 
   const color = isSelected ? 'tagColorPrimary.main' : 'tagColorDefault.main'
 
+  const hoverBackgroundColor = isSelected
+    ? 'tagBgColorPrimary.main'
+    : 'tagBgColorDefault.main'
+
+  const hoverColor = isSelected
+    ? 'tagColorPrimary.main'
+    : 'tagColorDefault.main'
+
   return (
     <Chip
       sx={[
         {
           '&:hover': {
-            color: 'tagColorPrimary.main',
-            backgroundColor: 'tagBgColorPrimary.main',
+            color: hoverColor,
+            backgroundColor: hoverBackgroundColor,
           },
         },
         {
