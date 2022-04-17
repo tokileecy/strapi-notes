@@ -22,6 +22,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      - NODE_OPTIONS=--max_old_space_size=2048
       - NODE_ENV=${APP_ENV:-development}
       - DATABASE_CLIENT=postgres
       - DATABASE_NAME=${DATABASE_NAME:-strapi}
