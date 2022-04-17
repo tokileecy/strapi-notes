@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import Tag from '../../base/Tag'
@@ -53,6 +54,14 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
           onAllSelected?.()
         }}
         isSelected={isAllSelected}
+      />
+      <Divider
+        orientation="vertical"
+        flexItem
+        sx={{
+          bgcolor: 'white',
+          color: 'white',
+        }}
       />
       {tagNodes}
     </Box>
