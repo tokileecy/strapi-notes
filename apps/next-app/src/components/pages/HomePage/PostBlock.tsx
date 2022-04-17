@@ -63,9 +63,9 @@ const PostBlock = () => {
               display: 'grid',
               gridTemplateColumns: {
                 xs: `repeat(1, 1fr)`,
-                md: `repeat(${getRepeatCol(2)}, 1fr)`,
-                lg: `repeat(${getRepeatCol(3)}, 1fr)`,
-                xl: `repeat(${getRepeatCol(4)}, 1fr)`,
+                sm: `repeat(${getRepeatCol(2)}, 1fr)`,
+                md: `repeat(${getRepeatCol(3)}, 1fr)`,
+                lg: `repeat(${getRepeatCol(4)}, 1fr)`,
               },
               justifyItems: 'center',
               width: '100%',

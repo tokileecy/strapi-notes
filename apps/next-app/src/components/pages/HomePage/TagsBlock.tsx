@@ -39,7 +39,10 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
         flexWrap: 'wrap',
         width: '100%',
         justifyContent: 'flex-start',
-        p: { xs: 2, sm: 2 },
+        pt: 2,
+        pb: 2,
+        pl: 6,
+        pr: 6,
         gap: 2,
         borderBottom: '1px dashed white',
       }}
