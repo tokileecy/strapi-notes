@@ -43,7 +43,7 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
         groupPostId,
         'group_post_tags.post_id', 
         'posts.id',
-      )
+      ).orderBy('created_at', 'desc')
 
     return data
   },
