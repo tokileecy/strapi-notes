@@ -15,7 +15,7 @@ services:
       context: ./docker/strapi-app
       args:
         NODE_VERSION: 16
-        STRAPI_VERSION: 4.1.7
+        STRAPI_VERSION: 4.1.8
         BASE_IMAGE: strapi_next_template/node-app
       dockerfile: Dockerfile
     container_name: strapi-app
