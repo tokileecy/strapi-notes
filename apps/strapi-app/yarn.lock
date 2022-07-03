@@ -2272,6 +2272,45 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pmmmwh/react-refresh-webpack-plugin@npm:0.5.4":
+  version: 0.5.4
+  resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.4"
+  dependencies:
+    ansi-html-community: ^0.0.8
+    common-path-prefix: ^3.0.0
+    core-js-pure: ^3.8.1
+    error-stack-parser: ^2.0.6
+    find-up: ^5.0.0
+    html-entities: ^2.1.0
+    loader-utils: ^2.0.0
+    schema-utils: ^3.0.0
+    source-map: ^0.7.3
+  peerDependencies:
+    "@types/webpack": 4.x || 5.x
+    react-refresh: ">=0.10.0 <1.0.0"
+    sockjs-client: ^1.4.0
+    type-fest: ">=0.17.0 <3.0.0"
+    webpack: ">=4.43.0 <6.0.0"
+    webpack-dev-server: 3.x || 4.x
+    webpack-hot-middleware: 2.x
+    webpack-plugin-serve: 0.x || 1.x
+  peerDependenciesMeta:
+    "@types/webpack":
+      optional: true
+    sockjs-client:
+      optional: true
+    type-fest:
+      optional: true
+    webpack-dev-server:
+      optional: true
+    webpack-hot-middleware:
+      optional: true
+    webpack-plugin-serve:
+      optional: true
+  checksum: 66deb75fe06c0d93f9f6f87c57349013cdc82d4cc536b3aff919fd417df1c6603d14a96448d4088f1a680ec22a75f994b30c374a0042c524dfecd96a942ff674
+  languageName: node
+  linkType: hard
+
 "@protobufjs/aspromise@npm:^1.1.1, @protobufjs/aspromise@npm:^1.1.2":
   version: 1.1.2
   resolution: "@protobufjs/aspromise@npm:1.1.2"
@@ -2363,6 +2402,18 @@ __metadata:
   version: 2.0.0
   resolution: "@react-dnd/shallowequal@npm:2.0.0"
   checksum: b5bbdc795d65945bb7ba2322bed5cf8d4c6fe91dced98c3b10e3d16822c438f558751135ff296f8d1aa1eaa9d0037dacab2b522ca5eb812175123b9996966dcb
+  languageName: node
+  linkType: hard
+
+"@rushstack/ts-command-line@npm:^4.7.7":
+  version: 4.12.1
+  resolution: "@rushstack/ts-command-line@npm:4.12.1"
+  dependencies:
+    "@types/argparse": 1.0.38
+    argparse: ~1.0.9
+    colors: ~1.2.1
+    string-argv: ~0.3.1
+  checksum: e9479bd001f4f206d207c867ec7b91444727cf8a1c685dac7589c6a33b54f47200deabc450d6831a1cc38501f0322eb7003c1f78f1fa43230541c4b7ddc4718d
   languageName: node
   linkType: hard
 
@@ -2468,9 +2519,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@strapi/admin@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/admin@npm:4.1.10"
+"@strapi/admin@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/admin@npm:4.2.2"
   dependencies:
     "@babel/core": 7.16.7
     "@babel/plugin-transform-runtime": 7.16.7
@@ -2485,11 +2536,12 @@ __metadata:
     "@fortawesome/free-brands-svg-icons": ^5.15.3
     "@fortawesome/free-solid-svg-icons": ^5.15.3
     "@fortawesome/react-fontawesome": ^0.1.14
-    "@strapi/babel-plugin-switch-ee-ce": 4.1.10
-    "@strapi/design-system": 1.1.0
-    "@strapi/helper-plugin": 4.1.10
-    "@strapi/icons": 1.1.0
-    "@strapi/utils": 4.1.10
+    "@pmmmwh/react-refresh-webpack-plugin": 0.5.4
+    "@strapi/babel-plugin-switch-ee-ce": 4.2.2
+    "@strapi/design-system": 1.2.0
+    "@strapi/helper-plugin": 4.2.2
+    "@strapi/icons": 1.2.0
+    "@strapi/utils": 4.2.2
     axios: 0.24.0
     babel-loader: 8.2.3
     babel-plugin-styled-components: 2.0.2
@@ -2549,6 +2601,7 @@ __metadata:
     react-intl: 5.20.2
     react-query: 3.24.3
     react-redux: 7.2.3
+    react-refresh: 0.11.0
     react-router: 5.2.0
     react-router-dom: 5.2.0
     react-select: ^4.0.2
@@ -2567,51 +2620,51 @@ __metadata:
     webpack-dev-server: 4.7.3
     webpackbar: 5.0.0-3
     yup: ^0.32.9
-  checksum: 3b3a9c9b2d72f1d777fff2cd8888b1c3c5ffd8e75ce0ed57dfca9d681d624b21fcbed9e52d408a4abfd5744bd2f6c58e00ee70f6ace95a9f2568b3fdbfd7b3a0
+  checksum: 98dcc2cd2b40b3723c977dc48627aea75235a222c7bdc559326aad3f598d132054b62adab5f15f9f9e5a91fbf00b73d57a9545a2ab1048757f0b0f919252f6ef
   languageName: node
   linkType: hard
 
-"@strapi/babel-plugin-switch-ee-ce@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/babel-plugin-switch-ee-ce@npm:4.1.10"
-  checksum: 98be316847b1002a07128fada60600c1fa392d0022d834b15e5d8bc2c28fea9a6c2afdf926c797f510036fc722a029a4a9197671d223264720ad190035979955
+"@strapi/babel-plugin-switch-ee-ce@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/babel-plugin-switch-ee-ce@npm:4.2.2"
+  checksum: 64413415dd4caa4dc66f2613922a9f93c44eb318e84d016cb3e297fb1d200bafefc3fd717bb179cb5beb87509ce10f9a7a41a8280e5599eadc4043b3f819a57b
   languageName: node
   linkType: hard
 
-"@strapi/database@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/database@npm:4.1.10"
+"@strapi/database@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/database@npm:4.2.2"
   dependencies:
     date-fns: 2.22.1
     debug: 4.3.1
     fs-extra: 10.0.0
     knex: 1.0.4
     lodash: 4.17.21
-    umzug: 2.3.0
-  checksum: 9275a7f240496b23d5b32baca37f1a45c849c95f373c8752d6c744e7ea2c71928bdf38e5c3988e6db9d2ae64e1ff6a149e107ab63f21728fe52ce28b37ffe04e
+    umzug: 3.1.1
+  checksum: a5c2ab4a8d64fe866c8470b29c61b967a1a976730634d26ad69b1f58c8f1451954bd884f30bc17930d4e32735164e84fb0d80f884506be045ee36bb01e547bd8
   languageName: node
   linkType: hard
 
-"@strapi/design-system@npm:1.1.0":
-  version: 1.1.0
-  resolution: "@strapi/design-system@npm:1.1.0"
+"@strapi/design-system@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@strapi/design-system@npm:1.2.0"
   dependencies:
     "@internationalized/number": ^3.0.2
     compute-scroll-into-view: ^1.0.17
     prop-types: ^15.7.2
   peerDependencies:
-    "@strapi/icons": ^0.0.1-alpha.73
+    "@strapi/icons": ^1.1.1
     react: ^17.0.1
     react-dom: ^17.0.1
     react-router-dom: ^5.2.0
     styled-components: ^5.2.1
-  checksum: 35f7da8efe5d5995bea75430a16cfccb2e662a0f9aa4c7f5af397cbae77492e636083b933f2a5af738686c3d330c6b08786efb45793552b3876ce4cac2baf3ee
+  checksum: ffc59aa82a1796e5dea74b80dce6a65e308da84483f9de5883c6ce00f71606fc57ef55c6ee5ac98284dfb90d1edeab3ccce50207471338214da5b4ba9f1df502
   languageName: node
   linkType: hard
 
-"@strapi/generate-new@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/generate-new@npm:4.1.10"
+"@strapi/generate-new@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/generate-new@npm:4.2.2"
   dependencies:
     "@sentry/node": 6.19.6
     chalk: ^4.1.1
@@ -2624,56 +2677,22 @@ __metadata:
     ora: ^5.4.0
     tar: 6.1.11
     uuid: ^3.3.2
-  checksum: 0133a8b10b0578f30a8a7a85f5a7f302f3fda665579575c47bc8dcee09c982226f59c5e96568184a3d203bf76d06e4c9cb7617976b54cc3f5422d527b85225ff
+  checksum: c291febdb44ae29a96d90289a8c25725eca419ea45577f9c84abaa0320fe55c7175866c847c9293974ce7d4f8ae7c55a9db3d35023e041cbf9d66af44edd3f45
   languageName: node
   linkType: hard
 
-"@strapi/generators@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/generators@npm:4.1.10"
+"@strapi/generators@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/generators@npm:4.2.2"
   dependencies:
     "@sindresorhus/slugify": 1.1.0
-    "@strapi/utils": 4.1.10
+    "@strapi/utils": 4.2.2
     chalk: 4.1.2
     fs-extra: 10.0.0
     node-plop: 0.26.3
     plop: 2.7.6
     pluralize: 8.0.0
-  checksum: 991ffa7a5a84953ae1f0f0edffbcfcc54a17d02eae943177e63c252bc03e8afa9b3835e9ba16a7f49e7730073b328ef52d6d4c40f4b8fe3fedab7cd3fbef43fe
-  languageName: node
-  linkType: hard
-
-"@strapi/helper-plugin@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/helper-plugin@npm:4.1.10"
-  dependencies:
-    "@fortawesome/fontawesome-free": ^5.15.2
-    "@fortawesome/fontawesome-svg-core": ^1.2.35
-    "@fortawesome/free-brands-svg-icons": ^5.15.2
-    "@fortawesome/free-solid-svg-icons": ^5.15.3
-    "@fortawesome/react-fontawesome": ^0.1.14
-    axios: 0.25.0
-    babel-plugin-styled-components: 2.0.2
-    formik: 2.2.9
-    invariant: ^2.2.1
-    lodash: 4.17.21
-    match-sorter: ^4.0.2
-    mini-css-extract-plugin: 2.4.4
-    moment: ^2.29.1
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-helmet: ^6.1.0
-    react-intl: 5.20.2
-    react-router: ^5.2.0
-    react-router-dom: 5.2.0
-    styled-components: 5.3.3
-    whatwg-fetch: ^3.6.2
-  peerDependencies:
-    formik: ^2.2.6
-    immer: 9.0.6
-    qs: 6.10.1
-    react-select: ^4.0.2
-  checksum: 4e5c620bd1eb3b121b319f0c8d5736668605262aec9b72ff252a717485ca6d727d882c42d8e4b89d446cb90dd54daff447e065065f592da91372fda7b230fc3b
+  checksum: bc9301dc17ed7c629d36a51c5eef9ba042f8b57ea29cf0f7525b38b8b9ad08a7591f79beb9ed77674f19a63b9615c39abd4a16ce7cdc829e63ec10c9f3f13f0d
   languageName: node
   linkType: hard
 
@@ -2709,47 +2728,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@strapi/icons@npm:1.1.0":
-  version: 1.1.0
-  resolution: "@strapi/icons@npm:1.1.0"
+"@strapi/icons@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@strapi/icons@npm:1.2.0"
   dependencies:
     rimraf: ^3.0.2
   peerDependencies:
     react: ^17.0.1
     react-dom: ^17.0.1
-  checksum: 92f09c2068b396c7d4bbcf9e4d9551090d5a377d851c6657c4ec6df3e80bf079dd9209c382b695aba70bf343bf3b2208d531a1f0265fa275a3ca8e685ea1c93e
+  checksum: e923a877063594d683afe70fd53bb6ba957301da21bab2ad2d4e1f1d0cdfe7b19761611087d6b717e5d0f3e6f23fbe9cdef53aa3e11d158baa0537e544e6d1be
   languageName: node
   linkType: hard
 
-"@strapi/logger@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/logger@npm:4.1.10"
+"@strapi/logger@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/logger@npm:4.2.2"
   dependencies:
     lodash: 4.17.21
     winston: 3.3.3
-  checksum: bb59de046f3a16d4648267850cc3da1e42cbed126528b5a2d948bf9bb38a0e0bbb973bb2bb675047aa492ec734ee944acc7de5f79272338ee1ae8a5f6f11e62f
+  checksum: 09ed4522f75826601a46f0d8dba5257db84efa689094aca85657c19b8f736c0f1ea58c95320bafe9d6adf90bf820844bfe8a16cf6f7bb499dcde5421704a9a16
   languageName: node
   linkType: hard
 
-"@strapi/plugin-content-manager@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/plugin-content-manager@npm:4.1.10"
+"@strapi/plugin-content-manager@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/plugin-content-manager@npm:4.2.2"
   dependencies:
     "@sindresorhus/slugify": 1.1.0
-    "@strapi/utils": 4.1.10
+    "@strapi/utils": 4.2.2
     lodash: 4.17.21
-  checksum: aae1e97396419a548e70aa6c6ae21bbc2a148e42d5520ba3ea5864bb0bc50282200f5eebdaf7c79cd5b1fc86e4843537f266930789455a639555701e60997097
+  checksum: 8bcf5a1fe379c3020c2853a6cdcc07b0a9de5170c5f5b6004c976a260f8520bb99a15c930a6f3436dc325824cf2e2d20c82528065f787cc052c8848e2ef90070
   languageName: node
   linkType: hard
 
-"@strapi/plugin-content-type-builder@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/plugin-content-type-builder@npm:4.1.10"
+"@strapi/plugin-content-type-builder@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/plugin-content-type-builder@npm:4.2.2"
   dependencies:
     "@sindresorhus/slugify": 1.1.0
-    "@strapi/generators": 4.1.10
-    "@strapi/helper-plugin": 4.1.10
-    "@strapi/utils": 4.1.10
+    "@strapi/generators": 4.2.2
+    "@strapi/helper-plugin": 4.2.2
+    "@strapi/utils": 4.2.2
     fs-extra: 10.0.0
     lodash: 4.17.21
     pluralize: ^8.0.0
@@ -2762,11 +2781,11 @@ __metadata:
     redux: ^4.0.1
     reselect: ^4.0.0
     yup: ^0.32.9
-  checksum: 14c207af7ff74ac6836bebae45f328e4e9b9b772cd04e5d27c21658883e7407be4dc5f11f3056c705bd81db80e252411c1398cf210063ab3e7504e6cd8baf7bd
+  checksum: 3d3227a3e6d32a0e63f68561b615db0acf62f70a1ef41e2af14e3f307773fb5956f2b1976afd0bfca1a2e51a45c9bfb5d8d3862f7f37e91ecf894d7bd94fbbe3
   languageName: node
   linkType: hard
 
-"@strapi/plugin-documentation@npm:^4.1.10":
+"@strapi/plugin-documentation@npm:^4.2.2":
   version: 4.2.2
   resolution: "@strapi/plugin-documentation@npm:4.2.2"
   dependencies:
@@ -2796,18 +2815,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@strapi/plugin-email@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/plugin-email@npm:4.1.10"
+"@strapi/plugin-email@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/plugin-email@npm:4.2.2"
   dependencies:
-    "@strapi/provider-email-sendmail": 4.1.10
-    "@strapi/utils": 4.1.10
+    "@strapi/provider-email-sendmail": 4.2.2
+    "@strapi/utils": 4.2.2
     lodash: 4.17.21
-  checksum: 856c2b29a78a7d3b9b286ebd975afd3ad1803087496e95aa45236cec70156019ae2ca4cb652630eddcc16e25561b17dc70fab8c94393c9217e6449c74ade893e
+  checksum: affe236c5cd5a11d463c13ae286ea0522b5188fdd602520d5702c41b27c0f18c5d9b1c41a45add629b5370a4e6105ca7aa0aa077e366f7f271acb4e5d64a1a93
   languageName: node
   linkType: hard
 
-"@strapi/plugin-graphql@npm:^4.1.10":
+"@strapi/plugin-graphql@npm:^4.2.2":
   version: 4.2.2
   resolution: "@strapi/plugin-graphql@npm:4.2.2"
   dependencies:
@@ -2836,23 +2855,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@strapi/plugin-i18n@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/plugin-i18n@npm:4.1.10"
+"@strapi/plugin-i18n@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/plugin-i18n@npm:4.2.2"
   dependencies:
-    "@strapi/utils": 4.1.10
+    "@strapi/utils": 4.2.2
     lodash: 4.17.21
-  checksum: 267547d317cd64d54ae7ffd6ae80caf3fd82c2ea229e5cc5554a6bdaae83f6c18ab785a8f5fcfa68cfe2d2a9f69ba67cb90bb9979501cb25f36d4cb577e41ebe
+  checksum: 0f228d8ce42fad33c930b80c265a8fbbbc9251ecbcfd40b15d61d54335507fe6668ccedb23fb0583546fbb317a6be7fff5b5e695e099e659b9612cde33f531c4
   languageName: node
   linkType: hard
 
-"@strapi/plugin-upload@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/plugin-upload@npm:4.1.10"
+"@strapi/plugin-upload@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/plugin-upload@npm:4.2.2"
   dependencies:
-    "@strapi/helper-plugin": 4.1.10
-    "@strapi/provider-upload-local": 4.1.10
-    "@strapi/utils": 4.1.10
+    "@strapi/helper-plugin": 4.2.2
+    "@strapi/provider-upload-local": 4.2.2
+    "@strapi/utils": 4.2.2
     byte-size: 7.0.1
     cropperjs: 1.5.11
     fs-extra: 10.0.0
@@ -2868,17 +2887,17 @@ __metadata:
     react-redux: 7.2.3
     react-router: ^5.2.0
     react-router-dom: 5.2.0
-    sharp: 0.30.4
-  checksum: 2eb17f67800f16db534d89de5c5055fcb82f7319d9203969b50c531883c1e4f77f6a021147f82536cc9a660835167e95f3350b9abbe370c1d823c479347d3876
+    sharp: 0.30.6
+  checksum: 98264d762667a8cf2827fbc534ec0c22122d66f82bb595187d19eaff641c9605468d7685a012402353c1c24b62b79b1f02a7065ab1ea4139031c68d2c29272e8
   languageName: node
   linkType: hard
 
-"@strapi/plugin-users-permissions@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/plugin-users-permissions@npm:4.1.10"
+"@strapi/plugin-users-permissions@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/plugin-users-permissions@npm:4.2.2"
   dependencies:
-    "@strapi/helper-plugin": 4.1.10
-    "@strapi/utils": 4.1.10
+    "@strapi/helper-plugin": 4.2.2
+    "@strapi/utils": 4.2.2
     bcryptjs: 2.4.3
     grant-koa: 5.4.8
     jsonwebtoken: ^8.1.0
@@ -2894,46 +2913,46 @@ __metadata:
     redux-saga: ^0.16.0
     request: ^2.83.0
     url-join: 4.0.1
-  checksum: 98adca4a000ac2952f2aa1194ec337d813dbd1a5cab235bc476fd3e3abf4cd1befd9f795fb7b73243bc27a128170a2d62cd3625ae9a6946acea6ff4c5db9c2c1
+  checksum: 6e4cb115a2d7205e76e7e5dafe02b891f19ed502ec0f6478e2a55c43b2bb98334e06dc1b8fdbedf4f582621dd2c6ba695aed7e1fcfb31b2703fa56b2dc8f092b
   languageName: node
   linkType: hard
 
-"@strapi/provider-email-sendmail@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/provider-email-sendmail@npm:4.1.10"
+"@strapi/provider-email-sendmail@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/provider-email-sendmail@npm:4.2.2"
   dependencies:
-    "@strapi/utils": 4.1.10
+    "@strapi/utils": 4.2.2
     sendmail: ^1.6.1
-  checksum: 83b79a02768eea7ef1203bc39f462fe62059dafbee8c57440c5cf8a5657966aa35a67372889619160afc5ae4c41ada73fb3c1cf260281bc32ff8711ae037a48f
+  checksum: 6d3a3c1265ae19de1ddabe0e96efff0c4e8b9871910203f1035ec2d65ccabc5476e4b75870197ab20712f1f00bbd3dd57cfa52e85f67e0d483385ea49fab79c6
   languageName: node
   linkType: hard
 
-"@strapi/provider-upload-local@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/provider-upload-local@npm:4.1.10"
+"@strapi/provider-upload-local@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/provider-upload-local@npm:4.2.2"
   dependencies:
-    "@strapi/utils": 4.1.10
+    "@strapi/utils": 4.2.2
     fs-extra: 10.0.0
-  checksum: 09434a0fbfd62b0f5139eb7d6596026b2ede0f955ac349f060d8dbe1edbe2eead9321fd25bff463d0cfb0a674d8d03c9707a843e8655675dc156f74baeb43516
+  checksum: 1a1dec25cf23d0a5fabccebe9c82407ffdb1d09398a076a55e818dda1541efb3da7e2f9fba6fb9fb28a30e7a6a4ee57607202f01a5caddd059c4cbe850beb82f
   languageName: node
   linkType: hard
 
-"@strapi/strapi@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/strapi@npm:4.1.10"
+"@strapi/strapi@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@strapi/strapi@npm:4.2.2"
   dependencies:
     "@koa/cors": 3.1.0
     "@koa/router": 10.1.1
-    "@strapi/admin": 4.1.10
-    "@strapi/database": 4.1.10
-    "@strapi/generate-new": 4.1.10
-    "@strapi/generators": 4.1.10
-    "@strapi/logger": 4.1.10
-    "@strapi/plugin-content-manager": 4.1.10
-    "@strapi/plugin-content-type-builder": 4.1.10
-    "@strapi/plugin-email": 4.1.10
-    "@strapi/plugin-upload": 4.1.10
-    "@strapi/utils": 4.1.10
+    "@strapi/admin": 4.2.2
+    "@strapi/database": 4.2.2
+    "@strapi/generate-new": 4.2.2
+    "@strapi/generators": 4.2.2
+    "@strapi/logger": 4.2.2
+    "@strapi/plugin-content-manager": 4.2.2
+    "@strapi/plugin-content-type-builder": 4.2.2
+    "@strapi/plugin-email": 4.2.2
+    "@strapi/plugin-upload": 4.2.2
+    "@strapi/utils": 4.2.2
     bcryptjs: 2.4.3
     boxen: 5.1.2
     chalk: 4.1.2
@@ -2975,20 +2994,7 @@ __metadata:
     uuid: ^3.3.2
   bin:
     strapi: bin/strapi.js
-  checksum: 9166d905c1fe43d21b8ccd5a4d08a70f68eb91afce96bd4856bd7423fb943385b7506d3695e7c58eb405b0c636715e7e87d237701b94a4de647e2bec54593579
-  languageName: node
-  linkType: hard
-
-"@strapi/utils@npm:4.1.10":
-  version: 4.1.10
-  resolution: "@strapi/utils@npm:4.1.10"
-  dependencies:
-    "@sindresorhus/slugify": 1.1.0
-    date-fns: 2.24.0
-    http-errors: 1.8.0
-    lodash: 4.17.21
-    yup: 0.32.9
-  checksum: 664a6233f2b31702e9823bfc0b0ee83208cee48da7d54647a7c0906934f5919205865c1afcbb8abf154f7b0df8325650164b492b98d80574db8c3dda564de8b7
+  checksum: 63af513d6d90fa1b5af82c81a8922a3b3c564b5ff81998bcc3e5ba7276b0e161e4ac044ee0a43bfcad0ea367d10f74413accbf96ed6f87e7d5fd470f29e5072d
   languageName: node
   linkType: hard
 
@@ -3027,6 +3033,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 590b7580570534a640510c071e09074cf63b5958b237a728f94322567350aea4d239f8a9d897a12b15c856b992ee4d7907e9812bb079886af2c00714e7fb3f60
+  languageName: node
+  linkType: hard
+
+"@types/argparse@npm:1.0.38":
+  version: 1.0.38
+  resolution: "@types/argparse@npm:1.0.38"
+  checksum: 26ed7e3f1e3595efdb883a852f5205f971b798e4c28b7e30a32c5298eee596e8b45834ce831f014d250b9730819ab05acff5b31229666d3af4ba465b4697d0eb
   languageName: node
   linkType: hard
 
@@ -4133,13 +4146,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aproba@npm:^1.0.3":
-  version: 1.2.0
-  resolution: "aproba@npm:1.2.0"
-  checksum: 0fca141966559d195072ed047658b6e6c4fe92428c385dd38e288eacfc55807e7b4989322f030faff32c0f46bb0bc10f1e0ac32ec22d25315a1e5bbc0ebb76dc
-  languageName: node
-  linkType: hard
-
 "aproba@npm:^1.0.3 || ^2.0.0":
   version: 2.0.0
   resolution: "aproba@npm:2.0.0"
@@ -4157,20 +4163,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"are-we-there-yet@npm:~1.1.2":
-  version: 1.1.7
-  resolution: "are-we-there-yet@npm:1.1.7"
-  dependencies:
-    delegates: ^1.0.0
-    readable-stream: ^2.0.6
-  checksum: 70d251719c969b2745bfe5ddf3ebaefa846a636e90a6d5212573676af5d6670e15457761d4725731e19cbebdce42c4ab0cbedf23ab047f2a08274985aa10a3c7
-  languageName: node
-  linkType: hard
-
 "argparse@npm:^2.0.1":
   version: 2.0.1
   resolution: "argparse@npm:2.0.1"
   checksum: 83644b56493e89a254bae05702abf3a1101b4fa4d0ca31df1c9985275a5a5bd47b3c27b7fa0b71098d41114d8ca000e6ed90cad764b306f8a503665e4d517ced
+  languageName: node
+  linkType: hard
+
+"argparse@npm:~1.0.9":
+  version: 1.0.10
+  resolution: "argparse@npm:1.0.10"
+  dependencies:
+    sprintf-js: ~1.0.2
+  checksum: 7ca6e45583a28de7258e39e13d81e925cfa25d7d4aacbf806a382d3c02fcb13403a07fb8aeef949f10a7cfe4a62da0e2e807b348a5980554cc28ee573ef95945
   languageName: node
   linkType: hard
 
@@ -4586,7 +4591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.5.0, bluebird@npm:^3.7.2":
+"bluebird@npm:^3.5.0":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 869417503c722e7dc54ca46715f70e15f4d9c602a423a02c825570862d12935be59ed9c7ba34a9b31f186c017c23cac6b54e35446f8353059c101da73eac22ef
@@ -5423,13 +5428,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"code-point-at@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "code-point-at@npm:1.1.0"
-  checksum: 17d5666611f9b16d64fdf48176d9b7fb1c7d1c1607a189f7e600040a11a6616982876af148230336adb7d8fe728a559f743a4e29db3747e3b1a32fa7f4529681
-  languageName: node
-  linkType: hard
-
 "codemirror@npm:^5.61.0":
   version: 5.65.2
   resolution: "codemirror@npm:5.65.2"
@@ -5532,6 +5530,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"colors@npm:~1.2.1":
+  version: 1.2.5
+  resolution: "colors@npm:1.2.5"
+  checksum: b6e23de735f68b72d5cdf6fd854ca43d1b66d82dcf54bda0b788083b910164a040f2c4edf23c670d36a7a2d8f1b7d6e62e3292703e4642691e6ccaa1c62d8f74
+  languageName: node
+  linkType: hard
+
 "colorspace@npm:1.1.x":
   version: 1.1.4
   resolution: "colorspace@npm:1.1.4"
@@ -5576,6 +5581,13 @@ __metadata:
   version: 8.3.0
   resolution: "commander@npm:8.3.0"
   checksum: 0f82321821fc27b83bd409510bb9deeebcfa799ff0bf5d102128b500b7af22872c0c92cb6a0ebc5a4cf19c6b550fba9cedfa7329d18c6442a625f851377bacf0
+  languageName: node
+  linkType: hard
+
+"common-path-prefix@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "common-path-prefix@npm:3.0.0"
+  checksum: fdb3c4f54e51e70d417ccd950c07f757582de800c0678ca388aedefefc84982039f346f9fd9a1252d08d2da9e9ef4019f580a1d1d3a10da031e4bb3c924c5818
   languageName: node
   linkType: hard
 
@@ -5666,7 +5678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"console-control-strings@npm:^1.0.0, console-control-strings@npm:^1.1.0, console-control-strings@npm:~1.1.0":
+"console-control-strings@npm:^1.1.0":
   version: 1.1.0
   resolution: "console-control-strings@npm:1.1.0"
   checksum: 8755d76787f94e6cf79ce4666f0c5519906d7f5b02d4b884cf41e11dcd759ed69c57da0670afd9236d229a46e0f9cf519db0cd829c6dca820bb5a5c3def584ed
@@ -5783,6 +5795,13 @@ __metadata:
   version: 3.21.1
   resolution: "core-js-pure@npm:3.21.1"
   checksum: 00a5dff599b7fb0b30746a638b9d0edbdc0df24ed1580ca56be595fbe3c78c375d37fc4e1bff23627109229702c9ee8ea2587a66b8280eb33b85160aa4e401e9
+  languageName: node
+  linkType: hard
+
+"core-js-pure@npm:^3.8.1":
+  version: 3.23.3
+  resolution: "core-js-pure@npm:3.23.3"
+  checksum: 09a477a56963ca4409ca383d36429ea3b51b658ff85e94331a510543c77c4d1b44cb6b305b0f185d729eb059c71f1289c62fdec6371ff46ce838a16988cdcb2e
   languageName: node
   linkType: hard
 
@@ -6634,6 +6653,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"emittery@npm:^0.10.2":
+  version: 0.10.2
+  resolution: "emittery@npm:0.10.2"
+  checksum: ee3e21788b043b90885b18ea756ec3105c1cedc50b29709c92b01e239c7e55345d4bb6d3aef4ddbaf528eef448a40b3bb831bad9ee0fc9c25cbf1367ab1ab5ac
+  languageName: node
+  linkType: hard
+
 "emoji-regex@npm:^8.0.0":
   version: 8.0.0
   resolution: "emoji-regex@npm:8.0.0"
@@ -6733,6 +6759,15 @@ __metadata:
   dependencies:
     is-arrayish: ^0.2.1
   checksum: c1c2b8b65f9c91b0f9d75f0debaa7ec5b35c266c2cac5de412c1a6de86d4cbae04ae44e510378cb14d032d0645a36925d0186f8bb7367bcc629db256b743a001
+  languageName: node
+  linkType: hard
+
+"error-stack-parser@npm:^2.0.6":
+  version: 2.1.4
+  resolution: "error-stack-parser@npm:2.1.4"
+  dependencies:
+    stackframe: ^1.3.4
+  checksum: 3b916d2d14c6682f287c8bfa28e14672f47eafe832701080e420e7cdbaebb2c50293868256a95706ac2330fe078cf5664713158b49bc30d7a5f2ac229ded0e18
   languageName: node
   linkType: hard
 
@@ -7444,6 +7479,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"find-up@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "find-up@npm:5.0.0"
+  dependencies:
+    locate-path: ^6.0.0
+    path-exists: ^4.0.0
+  checksum: 07955e357348f34660bde7920783204ff5a26ac2cafcaa28bace494027158a97b9f56faaf2d89a6106211a8174db650dd9f503f9c0d526b1202d5554a00b9095
+  languageName: node
+  linkType: hard
+
 "findup-sync@npm:^2.0.0":
   version: 2.0.0
   resolution: "findup-sync@npm:2.0.0"
@@ -7613,6 +7658,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fs-jetpack@npm:^4.1.0":
+  version: 4.3.1
+  resolution: "fs-jetpack@npm:4.3.1"
+  dependencies:
+    minimatch: ^3.0.2
+    rimraf: ^2.6.3
+  checksum: ffe90946ec250c6042569faa2ec7753594779ca0e8a72eea0b76b82574542c50d580974f54c5d6885f44f5719ece173be778cf82dc50ad90f43dab043f4061c9
+  languageName: node
+  linkType: hard
+
 "fs-minipass@npm:^2.0.0":
   version: 2.1.0
   resolution: "fs-minipass@npm:2.1.0"
@@ -7676,22 +7731,6 @@ __metadata:
     strip-ansi: ^6.0.1
     wide-align: ^1.1.5
   checksum: 65077b87a7138bf465c7ea9541a81cdaeba42224f8650427529d47dda99c0a9273b596a8ee54a62af2a04a31682fa49de9b35ef7dd52ed8da5f0436d288ead23
-  languageName: node
-  linkType: hard
-
-"gauge@npm:~2.7.3":
-  version: 2.7.4
-  resolution: "gauge@npm:2.7.4"
-  dependencies:
-    aproba: ^1.0.3
-    console-control-strings: ^1.0.0
-    has-unicode: ^2.0.0
-    object-assign: ^4.1.0
-    signal-exit: ^3.0.0
-    string-width: ^1.0.1
-    strip-ansi: ^3.0.1
-    wide-align: ^1.1.0
-  checksum: a89b53cee65579b46832e050b5f3a79a832cc422c190de79c6b8e2e15296ab92faddde6ddf2d376875cbba2b043efa99b9e1ed8124e7365f61b04e3cee9d40ee
   languageName: node
   linkType: hard
 
@@ -7812,6 +7851,20 @@ __metadata:
     once: ^1.3.0
     path-is-absolute: ^1.0.0
   checksum: 78a8ea942331f08ed2e055cb5b9e40fe6f46f579d7fd3d694f3412fe5db23223d29b7fee1575440202e9a7ff9a72ab106a39fee39934c7bedafe5e5f8ae20134
+  languageName: node
+  linkType: hard
+
+"glob@npm:^7.1.6":
+  version: 7.2.3
+  resolution: "glob@npm:7.2.3"
+  dependencies:
+    fs.realpath: ^1.0.0
+    inflight: ^1.0.4
+    inherits: 2
+    minimatch: ^3.1.1
+    once: ^1.3.0
+    path-is-absolute: ^1.0.0
+  checksum: 29452e97b38fa704dabb1d1045350fb2467cf0277e155aa9ff7077e90ad81d1ea9d53d3ee63bd37c05b09a065e90f16aec4a65f5b8de401d1dac40bc5605d133
   languageName: node
   linkType: hard
 
@@ -8129,7 +8182,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"has-unicode@npm:^2.0.0, has-unicode@npm:^2.0.1":
+"has-unicode@npm:^2.0.1":
   version: 2.0.1
   resolution: "has-unicode@npm:2.0.1"
   checksum: 1eab07a7436512db0be40a710b29b5dc21fa04880b7f63c9980b706683127e3c1b57cb80ea96d47991bdae2dfe479604f6a1ba410106ee1046a41d1bd0814400
@@ -8290,6 +8343,13 @@ __metadata:
     readable-stream: ^2.0.1
     wbuf: ^1.1.0
   checksum: 2de144115197967ad6eeee33faf41096c6ba87078703c5cb011632dcfbffeb45784569e0cf02c317bd79c48375597c8ec88c30fff5bb0b023e8f654fb6e9c06e
+  languageName: node
+  linkType: hard
+
+"html-entities@npm:^2.1.0":
+  version: 2.3.3
+  resolution: "html-entities@npm:2.3.3"
+  checksum: 92521501da8aa5f66fee27f0f022d6e9ceae62667dae93aa6a2f636afa71ad530b7fb24a18d4d6c124c9885970cac5f8a52dbf1731741161002816ae43f98196
   languageName: node
   linkType: hard
 
@@ -8986,15 +9046,6 @@ __metadata:
   version: 2.1.1
   resolution: "is-extglob@npm:2.1.1"
   checksum: df033653d06d0eb567461e58a7a8c9f940bd8c22274b94bf7671ab36df5719791aae15eef6d83bbb5e23283967f2f984b8914559d4449efda578c775c4be6f85
-  languageName: node
-  linkType: hard
-
-"is-fullwidth-code-point@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "is-fullwidth-code-point@npm:1.0.0"
-  dependencies:
-    number-is-nan: ^1.0.0
-  checksum: 4d46a7465a66a8aebcc5340d3b63a56602133874af576a9ca42c6f0f4bd787a743605771c5f246db77da96605fefeffb65fc1dbe862dcc7328f4b4d03edf5a57
   languageName: node
   linkType: hard
 
@@ -9991,6 +10042,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"locate-path@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "locate-path@npm:6.0.0"
+  dependencies:
+    p-locate: ^5.0.0
+  checksum: 72eb661788a0368c099a184c59d2fee760b3831c9c1c33955e8a19ae4a21b4116e53fa736dc086cdeb9fce9f7cc508f2f92d2d3aae516f133e16a2bb59a39f5a
+  languageName: node
+  linkType: hard
+
 "lodash-es@npm:^4.17.11, lodash-es@npm:^4.17.15, lodash-es@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash-es@npm:4.17.21"
@@ -10623,7 +10683,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^3.0.4":
+"minimatch@npm:^3.0.2, minimatch@npm:^3.0.4, minimatch@npm:^3.1.1":
   version: 3.1.2
   resolution: "minimatch@npm:3.1.2"
   dependencies:
@@ -11023,12 +11083,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "node-addon-api@npm:4.3.0"
+"node-addon-api@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "node-addon-api@npm:5.0.0"
   dependencies:
     node-gyp: latest
-  checksum: 3de396e23cc209f539c704583e8e99c148850226f6e389a641b92e8967953713228109f919765abc1f4355e801e8f41842f96210b8d61c7dcc10a477002dcf00
+  checksum: 7c5e2043ac37f6108784d94ed73a44ae6d3e68eb968de60680922fc6bc3d17fa69448c0feb4e0c9d3f4c74a0324822e566a8340a56916d9d6f23cb3e85620334
   languageName: node
   linkType: hard
 
@@ -11210,18 +11270,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npmlog@npm:^4.0.1":
-  version: 4.1.2
-  resolution: "npmlog@npm:4.1.2"
-  dependencies:
-    are-we-there-yet: ~1.1.2
-    console-control-strings: ~1.1.0
-    gauge: ~2.7.3
-    set-blocking: ~2.0.0
-  checksum: edbda9f95ec20957a892de1839afc6fb735054c3accf6fbefe767bac9a639fd5cea2baeac6bd2bcd50a85cb54924d57d9886c81c7fbc2332c2ddd19227504192
-  languageName: node
-  linkType: hard
-
 "npmlog@npm:^6.0.0":
   version: 6.0.1
   resolution: "npmlog@npm:6.0.1"
@@ -11243,13 +11291,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"number-is-nan@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "number-is-nan@npm:1.0.1"
-  checksum: 13656bc9aa771b96cef209ffca31c31a03b507ca6862ba7c3f638a283560620d723d52e626d57892c7fff475f4c36ac07f0600f14544692ff595abff214b9ffb
-  languageName: node
-  linkType: hard
-
 "oauth-sign@npm:^0.9.0, oauth-sign@npm:~0.9.0":
   version: 0.9.0
   resolution: "oauth-sign@npm:0.9.0"
@@ -11257,7 +11298,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-assign@npm:^4.0.1, object-assign@npm:^4.1.0, object-assign@npm:^4.1.1":
+"object-assign@npm:^4.0.1, object-assign@npm:^4.1.1":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
@@ -11562,12 +11603,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-limit@npm:^3.0.2":
+  version: 3.1.0
+  resolution: "p-limit@npm:3.1.0"
+  dependencies:
+    yocto-queue: ^0.1.0
+  checksum: 7c3690c4dbf62ef625671e20b7bdf1cbc9534e83352a2780f165b0d3ceba21907e77ad63401708145ca4e25bfc51636588d89a8c0aeb715e6c37d1c066430360
+  languageName: node
+  linkType: hard
+
 "p-locate@npm:^4.1.0":
   version: 4.1.0
   resolution: "p-locate@npm:4.1.0"
   dependencies:
     p-limit: ^2.2.0
   checksum: 513bd14a455f5da4ebfcb819ef706c54adb09097703de6aeaa5d26fe5ea16df92b48d1ac45e01e3944ce1e6aa2a66f7f8894742b8c9d6e276e16cd2049a2b870
+  languageName: node
+  linkType: hard
+
+"p-locate@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "p-locate@npm:5.0.0"
+  dependencies:
+    p-limit: ^3.0.2
+  checksum: 1623088f36cf1cbca58e9b61c4e62bf0c60a07af5ae1ca99a720837356b5b6c5ba3eb1b2127e47a06865fee59dd0453cad7cc844cda9d5a62ac1a5a51b7c86d3
   languageName: node
   linkType: hard
 
@@ -12039,6 +12098,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pony-cause@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "pony-cause@npm:1.1.1"
+  checksum: 5ff8878b808be48db801d52246a99d7e4789e52d20575ba504ede30c818fd85d38a033915e02c15fa9b6dce72448836dc1a47094acf8f1c21c4f04a4603b0cfb
+  languageName: node
+  linkType: hard
+
 "portfinder@npm:^1.0.28":
   version: 1.0.28
   resolution: "portfinder@npm:1.0.28"
@@ -12159,9 +12225,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prebuild-install@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "prebuild-install@npm:7.0.1"
+"prebuild-install@npm:^7.1.0":
+  version: 7.1.1
+  resolution: "prebuild-install@npm:7.1.1"
   dependencies:
     detect-libc: ^2.0.0
     expand-template: ^2.0.3
@@ -12170,7 +12236,6 @@ __metadata:
     mkdirp-classic: ^0.5.3
     napi-build-utils: ^1.0.1
     node-abi: ^3.3.0
-    npmlog: ^4.0.1
     pump: ^3.0.0
     rc: ^1.2.7
     simple-get: ^4.0.0
@@ -12178,7 +12243,7 @@ __metadata:
     tunnel-agent: ^0.6.0
   bin:
     prebuild-install: bin.js
-  checksum: 117c8966f221242633bbf245755fb469dabc7085909f5e3db83359d6281a88dedbdada7e839315805a192c74b7cce3ed1a86c1382a8d950c1ea60a9d5d8e7bf0
+  checksum: dbf96d0146b6b5827fc8f67f72074d2e19c69628b9a7a0a17d0fad1bf37e9f06922896972e074197fc00a52eae912993e6ef5a0d471652f561df5cb516f3f467
   languageName: node
   linkType: hard
 
@@ -12635,6 +12700,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-refresh@npm:0.11.0":
+  version: 0.11.0
+  resolution: "react-refresh@npm:0.11.0"
+  checksum: 112178a05b1e0ffeaf5d9fb4e56b4410a34a73adeb04dbf13abdc50d9ac9df2ada83e81485156cca0b3fa296aa3612751b3d6cd13be4464642a43679b819cbc7
+  languageName: node
+  linkType: hard
+
 "react-router-dom@npm:5.2.0":
   version: 5.2.0
   resolution: "react-router-dom@npm:5.2.0"
@@ -12761,7 +12833,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:^2.0.1, readable-stream@npm:^2.0.6, readable-stream@npm:^2.3.5":
+"readable-stream@npm:^2.0.1, readable-stream@npm:^2.3.5":
   version: 2.3.7
   resolution: "readable-stream@npm:2.3.7"
   dependencies:
@@ -13282,6 +13354,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rimraf@npm:^2.6.3":
+  version: 2.7.1
+  resolution: "rimraf@npm:2.7.1"
+  dependencies:
+    glob: ^7.1.3
+  bin:
+    rimraf: ./bin.js
+  checksum: cdc7f6eacb17927f2a075117a823e1c5951792c6498ebcce81ca8203454a811d4cf8900314154d3259bb8f0b42ab17f67396a8694a54cae3283326e57ad250cd
+  languageName: node
+  linkType: hard
+
 "ripemd160@npm:^2.0.0, ripemd160@npm:^2.0.1":
   version: 2.0.2
   resolution: "ripemd160@npm:2.0.2"
@@ -13408,7 +13491,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^3.1.0, schema-utils@npm:^3.1.1":
+"schema-utils@npm:^3.0.0, schema-utils@npm:^3.1.0, schema-utils@npm:^3.1.1":
   version: 3.1.1
   resolution: "schema-utils@npm:3.1.1"
   dependencies:
@@ -13603,7 +13686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"set-blocking@npm:^2.0.0, set-blocking@npm:~2.0.0":
+"set-blocking@npm:^2.0.0":
   version: 2.0.0
   resolution: "set-blocking@npm:2.0.0"
   checksum: 6e65a05f7cf7ebdf8b7c75b101e18c0b7e3dff4940d480efed8aad3a36a4005140b660fa1d804cb8bce911cac290441dc728084a30504d3516ac2ff7ad607b02
@@ -13671,20 +13754,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sharp@npm:0.30.4":
-  version: 0.30.4
-  resolution: "sharp@npm:0.30.4"
+"sharp@npm:0.30.6":
+  version: 0.30.6
+  resolution: "sharp@npm:0.30.6"
   dependencies:
     color: ^4.2.3
     detect-libc: ^2.0.1
-    node-addon-api: ^4.3.0
+    node-addon-api: ^5.0.0
     node-gyp: latest
-    prebuild-install: ^7.0.1
+    prebuild-install: ^7.1.0
     semver: ^7.3.7
     simple-get: ^4.0.1
     tar-fs: ^2.1.1
     tunnel-agent: ^0.6.0
-  checksum: 80070d8cad5fe20e7bbb2a1cfddda3f7d421f6af8302c05af8307c0b3b1972e6ed2690563e90b2897b4b499b32967d28a15e37f5d196a1f8867d630609052211
+  checksum: 2560b5769d78ee660d767e59f6fa56531c448d16383f9700e4ecb8016382104c1bb42991bdd4ea741c0f4d934ea5246c5d602fc5f39062bcc1c2c8786421fd5a
   languageName: node
   linkType: hard
 
@@ -13949,6 +14032,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"source-map@npm:^0.7.3":
+  version: 0.7.4
+  resolution: "source-map@npm:0.7.4"
+  checksum: 01cc5a74b1f0e1d626a58d36ad6898ea820567e87f18dfc9d24a9843a351aaa2ec09b87422589906d6ff1deed29693e176194dc88bcae7c9a852dc74b311dbf5
+  languageName: node
+  linkType: hard
+
 "source-map@npm:~0.7.2":
   version: 0.7.3
   resolution: "source-map@npm:0.7.3"
@@ -14008,6 +14098,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sprintf-js@npm:~1.0.2":
+  version: 1.0.3
+  resolution: "sprintf-js@npm:1.0.3"
+  checksum: 19d79aec211f09b99ec3099b5b2ae2f6e9cdefe50bc91ac4c69144b6d3928a640bb6ae5b3def70c2e85a2c3d9f5ec2719921e3a59d3ca3ef4b2fd1a4656a0df3
+  languageName: node
+  linkType: hard
+
 "sshpk@npm:^1.7.0":
   version: 1.17.0
   resolution: "sshpk@npm:1.17.0"
@@ -14042,6 +14139,13 @@ __metadata:
   version: 0.0.10
   resolution: "stack-trace@npm:0.0.10"
   checksum: 473036ad32f8c00e889613153d6454f9be0536d430eb2358ca51cad6b95cea08a3cc33cc0e34de66b0dad221582b08ed2e61ef8e13f4087ab690f388362d6610
+  languageName: node
+  linkType: hard
+
+"stackframe@npm:^1.3.4":
+  version: 1.3.4
+  resolution: "stackframe@npm:1.3.4"
+  checksum: bae1596873595c4610993fa84f86a3387d67586401c1816ea048c0196800c0646c4d2da98c2ee80557fd9eff05877efe33b91ba6cd052658ed96ddc85d19067d
   languageName: node
   linkType: hard
 
@@ -14082,11 +14186,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "strapi-app@workspace:."
   dependencies:
-    "@strapi/plugin-documentation": ^4.1.10
-    "@strapi/plugin-graphql": ^4.1.10
-    "@strapi/plugin-i18n": 4.1.10
-    "@strapi/plugin-users-permissions": 4.1.10
-    "@strapi/strapi": 4.1.10
+    "@strapi/plugin-documentation": ^4.2.2
+    "@strapi/plugin-graphql": ^4.2.2
+    "@strapi/plugin-i18n": 4.2.2
+    "@strapi/plugin-users-permissions": 4.2.2
+    "@strapi/strapi": 4.2.2
     openapi-typescript: ^5.2.0
     pg: 8.7.3
   languageName: unknown
@@ -14128,14 +14232,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string-width@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "string-width@npm:1.0.2"
-  dependencies:
-    code-point-at: ^1.0.0
-    is-fullwidth-code-point: ^1.0.0
-    strip-ansi: ^3.0.0
-  checksum: 5c79439e95bc3bd7233a332c5f5926ab2ee90b23816ed4faa380ce3b2576d7800b0a5bb15ae88ed28737acc7ea06a518c2eef39142dd727adad0e45c776cd37e
+"string-argv@npm:~0.3.1":
+  version: 0.3.1
+  resolution: "string-argv@npm:0.3.1"
+  checksum: efbd0289b599bee808ce80820dfe49c9635610715429c6b7cc50750f0437e3c2f697c81e5c390208c13b5d5d12d904a1546172a88579f6ee5cbaaaa4dc9ec5cf
   languageName: node
   linkType: hard
 
@@ -14188,7 +14288,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-ansi@npm:^3.0.0, strip-ansi@npm:^3.0.1":
+"strip-ansi@npm:^3.0.0":
   version: 3.0.1
   resolution: "strip-ansi@npm:3.0.1"
   dependencies:
@@ -14721,6 +14821,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"type-fest@npm:^2.0.0":
+  version: 2.15.1
+  resolution: "type-fest@npm:2.15.1"
+  checksum: 4eb7d717aae49ca654a6926f99bef8112f76f71c7a685df8e0431e6ae8049bae6c526076f30ee5ccddc535d4b3b3869bcc5e8c4b7f0264b1007f810b898dd33c
+  languageName: node
+  linkType: hard
+
 "type-is@npm:^1.6.14, type-is@npm:^1.6.16, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
@@ -14756,12 +14863,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"umzug@npm:2.3.0":
-  version: 2.3.0
-  resolution: "umzug@npm:2.3.0"
+"umzug@npm:3.1.1":
+  version: 3.1.1
+  resolution: "umzug@npm:3.1.1"
   dependencies:
-    bluebird: ^3.7.2
-  checksum: 8cc2d5e373ad3f8bcb5021715df3ea7a67a10526b5fb97dd4783e3bda1f57e7f44f89c7d4f979b20fc17d3600538a5b070505cd675093720e4309034bfca0cd5
+    "@rushstack/ts-command-line": ^4.7.7
+    emittery: ^0.10.2
+    fs-jetpack: ^4.1.0
+    glob: ^7.1.6
+    pony-cause: ^1.1.1
+    type-fest: ^2.0.0
+  checksum: 5ade702c7621c0d1b4ec31d7edc93c39bdf309d8e02f07224d0601d87d5e239679c832b32fad6331716407ada89da9effc0515faf1890ed203b8521c9023fd3d
   languageName: node
   linkType: hard
 
@@ -15368,7 +15480,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wide-align@npm:^1.1.0, wide-align@npm:^1.1.5":
+"wide-align@npm:^1.1.5":
   version: 1.1.5
   resolution: "wide-align@npm:1.1.5"
   dependencies:
@@ -15548,6 +15660,13 @@ __metadata:
   version: 1.2.1
   resolution: "ylru@npm:1.2.1"
   checksum: 33c45248becece949d4511a13f66b2330852f6226da6c2842bf16f0b0ee45bbbfcdf6b8da3d4c52d6cd5106818eeb3674dd73a17e87c945d1839c470107549e2
+  languageName: node
+  linkType: hard
+
+"yocto-queue@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "yocto-queue@npm:0.1.0"
+  checksum: f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
   languageName: node
   linkType: hard
 

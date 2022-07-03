@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2022-07-03T14:13:30.102Z"
+    "x-generation-date": "2022-07-03T14:28:36.819Z"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -8304,8 +8304,151 @@
             "type": "object"
           }
         }
+      },
+      "Users-Permissions-Role": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "datetime"
+          },
+          "updatedAt": {
+            "type": "datetime"
+          }
+        }
+      },
+      "Users-Permissions-User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "example": "foo.bar"
+          },
+          "email": {
+            "type": "string",
+            "example": "foo.bar@strapi.io"
+          },
+          "provider": {
+            "type": "string",
+            "example": "local"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "example": true
+          },
+          "blocked": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdAt": {
+            "type": "datetime",
+            "example": "2022-06-02T08:32:06.258Z"
+          },
+          "updatedAt": {
+            "type": "datetime",
+            "example": "2022-06-02T08:32:06.267Z"
+          }
+        }
+      },
+      "Users-Permissions-UserRegistration": {
+        "type": "object",
+        "properties": {
+          "jwt": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          },
+          "user": {
+            "$ref": "#/components/schemas/Users-Permissions-User"
+          }
+        }
+      },
+      "Users-Permissions-PermissionsTree": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "description": "every api",
+          "properties": {
+            "controllers": {
+              "description": "every controller of the api",
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "description": "every action of every controller",
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "policy": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Users-Permissions-RoleRequest": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "permissions": {
+                  "$ref": "#/components/schemas/Users-Permissions-PermissionsTree"
+                }
+              }
+            },
+            "example": {
+              "name": "foo",
+              "description": "role foo",
+              "permissions": {
+                "api::content-type.content-type": {
+                  "controllers": {
+                    "controllerA": {
+                      "find": {
+                        "enabled": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-    }
+    },
+    "parameters": {},
+    "responses": {},
+    "examples": {},
+    "requestBodies": {}
   },
   "paths": {
     "/categories": {
@@ -9831,77 +9974,6 @@
         "operationId": "delete/tags/{id}"
       }
     },
-    "/upload/files/count": {
-      "get": {
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UploadFileResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Upload - File"
-        ],
-        "parameters": [],
-        "operationId": "get/upload/files/count"
-      }
-    },
     "/upload/files": {
       "get": {
         "responses": {
@@ -10219,59 +10291,64 @@
     },
     "/users-permissions/permissions": {
       "get": {
+        "tags": [
+          "Users-Permissions - Users & Roles"
+        ],
+        "summary": "Get default generated permissions",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Returns the permissions tree",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsPermissionResponse"
+                  "type": "object",
+                  "properties": {
+                    "permissions": {
+                      "$ref": "#/components/schemas/Users-Permissions-PermissionsTree"
+                    }
+                  }
+                },
+                "example": {
+                  "permissions": {
+                    "api::content-type.content-type": {
+                      "controllers": {
+                        "controllerA": {
+                          "find": {
+                            "enabled": false,
+                            "policy": ""
+                          },
+                          "findOne": {
+                            "enabled": false,
+                            "policy": ""
+                          },
+                          "create": {
+                            "enabled": false,
+                            "policy": ""
+                          }
+                        },
+                        "controllerB": {
+                          "find": {
+                            "enabled": false,
+                            "policy": ""
+                          },
+                          "findOne": {
+                            "enabled": false,
+                            "policy": ""
+                          },
+                          "create": {
+                            "enabled": false,
+                            "policy": ""
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -10280,151 +10357,124 @@
               }
             }
           }
-        },
-        "tags": [
-          "Users-permissions - Permission"
-        ],
-        "parameters": [],
-        "operationId": "get/users-permissions/permissions"
+        }
       }
     },
     "/users-permissions/roles/{id}": {
       "get": {
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsRoleResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
         "tags": [
-          "Users-permissions - Role"
+          "Users-Permissions - Users & Roles"
         ],
+        "summary": "Get a role",
         "parameters": [
           {
-            "name": "id",
             "in": "path",
-            "description": "",
-            "deprecated": false,
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "name": "id",
+            "type": "string",
+            "description": "role Id"
           }
         ],
-        "operationId": "get/users-permissions/roles/{id}"
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "$ref": "#/components/schemas/Users-Permissions-Role"
+                    }
+                  }
+                },
+                "example": {
+                  "role": {
+                    "id": 1,
+                    "name": "Public",
+                    "description": "Default role given to unauthenticated user.",
+                    "type": "public",
+                    "createdAt": "2022-05-19T17:35:35.097Z",
+                    "updatedAt": "2022-05-31T16:05:36.603Z",
+                    "permissions": {
+                      "api::content-type.content-type": {
+                        "controllers": {
+                          "controllerA": {
+                            "find": {
+                              "enabled": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/users-permissions/roles": {
       "get": {
+        "tags": [
+          "Users-Permissions - Users & Roles"
+        ],
+        "summary": "List roles",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Returns list of roles",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsRoleListResponse"
+                  "type": "object",
+                  "properties": {
+                    "roles": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/Users-Permissions-Role"
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "nb_users": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "roles": [
+                    {
+                      "id": 1,
+                      "name": "Public",
+                      "description": "Default role given to unauthenticated user.",
+                      "type": "public",
+                      "createdAt": "2022-05-19T17:35:35.097Z",
+                      "updatedAt": "2022-05-31T16:05:36.603Z",
+                      "nb_users": 0
+                    }
+                  ]
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -10433,168 +10483,42 @@
               }
             }
           }
-        },
-        "tags": [
-          "Users-permissions - Role"
-        ],
-        "parameters": [
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sort by attributes ascending (asc) or descending (desc)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "pagination[withCount]",
-            "in": "query",
-            "description": "Retun page/pageSize (default: true)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "pagination[page]",
-            "in": "query",
-            "description": "Page number (default: 0)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "pagination[pageSize]",
-            "in": "query",
-            "description": "Page size (default: 25)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "pagination[start]",
-            "in": "query",
-            "description": "Offset value (default: 0)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "pagination[limit]",
-            "in": "query",
-            "description": "Number of entities to return (default: 25)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "fields",
-            "in": "query",
-            "description": "Fields to return (ex: title,author)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "populate",
-            "in": "query",
-            "description": "Relations to return",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "operationId": "get/users-permissions/roles"
+        }
       },
       "post": {
+        "tags": [
+          "Users-Permissions - Users & Roles"
+        ],
+        "summary": "Create a role",
+        "requestBody": {
+          "$ref": "#/components/schemas/Users-Permissions-RoleRequest"
+        },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Returns ok if the role was create",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsRoleResponse"
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "enum",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Users-permissions - Role"
-        ],
-        "parameters": [],
-        "operationId": "post/users-permissions/roles",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UsersPermissionsRoleRequest"
               }
             }
           }
@@ -10603,232 +10527,117 @@
     },
     "/users-permissions/roles/{role}": {
       "put": {
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsRoleResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
         "tags": [
-          "Users-permissions - Role"
+          "Users-Permissions - Users & Roles"
         ],
+        "summary": "Update a role",
         "parameters": [
           {
-            "name": "role",
             "in": "path",
-            "description": "",
-            "deprecated": false,
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "name": "role",
+            "type": "string",
+            "description": "role Id"
           }
         ],
-        "operationId": "put/users-permissions/roles/{role}",
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UsersPermissionsRoleRequest"
+          "$ref": "#/components/schemas/Users-Permissions-RoleRequest"
+        },
+        "responses": {
+          "200": {
+            "description": "Returns ok if the role was udpated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "enum",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
         }
       },
       "delete": {
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int64"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
         "tags": [
-          "Users-permissions - Role"
+          "Users-Permissions - Users & Roles"
         ],
+        "summary": "Delete a role",
         "parameters": [
           {
-            "name": "role",
             "in": "path",
-            "description": "",
-            "deprecated": false,
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "name": "role",
+            "type": "string",
+            "description": "role Id"
           }
         ],
-        "operationId": "delete/users-permissions/roles/{role}"
+        "responses": {
+          "200": {
+            "description": "Returns ok if the role was delete",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "enum",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/users/count": {
       "get": {
+        "tags": [
+          "Users-Permissions - Users & Roles"
+        ],
+        "summary": "Get user count",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Returns a number",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsUserResponse"
-                }
+                  "type": "number"
+                },
+                "example": 1
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -10837,69 +10646,43 @@
               }
             }
           }
-        },
-        "tags": [
-          "Users-permissions - User"
-        ],
-        "parameters": [],
-        "operationId": "get/users/count"
+        }
       }
     },
     "/users": {
       "get": {
+        "tags": [
+          "Users-Permissions - Users & Roles"
+        ],
+        "summary": "Get list of users",
         "responses": {
           "200": {
-            "description": "OK",
+            "summary": "Returns an array of users",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsUserListResponse"
-                }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Users-Permissions-User"
+                  }
+                },
+                "example": [
+                  {
+                    "id": 9,
+                    "username": "foao@strapi.io",
+                    "email": "foao@strapi.io",
+                    "provider": "local",
+                    "confirmed": false,
+                    "blocked": false,
+                    "createdAt": "2022-06-01T18:32:35.211Z",
+                    "updatedAt": "2022-06-01T18:32:35.217Z"
+                  }
+                ]
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -10908,168 +10691,90 @@
               }
             }
           }
-        },
-        "tags": [
-          "Users-permissions - User"
-        ],
-        "parameters": [
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sort by attributes ascending (asc) or descending (desc)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "pagination[withCount]",
-            "in": "query",
-            "description": "Retun page/pageSize (default: true)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "pagination[page]",
-            "in": "query",
-            "description": "Page number (default: 0)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "pagination[pageSize]",
-            "in": "query",
-            "description": "Page size (default: 25)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "pagination[start]",
-            "in": "query",
-            "description": "Offset value (default: 0)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "pagination[limit]",
-            "in": "query",
-            "description": "Number of entities to return (default: 25)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "fields",
-            "in": "query",
-            "description": "Fields to return (ex: title,author)",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "populate",
-            "in": "query",
-            "description": "Relations to return",
-            "deprecated": false,
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "operationId": "get/users"
+        }
       },
       "post": {
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsUserResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
         "tags": [
-          "Users-permissions - User"
+          "Users-Permissions - Users & Roles"
         ],
-        "parameters": [],
-        "operationId": "post/users",
+        "summary": "Create a user",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UsersPermissionsUserRequest"
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "username": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "password": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              },
+              "example": {
+                "username": "foo",
+                "email": "foo@strapi.io",
+                "password": "foo-password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns created user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Users-Permissions-User"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "$ref": "#/components/schemas/Users-Permissions-Role"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "id": 1,
+                  "username": "foo",
+                  "email": "foo@strapi.io",
+                  "provider": "local",
+                  "confirmed": false,
+                  "blocked": false,
+                  "createdAt": "2022-05-19T17:35:35.096Z",
+                  "updatedAt": "2022-05-19T17:35:35.096Z",
+                  "role": {
+                    "id": 1,
+                    "name": "X",
+                    "description": "Default role given to authenticated user.",
+                    "type": "authenticated",
+                    "createdAt": "2022-05-19T17:35:35.096Z",
+                    "updatedAt": "2022-06-04T07:11:59.551Z"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -11078,59 +10783,33 @@
     },
     "/users/me": {
       "get": {
+        "tags": [
+          "Users-Permissions - Users & Roles"
+        ],
+        "summary": "Get authenticated user info",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Returns user info",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsUserResponse"
+                  "$ref": "#/components/schemas/Users-Permissions-User"
+                },
+                "example": {
+                  "id": 1,
+                  "username": "foo",
+                  "email": "foo@strapi.io",
+                  "provider": "local",
+                  "confirmed": false,
+                  "blocked": false,
+                  "createdAt": "2022-05-19T17:35:35.096Z",
+                  "updatedAt": "2022-05-19T17:35:35.096Z"
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -11139,200 +10818,182 @@
               }
             }
           }
-        },
-        "tags": [
-          "Users-permissions - User"
-        ],
-        "parameters": [],
-        "operationId": "get/users/me"
+        }
       }
     },
     "/users/{id}": {
       "get": {
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsUserResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
         "tags": [
-          "Users-permissions - User"
+          "Users-Permissions - Users & Roles"
         ],
+        "summary": "Get a user",
         "parameters": [
           {
-            "name": "id",
             "in": "path",
-            "description": "",
-            "deprecated": false,
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "name": "id",
+            "type": "string",
+            "description": "user Id"
           }
         ],
-        "operationId": "get/users/{id}"
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users-Permissions-User"
+                },
+                "example": {
+                  "id": 1,
+                  "username": "foo",
+                  "email": "foo@strapi.io",
+                  "provider": "local",
+                  "confirmed": false,
+                  "blocked": false,
+                  "createdAt": "2022-05-19T17:35:35.096Z",
+                  "updatedAt": "2022-05-19T17:35:35.096Z"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       },
       "put": {
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsersPermissionsUserResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
         "tags": [
-          "Users-permissions - User"
+          "Users-Permissions - Users & Roles"
         ],
+        "summary": "Update a user",
         "parameters": [
           {
-            "name": "id",
             "in": "path",
-            "description": "",
-            "deprecated": false,
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "name": "id",
+            "type": "string",
+            "description": "user Id"
           }
         ],
-        "operationId": "put/users/{id}",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UsersPermissionsUserRequest"
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "username": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "password": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              },
+              "example": {
+                "username": "foo",
+                "email": "foo@strapi.io",
+                "password": "foo-password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns updated user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Users-Permissions-User"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "$ref": "#/components/schemas/Users-Permissions-Role"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "id": 1,
+                  "username": "foo",
+                  "email": "foo@strapi.io",
+                  "provider": "local",
+                  "confirmed": false,
+                  "blocked": false,
+                  "createdAt": "2022-05-19T17:35:35.096Z",
+                  "updatedAt": "2022-05-19T17:35:35.096Z",
+                  "role": {
+                    "id": 1,
+                    "name": "X",
+                    "description": "Default role given to authenticated user.",
+                    "type": "authenticated",
+                    "createdAt": "2022-05-19T17:35:35.096Z",
+                    "updatedAt": "2022-06-04T07:11:59.551Z"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
         }
       },
       "delete": {
+        "tags": [
+          "Users-Permissions - Users & Roles"
+        ],
+        "summary": "Delete a user",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Returns deleted user info",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int64"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Users-Permissions-User"
+                    }
+                  ]
+                },
+                "example": {
+                  "id": 1,
+                  "username": "foo",
+                  "email": "foo@strapi.io",
+                  "provider": "local",
+                  "confirmed": false,
+                  "blocked": false,
+                  "createdAt": "2022-05-19T17:35:35.096Z",
+                  "updatedAt": "2022-05-19T17:35:35.096Z"
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -11340,9 +11001,23 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/connect/(.*)": {
+      "get": {
+        "tags": [
+          "Users-Permissions - Auth"
+        ],
+        "summary": "Login with a provider",
+        "description": "Redirects to provider login before being redirect to /auth/{provider}/callback",
+        "responses": {
+          "301": {
+            "description": "Redirect response"
           },
-          "401": {
-            "description": "Unauthorized",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -11350,9 +11025,52 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/auth/local": {
+      "post": {
+        "tags": [
+          "Users-Permissions - Auth"
+        ],
+        "summary": "Local login",
+        "description": "Returns a jwt token and user info",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "identifier": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "identier": "foobar",
+                "password": "Test1234"
+              }
+            }
           },
-          "403": {
-            "description": "Forbidden",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Connection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users-Permissions-UserRegistration"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -11360,9 +11078,56 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/auth/local/register": {
+      "post": {
+        "tags": [
+          "Users-Permissions - Auth"
+        ],
+        "summary": "Register a user",
+        "description": "Returns a jwt token and user info",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "username": "foobar",
+                "email": "foo.bar@strapi.io",
+                "password": "Test1234"
+              }
+            }
           },
-          "404": {
-            "description": "Not Found",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfull registration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users-Permissions-UserRegistration"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -11370,35 +11135,256 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/auth/{provider}/callback": {
+      "get": {
+        "tags": [
+          "Users-Permissions - Auth"
+        ],
+        "summary": "Default Callback from provider auth",
+        "responses": {
+          "200": {
+            "description": "Returns a jwt token and user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users-Permissions-UserRegistration"
+                }
+              }
+            }
           },
-          "500": {
-            "description": "Internal Server Error",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "Users-Permissions - Auth"
+        ],
+        "summary": "Send rest password email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "email": "foo.bar@strapi.io"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "enum",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": [
+          "Users-Permissions - Auth"
+        ],
+        "summary": "Rest user password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "passwordConfirmation": {
+                    "type": "string"
+                  },
+                  "code": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "password": "Test1234",
+                "passwordConfirmation": "Test1234",
+                "code": "zertyoaizndoianzodianzdonaizdoinaozdnia"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns a jwt token and user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Users-Permissions-UserRegistration"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/email-confirmation": {
+      "get": {
+        "tags": [
+          "Users-Permissions - Auth"
+        ],
+        "summary": "Confirm user email",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "confirmation",
+            "type": "string",
+            "description": "confirmation token received by email"
+          }
+        ],
+        "responses": {
+          "301": {
+            "description": "Redirects to the configure email confirmation redirect url"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/send-email-confirmation": {
+      "post": {
+        "tags": [
+          "Users-Permissions - Auth"
+        ],
+        "summary": "Send confirmation email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
-        "tags": [
-          "Users-permissions - User"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "deprecated": false,
-            "required": true,
-            "schema": {
-              "type": "string"
+        "responses": {
+          "200": {
+            "description": "Returns email and boolean to confirm email was sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "sent": {
+                      "type": "enum",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
             }
           }
-        ],
-        "operationId": "delete/users/{id}"
+        }
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Users-Permissions - Auth",
+      "description": "Authentication endpoints",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://docs.strapi.io/developer-docs/latest/plugins/users-permissions.html"
+      }
+    },
+    {
+      "name": "Users-Permissions - Users & Roles",
+      "description": "Users, roles, and permissions endpoints",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://docs.strapi.io/developer-docs/latest/plugins/users-permissions.html"
+      }
+    }
+  ]
 }
