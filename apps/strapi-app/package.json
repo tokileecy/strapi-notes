@@ -9,7 +9,7 @@
   "scripts": {
     "develop:frontend": "strapi develop --watch-admin",
     "build:ts": "openapi-typescript src/extensions/documentation/documentation/1.0.0/full_documentation.json --output strapi-types.ts",
-    "develop": "strapi develop",
+    "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi"

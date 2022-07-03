@@ -12,11 +12,9 @@ services:
       image: strapi_next_template/node-app
   strapi-app:
     build:
-      context: ./docker/strapi-app
+      context: ./docker/node-app
       args:
         NODE_VERSION: 16
-        STRAPI_VERSION: 4.2.2
-        BASE_IMAGE: strapi_next_template/node-app
       dockerfile: Dockerfile
     container_name: strapi-app
     restart: unless-stopped
@@ -33,7 +31,7 @@ services:
       - APP_KEYS=${APP_KEYS:-someSecret,anotherSecret}
     command: >
       /bin/sh -c "
-        if [ ${APP_ENV:-development} = \"production\" ]; then yarn build && yarn start; else yarn develop; fi
+        if [ ${APP_ENV:-development} = \"production\" ]; then yarn build && yarn start; else yarn dev; fi
       "
     volumes:
       - ./apps/strapi-app:/srv/app
