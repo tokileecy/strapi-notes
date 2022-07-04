@@ -26,6 +26,7 @@ services:
       - DATABASE_USERNAME=${DATABASE_USERNAME:-strapi}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD:-strapi}
       - APP_KEYS=${APP_KEYS:-someSecret,anotherSecret}
+      - JWT_SECRET=${JWT_SECRET:-JWT_SECRET==}
     command: >
       /bin/sh -c "
         if [ ${APP_ENV:-development} = \"production\" ]; then yarn build && yarn start; else yarn dev; fi
