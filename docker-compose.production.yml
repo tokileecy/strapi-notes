@@ -1,17 +1,8 @@
 version: '3'
 
 services:
-  node-app:
-    build:
-      context: ./docker/node-app
-      args:
-        NODE_VERSION: 16
-      dockerfile: Dockerfile
-    command: bash
-    <<: &default
-      image: strapi_next_template/node-app
   strapi-app:
-    <<: *default
+    image: strapi-notes-strapi-app:latest
     user: '1000:1000'
     container_name: strapi-app
     restart: unless-stopped
@@ -30,8 +21,6 @@ services:
       /bin/sh -c "
         if [ ${APP_ENV:-development} = \"production\" ]; then yarn build && yarn start; else yarn dev; fi
       "
-    volumes:
-      - ./apps/strapi-app:/srv/app
     ports:
       - "${STRAPI_PORT:-1337}:1337"
     depends_on:
@@ -44,12 +33,12 @@ services:
       - POSTGRES_DB=${DATABASE_NAME:-strapi}
       - POSTGRES_USER=${DATABASE_USERNAME:-strapi}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-strapi}
-    ports:
-      - "${DATABASE_PORT}:5432"
     volumes:
       - ./dbs/postgres:/var/lib/postgresql/data
+    ports:
+      - "${DATABASE_PORT}:5432"
   next-app:
-    <<: *default
+    image: strapi-notes-next-app:latest
     user: '1000:1000'
     environment:
       - NODE_ENV=${APP_ENV:-development}
@@ -62,5 +51,3 @@ services:
       "
     ports:
       - "${NEXT_PORT:-3000}:3000"
-    volumes:
-      - ./apps/next-app:/srv/app

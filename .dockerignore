@@ -1,2 +1,6 @@
 **/node_modules
+**/.env
 dbs
+apps/strapi-app/.cache
+apps/strapi-app/build
+apps/next-app/.next
