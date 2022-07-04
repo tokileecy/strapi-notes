@@ -159,5 +159,5 @@ dist
 # custom
 
 .turbo
-apps/postgres/
+dbs/postgres/
 .env
