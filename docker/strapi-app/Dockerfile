@@ -11,4 +11,4 @@ WORKDIR /srv/app
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["strapi", "develop"]
+CMD ["yarn", "dev"]
