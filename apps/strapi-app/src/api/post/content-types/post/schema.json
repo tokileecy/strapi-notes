@@ -20,17 +20,17 @@
       "type": "string",
       "pluginOptions": {}
     },
-    "categories": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::category.category",
-      "mappedBy": "post"
-    },
     "tags": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::tag.tag",
       "inversedBy": "posts"
+    },
+    "path": {
+      "type": "string",
+      "regex": "^\\/$|((\\/.+)+)(?<!\\/)$",
+      "unique": true,
+      "required": false
     }
   }
 }
