@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
 import tagReducer from './features/tags/tagSlice'
-import categoryReducer from './features/categories/categorySlice'
 import postReducer from './features/posts/postSlice'
 import globalReducer from './features/global/globalSlice'
 
@@ -9,7 +8,6 @@ const store = configureStore({
   reducer: {
     global: globalReducer,
     tags: tagReducer,
-    categories: categoryReducer,
     posts: postReducer,
   },
 })

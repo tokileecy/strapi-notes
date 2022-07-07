@@ -1,10 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export type Tag = {
-  id: string
-  attributes: {
-    name: string
-  }
+  id: number
+  name: string
 }
 
 export type State = {

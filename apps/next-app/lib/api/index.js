@@ -1,5 +1,5 @@
 const PostsQuery = require('../../gql/query/posts.gql')
-const CategoriesQuery = require('../../gql/query/categories.gql')
+const PathsQuery = require('../../gql/query/paths.gql')
 const TagsQuery = require('../../gql/query/tags.gql')
 const client = require('../apollo-client')
 const { customInstance } = require('../axios-instance')
@@ -28,13 +28,9 @@ const api = {
     }
   },
 
-  async getPosts(categories = [], pagination = basePagination) {
+  async getPosts(pagination = basePagination) {
     const variables = {
       pagination,
-    }
-
-    if (categories.length > 0) {
-      variables.categories = categories
     }
 
     const response = await client.query({
@@ -49,23 +45,6 @@ const api = {
     return postDatas
   },
 
-  async getCategories(pagination = basePagination) {
-    const variables = {
-      pagination,
-    }
-
-    const response = await client.query({
-      query: CategoriesQuery,
-      variables,
-    })
-
-    printErrors('categories', response)
-
-    const categoriesDatas = response.data.categories?.data ?? []
-
-    return categoriesDatas
-  },
-
   async getTags(pagination = basePagination) {
     const variables = {
       pagination,
@@ -78,9 +57,38 @@ const api = {
 
     printErrors('tags', response)
 
-    const tagsDatas = response.data.tags?.data ?? []
+    const tagsDatas =
+      response.data.tags?.data.map((tag) => ({
+        id: tag.id,
+        name: tag.attributes.name,
+      })) ?? []
 
     return tagsDatas
+  },
+
+  async getPaths() {
+    const variables = {
+      pagination: basePagination,
+    }
+
+    const response = await client.query({
+      query: PathsQuery,
+      variables,
+    })
+
+    printErrors('paths', response)
+
+    const pathsDatas = (response.data.posts?.data ?? []).reduce((acc, post) => {
+      const path = post.attributes.path
+
+      if (path) {
+        acc.push(path)
+      }
+
+      return acc
+    }, [])
+
+    return pathsDatas
   },
 }
 

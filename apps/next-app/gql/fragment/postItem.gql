@@ -1,13 +1,5 @@
 fragment PostItem on Post {
   name
-  
-  category {
-    data {
-      attributes {
-        name
-      }
-    }
-  }
   tags {
     data {
     	attributes {
@@ -18,6 +10,6 @@ fragment PostItem on Post {
   publishedAt
   createdAt
   updatedAt
-  locale
+  path
   content
 }

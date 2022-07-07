@@ -2,12 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export type State = {
   selectedTags: Record<string, boolean>
-  selectedCategory: string | undefined
 }
 
 export const initialState: State = {
   selectedTags: {},
-  selectedCategory: undefined,
 }
 
 export const globalSlice = createSlice({
@@ -29,16 +27,9 @@ export const globalSlice = createSlice({
     clearTags: (state) => {
       state.selectedTags = {}
     },
-    setCategory: (state, action: PayloadAction<string>) => {
-      state.selectedCategory = action.payload
-    },
-    clearCategory: (state) => {
-      state.selectedCategory = undefined
-    },
   },
 })
 
-export const { addTags, removeTags, clearTags, setCategory, clearCategory } =
-  globalSlice.actions
+export const { addTags, removeTags, clearTags } = globalSlice.actions
 
 export default globalSlice.reducer

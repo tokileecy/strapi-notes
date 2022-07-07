@@ -1,13 +1,12 @@
-query GetCategorys (
+query GetPaths (
   $pagination: PaginationArg
 ) {
-  categories (
+  posts (
     pagination: $pagination
   ) {
     data {
-      id
       attributes {
-        name
+        path
       }
     }
   }

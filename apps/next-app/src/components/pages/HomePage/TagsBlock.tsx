@@ -15,7 +15,7 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
 
   const tagNodes = tags.ids.map((tagId) => {
     const id = tagId
-    const name = tags.itemById[id].attributes.name
+    const name = tags.itemById[id].name
     const isSelected = selectedTags[id] ?? false
 
     return (

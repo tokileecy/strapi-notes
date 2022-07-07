@@ -8,6 +8,7 @@ query GetTags (
       id
       attributes {
         name
+        content
       }
     }
   }

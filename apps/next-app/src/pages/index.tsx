@@ -7,12 +7,10 @@ const Home: NextPage<HomePageProps> = (props) => {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const categories = await api.getCategories()
   const tags = await api.getTags()
 
   return {
     props: {
-      categories,
       tags,
     },
   }

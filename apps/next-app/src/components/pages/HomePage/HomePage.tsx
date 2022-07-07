@@ -3,63 +3,38 @@ import Layout from '../../Layout'
 import Box from '@mui/material/Box'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import {
-  setCategories,
-  Category,
-} from '@/redux/features/categories/categorySlice'
 import { setTags, Tag } from '@/redux/features/tags/tagSlice'
 import { setPosts, Post } from '@/redux/features/posts/postSlice'
 import {
-  // setCategory,
-  // clearCategory,
   clearTags,
   removeTags,
   addTags,
 } from '@/redux/features/global/globalSlice'
 import api from '@/lib/api'
-// import CategoryBlock from './CategoryBlock'
 import TagsBlock from './TagsBlock'
 import PostBlock from './PostBlock'
 
 export interface HomePageProps {
-  categories: Category[]
   tags: Tag[]
 }
 
 const HomePage = (props: HomePageProps): JSX.Element => {
-  const { categories, tags } = props
+  const { tags } = props
   const dispatch = useDispatch()
 
   const selectedTags = useSelector(
     (state: RootState) => state.global.selectedTags
   )
 
-  // const selectedCategory = useSelector(
-  //   (state: RootState) => state.global.selectedCategory
-  // )
-
   useEffect(() => {
     const tagIds: string[] = []
     const tagItemById: Record<string, Tag> = {}
-    const categoryIds: string[] = []
-    const categoryItemById: Record<string, Tag> = {}
 
     tags.forEach((tag) => {
-      tagIds.push(tag.id)
+      tagIds.push(tag.id.toString())
       tagItemById[tag.id] = tag
     })
 
-    categories.forEach((category) => {
-      categoryIds.push(category.id)
-      categoryItemById[category.id] = category
-    })
-
-    dispatch(
-      setCategories({
-        ids: categoryIds,
-        itemById: categoryItemById,
-      })
-    )
     dispatch(setTags({ ids: tagIds, itemById: tagItemById }))
   }, [])
 
@@ -97,19 +72,6 @@ const HomePage = (props: HomePageProps): JSX.Element => {
           alignItems: 'center',
         }}
       >
-        {/* <CategoryBlock
-          selectedCategory={selectedCategory}
-          onCategoryClick={(isSelected, id) => {
-            if (isSelected) {
-              dispatch(clearCategory())
-            } else {
-              dispatch(setCategory(id))
-            }
-          }}
-          onAllSelected={() => {
-            dispatch(clearCategory())
-          }}
-        /> */}
         <Box
           sx={{
             display: 'flex',
