@@ -27,7 +27,7 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
     groupPostId = groupPostId.groupBy('posts_tags_links.post_id')
       .as('group_post_tags')
 
-    const data = await knex.select([
+    let data = knex.select([
       'id',
       'content',
       'name',
@@ -39,12 +39,21 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
       'tag_ids',
     ]).from('posts')
       .whereNot('published_at', null)
-      .rightJoin(
-        groupPostId,
-        'group_post_tags.post_id', 
-        'posts.id',
-      ).orderBy('created_at', 'desc')
 
-    return data
+      if(tagIds.length !== 0) {
+        data = data.rightJoin(
+          groupPostId,
+          'group_post_tags.post_id', 
+          'posts.id',
+        ).orderBy('created_at', 'desc')
+      } else {
+        data = data.leftJoin(
+          groupPostId,
+          'group_post_tags.post_id', 
+          'posts.id',
+        ).orderBy('created_at', 'desc')
+      }
+
+    return await data
   },
 }));
