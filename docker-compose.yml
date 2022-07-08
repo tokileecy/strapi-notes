@@ -1,17 +1,8 @@
 version: '3'
 
 services:
-  node-app:
-    build:
-      context: ./docker/node-app
-      args:
-        NODE_VERSION: 16
-      dockerfile: Dockerfile
-    command: bash
-    <<: &default
-      image: strapi_next_template/node-app
   strapi-app:
-    <<: *default
+    image: node:16
     user: '1000:1000'
     container_name: strapi-app
     restart: unless-stopped
@@ -27,11 +18,13 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD:-strapi}
       - APP_KEYS=${APP_KEYS:-someSecret,anotherSecret}
       - JWT_SECRET=${JWT_SECRET:-JWT_SECRET==}
+    working_dir: /srv/app
     command: >
       /bin/sh -c "
         if [ ${APP_ENV:-development} = \"production\" ]; then yarn build && yarn start; else yarn dev; fi
       "
     volumes:
+      - ./docker/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
       - ./apps/strapi-app:/srv/app
     ports:
       - "${STRAPI_PORT:-1337}:1337"
@@ -50,13 +43,14 @@ services:
     volumes:
       - ./dbs/postgres:/var/lib/postgresql/data
   next-app:
-    <<: *default
+    image: node:16
     user: '1000:1000'
     environment:
       - NODE_ENV=${APP_ENV:-development}
       - SERVER_STRAPI_URL=http://strapi-app:1337/
       - PUBLIC_STRAPI_URL=${PUBLIC_STRAPI_URL:-http://127.0.0.1:1337}
       - APP_ENV=${APP_ENV:-development}
+    working_dir: /srv/app
     command: >
       /bin/sh -c "
         if [ ${APP_ENV:-development} = \"production\" ]; then yarn build && yarn start; else yarn dev; fi
@@ -64,4 +58,5 @@ services:
     ports:
       - "${NEXT_PORT:-3000}:3000"
     volumes:
+      - ./docker/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
       - ./apps/next-app:/srv/app
