@@ -4,13 +4,10 @@ import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
 import { Post } from '@/redux/features/posts/postSlice'
 import Markdown from '@/components/base/Markdown'
-
 export interface PostCardProps {
   post: Post
   onClick?: CardProps['onClick']
 }
-
-const limitContentLength = 110
 
 const PostCard = (props: PostCardProps): JSX.Element => {
   const { post, onClick } = props
@@ -36,24 +33,22 @@ const PostCard = (props: PostCardProps): JSX.Element => {
     return ''
   })
 
-  const ellipsisContent =
-    targetContent && targetContent.length > limitContentLength
-      ? (targetContent?.slice(0, limitContentLength - 10) ?? '') + '...'
-      : targetContent
+  // const ellipsisContent =
+  //   targetContent && targetContent.length > limitContentLength
+  //     ? (targetContent?.slice(0, limitContentLength - 10) ?? '') + '...'
+  //     : targetContent
 
   return (
     <Card
       sx={[
         {
-          '&:hover': {
-            backgroundColor: 'rgb(255 255 255 / 95%)',
-          },
-        },
-        {
-          width: '90%',
-          margin: 1,
-          boxShadow: 'rgb(200 255 230 / 10%) 0px 0px 6px 3px',
-          cursor: 'pointer',
+          maxHeight: '100%',
+          overflow: 'auto',
+          width: '500px',
+          p: 0,
+          m: 0,
+          backgroundColor: 'rgba(15, 108, 176, 0.24)',
+          color: 'white',
         },
       ]}
       onClick={onClick}
@@ -76,12 +71,10 @@ const PostCard = (props: PostCardProps): JSX.Element => {
       >
         <Box
           sx={{
-            maxHeight: '400px',
             wordBreak: 'break-all',
-            userSelect: 'none',
           }}
         >
-          <Markdown>{ellipsisContent}</Markdown>
+          <Markdown>{targetContent}</Markdown>
         </Box>
       </CardContent>
     </Card>

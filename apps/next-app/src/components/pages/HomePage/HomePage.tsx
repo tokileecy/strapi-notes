@@ -44,8 +44,8 @@ const HomePage = (props: HomePageProps): JSX.Element => {
         Array.from(Object.keys(selectedTags))
       )
 
-      const ids: number[] = []
-      const itemById: Record<number, Post> = {}
+      const ids: string[] = []
+      const itemById: Record<string, Post> = {}
 
       posts.forEach((post) => {
         ids.push(post.id)

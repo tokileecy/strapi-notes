@@ -1,9 +1,9 @@
 import { useCallback, useRef } from 'react'
-import { useSelector } from 'react-redux'
 import * as d3 from 'd3'
 import { RootState } from '@/redux/store'
 import { Post } from '@/redux/features/posts/postSlice'
 import { Tag } from '@/redux/features/tags/tagSlice'
+import { Box } from '@mui/material'
 
 interface PostNodeData {
   index?: number
@@ -67,7 +67,7 @@ const renderGraph = (
 
   const linkDatas = postNodeData.reduce<{ source: number; target: number }[]>(
     (acc, node) => {
-      node.data.tag_ids.forEach((tagId) => {
+      node.data?.tag_ids?.forEach((tagId) => {
         const tagNodeId = tagNodeIdBytagId.get(tagId.toString())
 
         if (tagNodeId !== undefined) {
@@ -108,6 +108,7 @@ const renderGraph = (
   >
 
   const nodes = svg
+    .style('height', '100%')
     .append('g')
     .selectAll('g')
     .data(nodeDatas)
@@ -128,19 +129,20 @@ const renderGraph = (
     .attr('alignment-baseline', 'middle')
     .attr('y', 0)
     .style('fill', '#ffffff')
-    .text((node) => node.data.name)
+    .text((node) => node.data?.name)
 
-  const forceNode = d3.forceManyBody().strength(6)
+  const forceNode = d3.forceManyBody().strength(-35)
 
   const forceLink = d3
     .forceLink<NodeData, { source: number; target: number }>(linkDatas)
     .id((node: NodeData) => node.id)
-    .strength(0)
+    .distance(30)
+    .strength(0.001)
 
   d3.forceSimulation<NodeData>(nodeDatas)
     .force('x', d3.forceX().strength(0.02))
     .force('y', d3.forceY().strength(0.04))
-    .force('center', d3.forceCenter(0, 0))
+    .force('center', d3.forceCenter(0, 0).strength(0.1))
     .force('charge', forceNode)
     .force('collide', d3.forceCollide().strength(1).radius(120).iterations(0.2))
     .force('link', forceLink)
@@ -157,9 +159,12 @@ const renderGraph = (
     })
 }
 
-const BackgroundGraph = (props: { posts: RootState['posts'] }) => {
-  const { posts } = props
-  const tags = useSelector((state: RootState) => state.tags)
+const BackgroundGraph = (props: {
+  posts: RootState['posts']
+  tags: RootState['tags']
+}) => {
+  const { tags, posts } = props
+
   const rootRef = useRef<HTMLDivElement>()
 
   const refCallback = useCallback(
@@ -175,7 +180,14 @@ const BackgroundGraph = (props: { posts: RootState['posts'] }) => {
     [posts.ids]
   )
 
-  return <div ref={refCallback}></div>
+  return (
+    <Box
+      ref={refCallback}
+      sx={{
+        height: '100%',
+      }}
+    ></Box>
+  )
 }
 
 export default BackgroundGraph

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export type Post = {
-  'id': number
+  'id': string
   'content': string
   'created_at': string
   'created_by_id': number
@@ -10,12 +10,12 @@ export type Post = {
   'name': string
   'published_at': string
   'updated_at': string
-  'tag_ids': number[]
+  'tag_ids': string[]
 }
 
 export type State = {
-  ids: number[]
-  itemById: Record<number, Post>
+  ids: string[]
+  itemById: Record<string, Post>
 }
 
 export const initialState: State = {

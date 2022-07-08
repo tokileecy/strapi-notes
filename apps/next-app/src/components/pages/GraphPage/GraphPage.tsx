@@ -4,10 +4,16 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setTags, Tag } from '@/redux/features/tags/tagSlice'
 import { setPosts, Post } from '@/redux/features/posts/postSlice'
+import {
+  clearTags,
+  removeTags,
+  addTags,
+} from '@/redux/features/global/globalSlice'
 import api from '@/lib/api'
 import BackgroundGraph from '@/components/pages/GraphPage/BackgroundGraph'
 import Layout from '../../Layout'
 import PostCard from './PostCard'
+import TagsBlock from './TagsBlock'
 
 interface PathData {
   name: string
@@ -228,6 +234,10 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
             }
           } else {
             current = current.children[str]
+
+            if (index === strs.length - 1) {
+              current.id = path.id
+            }
           }
         })
       }
@@ -257,8 +267,8 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
         Array.from(Object.keys(selectedTags))
       )
 
-      const ids: number[] = []
-      const itemById: Record<number, Post> = {}
+      const ids: string[] = []
+      const itemById: Record<string, Post> = {}
 
       posts.forEach((post) => {
         ids.push(post.id)
@@ -300,61 +310,137 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
 
     return [
       node,
-      {
-        ids: nextPostIds,
-        itemById: nextPostIds.reduce<Record<string, Post>>((acc, id) => {
-          acc[id] = allPosts.itemById[Number(id)]
+      nextPostIds.reduce<{
+        ids: string[]
+        itemById: Record<string, Post>
+      }>(
+        (acc, id) => {
+          const collectPost = allPosts.itemById[Number(id)]
+
+          if (collectPost) {
+            acc.ids.push(id)
+            acc.itemById[id] = allPosts.itemById[Number(id)]
+          }
+
           return acc
-        }, {}),
-      },
+        },
+        { ids: [], itemById: {} }
+      ),
     ]
   }, [selectedPath, allPosts])
+
+  const allTags = useSelector((state: RootState) => state.tags)
 
   const selectedPost = useMemo(() => {
     if (selectedNode) {
       return allPosts.itemById[Number(selectedNode.id)]
     }
-  }, [selectedNode])
+  }, [selectedNode, allPosts])
+
+  const collectedTags = useMemo(() => {
+    const targetSelectTags = [...Object.entries(selectedTags)].reduce<
+      RootState['tags']
+    >(
+      (acc, tagEntry) => {
+        if (tagEntry[1]) {
+          acc.ids.push(tagEntry[0])
+          acc.itemById[tagEntry[0]] = allTags.itemById[tagEntry[0]]
+        }
+
+        return acc
+      },
+      {
+        ids: [],
+        itemById: {},
+      }
+    )
+
+    if (targetSelectTags.ids.length === 0) {
+      return allTags
+    } else {
+      return targetSelectTags
+    }
+  }, [selectedTags, allTags])
 
   return (
     <Layout>
       <Box
         sx={{
-          p: 2,
-          m: 2,
-          borderRadius: 2,
-          backgroundColor: 'rgba(15, 108, 176, 0.24)',
-          position: 'absolute',
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden',
         }}
       >
-        <TmpPathList paths={tmpPaths} />
-        <Workspace
-          paths={workspacePaths}
-          node={workspaceTree}
-          selectedPath={selectedPath}
-          onSelectedPathChange={handleSelectedPathChange}
-        />
-        <TagList tags={tags} />
-      </Box>
-      <Box
-        sx={{
-          position: 'absolute',
-          zIndex: 2,
-          left: 0,
-          bottom: 0,
-        }}
-      >
-        {selectedPost && (
-          <PostCard
-            post={selectedPost}
-            // onClick={() => {
-            //   setOpen((prev) => !prev)
-            //   setSelectePost(posts.itemById[id])
-            // }}
+        <Box
+          sx={{
+            position: 'absolute',
+            width: '300px',
+            zIndex: 2,
+            left: 0,
+            p: 2,
+            m: 2,
+            borderRadius: 2,
+            backgroundColor: 'rgba(15, 108, 176, 0.24)',
+          }}
+        >
+          <TmpPathList paths={tmpPaths} />
+          <Workspace
+            paths={workspacePaths}
+            node={workspaceTree}
+            selectedPath={selectedPath}
+            onSelectedPathChange={handleSelectedPathChange}
           />
-        )}
+          <TagList tags={tags} />
+        </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            zIndex: 2,
+            top: 0,
+            left: '50%',
+            transform: 'translateX(-70%)',
+            p: 2,
+            m: 2,
+            borderRadius: 2,
+            backgroundColor: 'rgba(15, 108, 176, 0.24)',
+          }}
+        >
+          <TagsBlock
+            selectedTags={selectedTags}
+            onAllSelected={() => {
+              dispatch(clearTags())
+            }}
+            onTagSelected={(isSelected, id) => {
+              if (isSelected) {
+                dispatch(removeTags([id]))
+              } else {
+                dispatch(addTags([id]))
+              }
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            zIndex: 2,
+            right: 0,
+            height: '100%',
+            p: 2,
+          }}
+        >
+          {selectedPost && <PostCard post={selectedPost} />}
+        </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            zIndex: 0,
+            height: '100%',
+          }}
+        >
+          <BackgroundGraph tags={collectedTags} posts={collectedPosts} />
+        </Box>
       </Box>
-      <BackgroundGraph posts={collectedPosts} />
     </Layout>
   )
 }
