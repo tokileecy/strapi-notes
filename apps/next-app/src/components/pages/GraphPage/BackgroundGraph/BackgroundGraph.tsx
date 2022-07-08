@@ -157,8 +157,8 @@ const renderGraph = (
     })
 }
 
-const BackgroundGraph = () => {
-  const posts = useSelector((state: RootState) => state.posts)
+const BackgroundGraph = (props: { posts: RootState['posts'] }) => {
+  const { posts } = props
   const tags = useSelector((state: RootState) => state.tags)
   const rootRef = useRef<HTMLDivElement>()
 

@@ -79,11 +79,16 @@ const api = {
     printErrors('paths', response)
 
     const pathsDatas = (response.data.posts?.data ?? []).reduce((acc, post) => {
-      const path = post.attributes.path
+      // const path = post.attributes.path
 
-      if (path) {
-        acc.push(path)
-      }
+      // if (path) {
+      //   acc.push(path)
+      // }
+      acc.push({
+        id: post.id,
+        name: post.attributes.name,
+        path: post.attributes.path,
+      })
 
       return acc
     }, [])
