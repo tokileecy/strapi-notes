@@ -11,14 +11,14 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
     const knex = strapi.db.connection
 
     let groupPostId = knex.select([
-      'posts_tags_links.post_id',
+      'post_id',
       knex.raw(`
         json_agg(
-          posts_tags_links.tag_id
+          (SELECT CAST (tag_id AS Varchar))
         ) as tag_ids
       `),
     ]).from('posts_tags_links')
-      .leftJoin('posts', 'posts_tags_links.post_id', 'posts.id')
+      .leftJoin('posts', 'post_id', 'posts.id')
 
     if(tagIds.length !== 0) {
       groupPostId = groupPostId.whereIn('tag_id', tagIds)
@@ -28,14 +28,14 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
       .as('group_post_tags')
 
     let data = knex.select([
-      'id',
+      knex.raw(`CAST(id AS Varchar)`),
       'content',
       'name',
       'created_at',
       'updated_at',
       'published_at',
-      'created_by_id',
-      'updated_by_id',
+      knex.raw(`CAST(created_by_id AS Varchar)`),
+      knex.raw(`CAST(updated_by_id AS Varchar)`),
       'tag_ids',
     ]).from('posts')
       .whereNot('published_at', null)
