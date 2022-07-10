@@ -28,6 +28,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <Provider store={store}>
       <Head>
+        <link rel="icon" href="/favicon.png" sizes="16x16" type="image/png" />
         {/* <link
           rel="icon"
           type="image/png"
