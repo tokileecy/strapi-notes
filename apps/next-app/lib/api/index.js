@@ -16,10 +16,13 @@ const printErrors = (fetchEntityName, response) => {
 const basePagination = { start: 0, limit: -1 }
 
 const api = {
-  async getCustomPosts(tags = []) {
+  async getCustomPosts({ tags = [], withContent = '1' }) {
     try {
       const response = await customInstance.get('/posts', {
-        params: { filters: { tags: { $has_some: tags } } },
+        params: {
+          filters: { tags: { $has_some: tags } },
+          with_content: withContent,
+        },
       })
 
       return response.data
