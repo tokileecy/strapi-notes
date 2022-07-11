@@ -86,7 +86,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
             backgroundColor: 'rgba(15, 108, 176, 0.24)',
           }}
         >
-          <Hierarchy tags={tags} />
+          <Hierarchy />
         </Box>
         <Box
           sx={{

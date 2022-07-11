@@ -4,11 +4,14 @@ import Box from '@mui/material/Box'
 import { RootState } from '@/redux/store'
 import FolderNode from '@/core/FolderNode'
 
-const Folder = (props: {
+export interface FolderProps {
+  isRoot?: boolean
   node: FolderNode
   onSelectedPathChange?: (path: string) => void
-}) => {
-  const { node, onSelectedPathChange } = props
+}
+
+const Folder = (props: FolderProps) => {
+  const { isRoot, node, onSelectedPathChange } = props
 
   const selected = useSelector(
     (state: RootState) =>
@@ -19,7 +22,7 @@ const Folder = (props: {
     const childrens = Array.from(Object.values(node.children))
 
     return (
-      <Box ml={2}>
+      <Box ml={isRoot ? 0 : 3}>
         {childrens.map((children, index) => {
           return (
             <Folder

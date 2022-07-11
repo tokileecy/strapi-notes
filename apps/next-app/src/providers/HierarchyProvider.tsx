@@ -8,13 +8,13 @@ import { selectPath } from '@/redux/features/global/globalSlice'
 
 const usePathTree = (posts: Post[]) => {
   return useMemo(() => {
-    const tmpPaths: Post[] = []
+    const uncategorizedPaths: Post[] = []
     const workspacePaths: Post[] = []
     const workspaceTree = new FolderNode()
 
     posts.forEach((post) => {
       if (!post.path) {
-        tmpPaths.push(post)
+        uncategorizedPaths.push(post)
       } else {
         workspacePaths.push(post)
 
@@ -40,7 +40,7 @@ const usePathTree = (posts: Post[]) => {
       }
     })
     return {
-      tmpPaths,
+      tmpPaths: uncategorizedPaths,
       workspacePaths,
       workspaceTree,
     }
@@ -135,7 +135,7 @@ const useSelectedPost = (
 }
 
 export interface HierarchyContextValue {
-  tmpPaths: Post[]
+  uncategorizedPaths: Post[]
   workspacePaths: Post[]
   workspaceTree: FolderNode | null
   selectedPath: string
@@ -190,7 +190,11 @@ const HierarchyProvider = (props: { children: ReactNode }) => {
     (state: RootState) => state.global.selectedPath
   )
 
-  const { tmpPaths, workspacePaths, workspaceTree } = usePathTree(posts)
+  const {
+    tmpPaths: uncategorizedPaths,
+    workspacePaths,
+    workspaceTree,
+  } = usePathTree(posts)
 
   const {
     selectedPost,
@@ -219,7 +223,7 @@ const HierarchyProvider = (props: { children: ReactNode }) => {
   return (
     <HierarchyContext.Provider
       value={{
-        tmpPaths,
+        uncategorizedPaths,
         workspacePaths,
         workspaceTree,
         selectedPath,
