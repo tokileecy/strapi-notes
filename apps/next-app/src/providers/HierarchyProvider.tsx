@@ -1,4 +1,4 @@
-import { useMemo, createContext, ReactNode, useCallback } from 'react'
+import { useMemo, createContext, ReactNode, useCallback, useRef } from 'react'
 
 import FolderNode from '@/core/FolderNode'
 import { Post, Tag } from '@/types'
@@ -54,19 +54,51 @@ const useSelectedPost = (
   selectedPath: string,
   workspaceTree: FolderNode
 ) => {
+  const postsByTagId = useMemo(() => {
+    const map = tagState.ids.reduce<Record<string, Set<Post>>>((acc, id) => {
+      acc[id] = new Set()
+      return acc
+    }, {})
+
+    postState.ids.forEach((id) => {
+      const post = postState.itemById[id]
+
+      if (post.tag_ids)
+        post.tag_ids.forEach((tagId) => {
+          map[tagId].add(post)
+        })
+    })
+    return map
+  }, [postState, tagState])
+
+  const filteredPostSet = useMemo(() => {
+    const selectedTagIds = [...Object.keys(selectedTagSet)]
+
+    if (selectedTagIds.length === 0) {
+      return new Set([...Object.values(postState.itemById)])
+    }
+
+    const posts = selectedTagIds.reduce<Post[]>((acc, id) => {
+      return [...acc, ...postsByTagId[id].values()]
+    }, [])
+
+    return new Set(posts)
+  }, [postsByTagId, selectedTagSet])
+
   return useMemo(() => {
     let selectedPost: Post | null = null
     let selectedNode: FolderNode | null = null
 
-    let relativePosts: Post[] = postState.ids.map(
-      (id) => postState.itemById[id]
-    )
+    let relativePosts: Post[] = [...filteredPostSet.values()]
 
     const relativePostIds: string[] = []
     let relativeTagIdSet: Set<string> = new Set([])
 
     const collectPost = (startNode: FolderNode) => {
-      if (startNode.id !== '') {
+      if (
+        startNode.id !== '' &&
+        filteredPostSet.has(postState.itemById[startNode.id])
+      ) {
         relativePostIds.push(startNode.id)
       }
 
@@ -77,7 +109,7 @@ const useSelectedPost = (
       }
 
       if (!startNode) {
-        return [selectedNode, postState]
+        return
       }
 
       ;[...Object.values(startNode.children)].forEach((childNode) => {
@@ -131,7 +163,7 @@ const useSelectedPost = (
       relativeSelectedTags,
       relativeSelectedTagIds,
     }
-  }, [selectedPath, postState, workspaceTree])
+  }, [selectedPath, postState, workspaceTree, selectedTagSet, filteredPostSet])
 }
 
 export interface HierarchyContextValue {

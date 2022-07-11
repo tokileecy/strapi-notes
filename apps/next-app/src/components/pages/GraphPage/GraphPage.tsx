@@ -15,7 +15,6 @@ import Layout from '../../Layout'
 import PostCard from './PostCard'
 import TagsBlock from './TagsBlock'
 import Hierarchy from './Hierarchy'
-import useSelectedTags from './useSelectedTags'
 import useHierarchy from '@/hooks/useHierarchy'
 export interface GraphPageProps {
   tags: Tag[]
@@ -26,8 +25,6 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
   const { tags } = props
 
   const dispatch = useDispatch()
-
-  const { ids: selectedTagIds } = useSelectedTags()
 
   const { selectedPost, relativePosts, relativeTags, relativeSelectedTags } =
     useHierarchy()
@@ -46,9 +43,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const posts: Post[] = await api.getCustomPosts({
-        tags: selectedTagIds,
-      })
+      const posts: Post[] = await api.getCustomPosts({})
 
       const ids: string[] = []
       const itemById: Record<string, Post> = {}
@@ -62,7 +57,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
     }
 
     fetchData()
-  }, [selectedTagIds])
+  }, [])
 
   return (
     <Layout headerText="Toki Notes (Dev)">
@@ -131,6 +126,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
             position: 'absolute',
             zIndex: 0,
             height: '100%',
+            width: '100%',
           }}
         >
           <BackgroundGraph tags={relativeSelectedTags} posts={relativePosts} />

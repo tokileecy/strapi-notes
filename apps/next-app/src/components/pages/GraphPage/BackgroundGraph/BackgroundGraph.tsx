@@ -31,6 +31,8 @@ const BackgroundGraph = (props: BackgroundGraphProps) => {
       ref={refCallback}
       sx={{
         height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
       }}
     ></Box>
   )

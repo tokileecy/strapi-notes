@@ -33,6 +33,7 @@ export const globalSlice = createSlice({
     },
     selectPath: (state, action: PayloadAction<string>) => {
       delete state.selectedByPath[state.selectedPath]
+      state.selectedTagSet = {}
       state.selectedPath = action.payload
       state.selectedByPath[action.payload] = true
     },
