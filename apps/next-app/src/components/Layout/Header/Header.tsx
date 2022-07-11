@@ -3,7 +3,9 @@ import Toolbar from '@mui/material/Toolbar'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
-const Header = () => {
+const Header = (props: { text?: string }) => {
+  const { text = 'Toki Notes' } = props
+
   return (
     <AppBar>
       <Box
@@ -26,7 +28,7 @@ const Header = () => {
                 fontWeight: 'bold',
               }}
             >
-              Toki Notes
+              {text}
             </Typography>
           </Box>
         </Toolbar>

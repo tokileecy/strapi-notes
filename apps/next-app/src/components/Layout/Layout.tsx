@@ -5,14 +5,15 @@ import Main from './Main'
 
 export interface LayoutProps {
   children?: ReactNode
+  headerText?: string
 }
 
 const Layout = (props: LayoutProps): JSX.Element => {
-  const { children } = props
+  const { headerText, children } = props
 
   return (
     <BaseThemeProvider>
-      <Header />
+      <Header text={headerText} />
       <Main>{children}</Main>
     </BaseThemeProvider>
   )
