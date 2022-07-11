@@ -40,7 +40,7 @@ const usePathTree = (posts: Post[]) => {
       }
     })
     return {
-      tmpPaths: uncategorizedPaths,
+      uncategorizedPaths,
       workspacePaths,
       workspaceTree,
     }
@@ -151,7 +151,7 @@ export interface HierarchyContextValue {
 }
 
 const defaultHierarchyContextValue = {
-  tmpPaths: [],
+  uncategorizedPaths: [],
   workspacePaths: [],
   workspaceTree: null,
   selectedPath: '',
@@ -190,11 +190,8 @@ const HierarchyProvider = (props: { children: ReactNode }) => {
     (state: RootState) => state.global.selectedPath
   )
 
-  const {
-    tmpPaths: uncategorizedPaths,
-    workspacePaths,
-    workspaceTree,
-  } = usePathTree(posts)
+  const { uncategorizedPaths, workspacePaths, workspaceTree } =
+    usePathTree(posts)
 
   const {
     selectedPost,

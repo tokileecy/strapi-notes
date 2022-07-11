@@ -3,8 +3,9 @@ import Layout from '../../Layout'
 import Box from '@mui/material/Box'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setTags, Tag } from '@/redux/features/tags/tagSlice'
-import { setPosts, Post } from '@/redux/features/posts/postSlice'
+import { Tag, Post } from '@/types'
+import { setTags } from '@/redux/features/tags/tagSlice'
+import { setPosts } from '@/redux/features/posts/postSlice'
 import {
   clearTags,
   removeTags,

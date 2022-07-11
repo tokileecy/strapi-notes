@@ -17,22 +17,23 @@ const PostDialog = (inProps: PostDialogProps): JSX.Element => {
 
     const bannerProps: Record<string, string> = {}
 
-    targetContent = content?.replace(/<Banner.*\/>/g, (match) => {
-      const banner = match
+    targetContent =
+      content?.replace(/<Banner.*\/>/g, (match) => {
+        const banner = match
 
-      banner
-        .replace(/<Banner/, '')
-        .replace(/\/>/, '')
-        .split(/ /g)
-        .forEach((str) => {
-          const [key, value] = str.split(/=/g)
+        banner
+          .replace(/<Banner/, '')
+          .replace(/\/>/, '')
+          .split(/ /g)
+          .forEach((str) => {
+            const [key, value] = str.split(/=/g)
 
-          if (key !== '' && value !== '') {
-            bannerProps[key] = value.replace(/^"/, '').replace(/"$/, '')
-          }
-        })
-      return ''
-    })
+            if (key !== '' && value !== '') {
+              bannerProps[key] = value.replace(/^"/, '').replace(/"$/, '')
+            }
+          })
+        return ''
+      }) ?? ''
   }
 
   return (
