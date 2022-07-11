@@ -7,7 +7,10 @@
 const { createCoreService } = require('@strapi/strapi').factories;
 
 module.exports = createCoreService('api::post.post', ({ strapi }) => ({
-  async customPost(tagIds = []) {
+  async customPost({
+    tagIds = [],
+    withContent = '0',
+  }) {
     const knex = strapi.db.connection
 
     let groupPostId = knex.select([
@@ -27,9 +30,15 @@ module.exports = createCoreService('api::post.post', ({ strapi }) => ({
     groupPostId = groupPostId.groupBy('posts_tags_links.post_id')
       .as('group_post_tags')
 
+    const optionSelect = []
+    if (withContent === '1') {
+      optionSelect.push('content')
+    }
+
     let data = knex.select([
       knex.raw(`CAST(id AS Varchar)`),
-      'content',
+      ...optionSelect,
+      'path',
       'name',
       'created_at',
       'updated_at',
