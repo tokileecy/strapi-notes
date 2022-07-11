@@ -65,7 +65,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
   }, [selectedTagIds])
 
   return (
-    <Layout>
+    <Layout headerText="Toki Notes (Dev)">
       <Box
         sx={{
           position: 'relative',
@@ -91,7 +91,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
         <Box
           sx={{
             position: 'absolute',
-            zIndex: 2,
+            zIndex: 3,
             top: 0,
             left: '50%',
             transform: 'translateX(-70%)',
@@ -118,7 +118,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
         <Box
           sx={{
             position: 'absolute',
-            zIndex: 2,
+            zIndex: 1,
             right: 0,
             height: '100%',
             p: 2,
