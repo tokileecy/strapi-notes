@@ -1,6 +1,5 @@
 import { useCallback, useRef } from 'react'
-import { Post } from '@/types'
-import { Tag } from '@/redux/features/tags/tagSlice'
+import { Post, Tag } from '@/types'
 import { Box } from '@mui/material'
 import renderGraph from './renderGraph'
 

@@ -1,9 +1,10 @@
-import { useMemo, createContext, ReactNode } from 'react'
+import { useMemo, createContext, ReactNode, useCallback } from 'react'
 
 import FolderNode from '@/core/FolderNode'
 import { Post } from '@/types'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { selectPath } from '@/redux/features/global/globalSlice'
 
 const useSelectedPost = (
   postState: RootState['posts'],
@@ -108,6 +109,7 @@ export interface HierarchyContextValue {
   selectedNode: FolderNode | null
   relativePosts: Post[]
   relativePostIds: string[]
+  handleSelectedPathChange?: (path: string) => void
 }
 
 const defaultHierarchyContextValue = {
@@ -119,6 +121,7 @@ const defaultHierarchyContextValue = {
   selectedNode: null,
   relativePosts: [],
   relativePostIds: [],
+  handleSelectedPathChange: undefined,
 }
 
 export const HierarchyContext = createContext<HierarchyContextValue>(
@@ -127,10 +130,14 @@ export const HierarchyContext = createContext<HierarchyContextValue>(
 
 const HierarchyProvider = (props: { children: ReactNode }) => {
   const { children } = props
+  const dispatch = useDispatch()
 
   const postState = useSelector((state: RootState) => state.posts)
 
-  const posts = postState.ids.map((id) => postState.itemById[id])
+  const posts = useMemo(
+    () => postState.ids.map((id) => postState.itemById[id]),
+    [postState.ids]
+  )
 
   const selectedPath = useSelector(
     (state: RootState) => state.global.selectedPath
@@ -140,6 +147,13 @@ const HierarchyProvider = (props: { children: ReactNode }) => {
 
   const { selectedPost, selectedNode, relativePosts, relativePostIds } =
     useSelectedPost(postState, selectedPath, workspaceTree)
+
+  const handleSelectedPathChange = useCallback(
+    (path: string) => {
+      dispatch(selectPath(path))
+    },
+    [selectPath]
+  )
 
   return (
     <HierarchyContext.Provider
@@ -152,6 +166,7 @@ const HierarchyProvider = (props: { children: ReactNode }) => {
         selectedNode,
         relativePosts,
         relativePostIds,
+        handleSelectedPathChange,
       }}
     >
       {children}

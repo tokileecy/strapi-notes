@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Tag } from '@/redux/features/tags/tagSlice'
+import { Tag } from '@/types'
 
 const TagList = (props: { tags: Tag[] }) => {
   const { tags } = props

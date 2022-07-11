@@ -1,26 +1,22 @@
 import { useEffect } from 'react'
 import Box from '@mui/material/Box'
 import { useDispatch } from 'react-redux'
-import { setTags, Tag } from '@/redux/features/tags/tagSlice'
+import { setTags } from '@/redux/features/tags/tagSlice'
 import { setPosts } from '@/redux/features/posts/postSlice'
-import { Post } from '@/types'
+import { Post, Tag } from '@/types'
 import {
   clearTags,
   removeTags,
   addTags,
-  selectPath,
 } from '@/redux/features/global/globalSlice'
 import api from '@/lib/api'
 import BackgroundGraph from '@/components/pages/GraphPage/BackgroundGraph'
 import Layout from '../../Layout'
 import PostCard from './PostCard'
 import TagsBlock from './TagsBlock'
-import TagList from './TagList'
-import TmpPathList from './TmpPathList'
-import Workspace from './Workspace'
+import Hierarchy from './Hierarchy'
 import useSelectedTags from './useSelectedTags'
 import useHierarchy from '@/hooks/useHierarchy'
-
 export interface GraphPageProps {
   tags: Tag[]
   posts: Post[]
@@ -33,18 +29,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
 
   const { ids: selectedTagIds, tags: selectedTags } = useSelectedTags()
 
-  const {
-    tmpPaths,
-    workspacePaths,
-    workspaceTree,
-    selectedPath,
-    selectedPost,
-    relativePosts,
-  } = useHierarchy()
-
-  const handleSelectedPathChange = (path: string) => {
-    dispatch(selectPath(path))
-  }
+  const { selectedPost, relativePosts } = useHierarchy()
 
   useEffect(() => {
     const tagIds: string[] = []
@@ -100,14 +85,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
             backgroundColor: 'rgba(15, 108, 176, 0.24)',
           }}
         >
-          <TmpPathList paths={tmpPaths} />
-          <Workspace
-            paths={workspacePaths}
-            node={workspaceTree}
-            selectedPath={selectedPath}
-            onSelectedPathChange={handleSelectedPathChange}
-          />
-          <TagList tags={tags} />
+          <Hierarchy tags={tags} />
         </Box>
         <Box
           sx={{

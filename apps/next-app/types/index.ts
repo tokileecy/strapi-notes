@@ -11,3 +11,8 @@ export type Post = {
   'updated_at': string
   'tag_ids': string[]
 }
+
+export type Tag = {
+  id: string
+  name: string
+}

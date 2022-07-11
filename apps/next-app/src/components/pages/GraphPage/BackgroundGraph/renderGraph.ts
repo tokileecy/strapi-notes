@@ -1,6 +1,5 @@
 import * as d3 from 'd3'
-import { Post } from '@/types'
-import { Tag } from '@/redux/features/tags/tagSlice'
+import { Post, Tag } from '@/types'
 
 export interface PostNodeData {
   index?: number
