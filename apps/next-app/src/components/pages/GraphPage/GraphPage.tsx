@@ -27,9 +27,10 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
 
   const dispatch = useDispatch()
 
-  const { ids: selectedTagIds, tags: selectedTags } = useSelectedTags()
+  const { ids: selectedTagIds } = useSelectedTags()
 
-  const { selectedPost, relativePosts } = useHierarchy()
+  const { selectedPost, relativePosts, relativeTags, relativeSelectedTags } =
+    useHierarchy()
 
   useEffect(() => {
     const tagIds: string[] = []
@@ -101,6 +102,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
           }}
         >
           <TagsBlock
+            tags={relativeTags}
             onAllSelected={() => {
               dispatch(clearTags())
             }}
@@ -131,7 +133,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
             height: '100%',
           }}
         >
-          <BackgroundGraph tags={selectedTags} posts={relativePosts} />
+          <BackgroundGraph tags={relativeSelectedTags} posts={relativePosts} />
         </Box>
       </Box>
     </Layout>

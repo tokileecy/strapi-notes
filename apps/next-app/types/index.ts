@@ -9,7 +9,7 @@ export type Post = {
   'name': string
   'published_at': string
   'updated_at': string
-  'tag_ids': string[]
+  'tag_ids'?: string[]
 }
 
 export type Tag = {

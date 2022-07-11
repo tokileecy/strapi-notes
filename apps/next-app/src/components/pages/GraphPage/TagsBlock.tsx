@@ -3,30 +3,29 @@ import Divider from '@mui/material/Divider'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import Tag from '../../base/Tag'
+import { Tag as TagData } from '@/types'
 export interface TagsBlockProps {
+  tags: TagData[]
   onTagSelected?: (isSelected: boolean, id: string) => void
   onAllSelected?: () => void
 }
 
 const TagsBlock = (props: TagsBlockProps): JSX.Element => {
-  const { onTagSelected, onAllSelected } = props
-  const tags = useSelector((state: RootState) => state.tags)
+  const { tags, onTagSelected, onAllSelected } = props
 
   const selectedTagSet = useSelector(
     (state: RootState) => state.global.selectedTagSet
   )
 
-  const tagNodes = tags.ids.map((tagId) => {
-    const id = tagId
-    const name = tags.itemById[id].name
-    const isSelected = selectedTagSet[id] ?? false
+  const tagNodes = tags.map((tag) => {
+    const isSelected = selectedTagSet[tag.id] ?? false
 
     return (
       <Tag
-        key={id}
-        label={name}
+        key={tag.id}
+        label={tag.name}
         onClick={() => {
-          onTagSelected?.(isSelected, id)
+          onTagSelected?.(isSelected, tag.id)
         }}
         isSelected={isSelected}
       />
