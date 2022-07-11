@@ -1,6 +1,6 @@
 import { useMemo, useContext } from 'react'
 import Box from '@mui/material/Box'
-import FolderNode from './FolderNode'
+import FolderNode from '@/core/FolderNode'
 import FolderStateContext from './FolderStateContext'
 
 const Folder = (props: { node: FolderNode }) => {

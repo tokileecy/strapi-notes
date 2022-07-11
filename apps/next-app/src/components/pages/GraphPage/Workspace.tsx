@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import Box from '@mui/material/Box'
 import { PathData } from './TmpPathList'
-import FolderNode from './FolderNode'
+import FolderNode from '@/core/FolderNode'
 import FolderStateContext from './FolderStateContext'
 import Folder from './Folder'
 
 const Workspace = (props: {
   paths: PathData[]
-  node: FolderNode
+  node: FolderNode | null
   selectedPath: string
   onSelectedPathChange: (path: string) => void
 }) => {
@@ -44,9 +44,7 @@ const Workspace = (props: {
       <FolderStateContext.Provider
         value={{ pathState, onPathChange: handleSelectedPathChange }}
       >
-        <Box ml={2}>
-          <Folder node={node} />
-        </Box>
+        <Box ml={2}>{node && <Folder node={node} />}</Box>
       </FolderStateContext.Provider>
     </Box>
   )

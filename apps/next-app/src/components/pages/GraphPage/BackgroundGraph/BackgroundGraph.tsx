@@ -1,7 +1,6 @@
 import { useCallback, useRef } from 'react'
 import * as d3 from 'd3'
-import { RootState } from '@/redux/store'
-import { Post } from '@/redux/features/posts/postSlice'
+import { Post } from '@/types'
 import { Tag } from '@/redux/features/tags/tagSlice'
 import { Box } from '@mui/material'
 
@@ -24,11 +23,7 @@ interface TagNodeData {
 
 type NodeData = PostNodeData | TagNodeData
 
-const renderGraph = (
-  element: HTMLElement,
-  posts: RootState['posts'],
-  tags: RootState['tags']
-) => {
+const renderGraph = (element: HTMLElement, posts: Post[], tags: Tag[]) => {
   const width = 1440
   const height = 900
   const viewWidth = width * 1.5
@@ -37,9 +32,7 @@ const renderGraph = (
 
   const tagNodeIdBytagId = new Map<string, number>()
 
-  const postNodeData: PostNodeData[] = posts.ids.map((id, index) => {
-    const post = posts.itemById[id]
-
+  const postNodeData: PostNodeData[] = posts.map((post, index) => {
     return {
       id: index,
       x: 0,
@@ -49,11 +42,10 @@ const renderGraph = (
     }
   })
 
-  const tagNodeData: TagNodeData[] = tags.ids.map((id, index) => {
-    const tag = tags.itemById[id]
-    const nodeId = index + posts.ids.length
+  const tagNodeData: TagNodeData[] = tags.map((tag, index) => {
+    const nodeId = index + posts.length
 
-    tagNodeIdBytagId.set(id, nodeId)
+    tagNodeIdBytagId.set(tag.id, nodeId)
     return {
       id: nodeId,
       x: 0,
@@ -159,10 +151,7 @@ const renderGraph = (
     })
 }
 
-const BackgroundGraph = (props: {
-  posts: RootState['posts']
-  tags: RootState['tags']
-}) => {
+const BackgroundGraph = (props: { posts: Post[]; tags: Tag[] }) => {
   const { tags, posts } = props
 
   const rootRef = useRef<HTMLDivElement>()
@@ -177,7 +166,7 @@ const BackgroundGraph = (props: {
 
       renderGraph(element, posts, tags)
     },
-    [posts.ids]
+    [posts]
   )
 
   return (

@@ -4,19 +4,22 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import Tag from '../../base/Tag'
 export interface TagsBlockProps {
-  selectedTags: Record<string, boolean>
   onTagSelected?: (isSelected: boolean, id: string) => void
   onAllSelected?: () => void
 }
 
 const TagsBlock = (props: TagsBlockProps): JSX.Element => {
-  const { selectedTags, onTagSelected, onAllSelected } = props
+  const { onTagSelected, onAllSelected } = props
   const tags = useSelector((state: RootState) => state.tags)
+
+  const selectedTagSet = useSelector(
+    (state: RootState) => state.global.selectedTagSet
+  )
 
   const tagNodes = tags.ids.map((tagId) => {
     const id = tagId
     const name = tags.itemById[id].name
-    const isSelected = selectedTags[id] ?? false
+    const isSelected = selectedTagSet[id] ?? false
 
     return (
       <Tag
@@ -30,7 +33,7 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
     )
   })
 
-  const isAllSelected = [...Object.keys(selectedTags)].length === 0
+  const isAllSelected = [...Object.keys(selectedTagSet)].length === 0
 
   return (
     <Box

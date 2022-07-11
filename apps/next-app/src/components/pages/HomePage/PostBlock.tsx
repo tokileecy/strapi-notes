@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { useState } from 'react'
 import PostDialog from './PostDialog'
-import { Post } from '@/redux/features/posts/postSlice'
+import { Post } from '@/types'
 
 const PostBlock = () => {
   const [open, setOpen] = useState(false)

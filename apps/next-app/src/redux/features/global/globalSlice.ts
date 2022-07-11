@@ -1,11 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export type State = {
-  selectedTags: Record<string, boolean>
+  selectedTagSet: Record<string, boolean>
+  selectedPath: string
 }
 
 export const initialState: State = {
-  selectedTags: {},
+  selectedTagSet: {},
+  selectedPath: '',
 }
 
 export const globalSlice = createSlice({
@@ -14,22 +16,26 @@ export const globalSlice = createSlice({
   reducers: {
     addTags: (state, action: PayloadAction<string[]>) => {
       action.payload.forEach((tag) => {
-        state.selectedTags[tag] = true
+        state.selectedTagSet[tag] = true
       })
     },
     removeTags: (state, action: PayloadAction<string[]>) => {
       action.payload.forEach((tag) => {
-        if (state.selectedTags[tag]) {
-          delete state.selectedTags[tag]
+        if (state.selectedTagSet[tag]) {
+          delete state.selectedTagSet[tag]
         }
       })
     },
     clearTags: (state) => {
-      state.selectedTags = {}
+      state.selectedTagSet = {}
+    },
+    selectPath: (state, action: PayloadAction<string>) => {
+      state.selectedPath = action.payload
     },
   },
 })
 
-export const { addTags, removeTags, clearTags } = globalSlice.actions
+export const { addTags, removeTags, clearTags, selectPath } =
+  globalSlice.actions
 
 export default globalSlice.reducer

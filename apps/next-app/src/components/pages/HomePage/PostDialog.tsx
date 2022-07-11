@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Post } from '@/redux/features/posts/postSlice'
+import { Post } from '@/types'
 import Markdown from '@/components/base/Markdown'
 import Dialog, { DialogProps } from '@mui/material/Dialog'
 
@@ -17,7 +17,7 @@ const PostDialog = (inProps: PostDialogProps): JSX.Element => {
 
     const bannerProps: Record<string, string> = {}
 
-    targetContent = content.replace(/<Banner.*\/>/g, (match) => {
+    targetContent = content?.replace(/<Banner.*\/>/g, (match) => {
       const banner = match
 
       banner

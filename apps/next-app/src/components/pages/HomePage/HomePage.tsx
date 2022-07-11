@@ -23,7 +23,7 @@ const HomePage = (props: HomePageProps): JSX.Element => {
   const dispatch = useDispatch()
 
   const selectedTags = useSelector(
-    (state: RootState) => state.global.selectedTags
+    (state: RootState) => state.global.selectedTagSet
   )
 
   useEffect(() => {
@@ -40,9 +40,9 @@ const HomePage = (props: HomePageProps): JSX.Element => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const posts: Post[] = await api.getCustomPosts(
-        Array.from(Object.keys(selectedTags))
-      )
+      const posts: Post[] = await api.getCustomPosts({
+        tags: Array.from(Object.keys(selectedTags)),
+      })
 
       const ids: string[] = []
       const itemById: Record<string, Post> = {}

@@ -17,11 +17,14 @@
     "incremental": true,
     "paths": {
       "@/redux/*": ["src/redux/*"],
+      "@/core/*": ["src/core/*"],
       "@/page/*": ["src/page/*"],
       "@/components/*": ["src/components/*"],
+      "@/providers/*": ["src/providers/*"],
       "@/hooks/*": ["src/hooks/*"],
       "@/utils/*": ["src/utils/*"],
       "@/lib/*": ["lib/*"],
+      "@/types": ["types"],
       "@/types/*": ["types/*"]
     }
   },

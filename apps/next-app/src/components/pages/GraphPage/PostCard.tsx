@@ -2,7 +2,7 @@ import Card, { CardProps } from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
-import { Post } from '@/redux/features/posts/postSlice'
+import { Post } from '@/types'
 import Markdown from '@/components/base/Markdown'
 export interface PostCardProps {
   post: Post
@@ -16,7 +16,7 @@ const PostCard = (props: PostCardProps): JSX.Element => {
 
   const bannerProps: Record<string, string> = {}
 
-  const targetContent = content.replace(/<Banner.*\/>/g, (match) => {
+  const targetContent = content?.replace(/<Banner.*\/>/g, (match) => {
     const banner = match
 
     banner

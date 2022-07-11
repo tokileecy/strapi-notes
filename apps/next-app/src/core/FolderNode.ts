@@ -1,25 +1,41 @@
+import { Post } from '@/types'
+
+export interface FolderNodeOptions {
+  path?: string
+  absolutePath?: string
+  parent?: FolderNode | null
+  data?: Post
+  id?: string
+}
+
 class FolderNode {
   path: string
   absolutePath: string
   children: Record<string, FolderNode>
   parent: FolderNode | null
+  data: Post | null
   id: string
-  constructor(
-    path = '',
-    absolutePath = '',
-    parent: FolderNode | null = null,
-    id = ''
-  ) {
+
+  constructor(options: FolderNodeOptions = {}) {
+    const {
+      path = '',
+      absolutePath = '',
+      id = '',
+      parent = null,
+      data = null,
+    } = options
+
     this.path = path
     this.id = id
     this.absolutePath = absolutePath
     this.children = {}
     this.parent = parent
+    this.data = data
   }
 
-  createChildNode = (path: string, id?: string) => {
+  createChildNode = (path: string, id = '', data?: Post) => {
     const absolutePath = this.path === '/' ? path : `${this.path}${path}`
-    const child = new FolderNode(path, absolutePath, this, id)
+    const child = new FolderNode({ path, absolutePath, parent: this, id, data })
 
     this.children[path] = child
 

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export type Tag = {
-  id: number
+  id: string
   name: string
 }
 
