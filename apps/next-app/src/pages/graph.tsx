@@ -13,7 +13,7 @@ const Graph: NextPage<GraphPageProps> = (props) => {
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const tags = await api.getTags()
-  const posts = await api.getCustomPosts({ withContent: '0' })
+  const posts = await api.listPosts({ withContent: '0' })
 
   return {
     props: {

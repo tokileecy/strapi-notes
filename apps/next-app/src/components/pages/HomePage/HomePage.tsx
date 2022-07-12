@@ -41,7 +41,7 @@ const HomePage = (props: HomePageProps): JSX.Element => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const posts: Post[] = await api.getCustomPosts({
+      const posts: Post[] = await api.listPosts({
         tags: Array.from(Object.keys(selectedTags)),
       })
 

@@ -15,7 +15,15 @@ const printErrors = (fetchEntityName, response) => {
 
 const basePagination = { start: 0, limit: -1 }
 
-const api = {
+class Api {
+  constructor() {
+    this.jwtToken = undefined
+  }
+
+  setJwtToken = (token) => {
+    this.jwtToken = token
+  }
+
   /**
    * @param {{
    *   identifier: string
@@ -26,14 +34,24 @@ const api = {
    *   jwt: string
    * }> }
    */
-  login({ identifier, password }) {
+  login = ({ identifier, password }) => {
     return apiInstance.post('/auth/local', {
       identifier,
       password,
     })
-  },
+  }
 
-  async getCustomPosts({ tags = [], withContent = '1' }) {
+  getPost = async ({ id }) => {
+    try {
+      const response = await apiInstance.get(`/posts/${id}`)
+
+      return response.data
+    } catch (error) {
+      return []
+    }
+  }
+
+  listPosts = async ({ tags = [], withContent = '1' }) => {
     try {
       const response = await customInstance.get('/posts', {
         params: {
@@ -46,26 +64,91 @@ const api = {
     } catch (error) {
       return []
     }
-  },
+  }
 
-  async getPosts(pagination = basePagination) {
-    const variables = {
-      pagination,
+  /**
+   *
+   * @param {{
+   *  content?: string
+   *  name?: string
+   *  tags?: string[]
+   *  path?: string
+   * }} data
+   * @returns
+   */
+  createPost = async (data = {}) => {
+    try {
+      const response = await apiInstance.post(
+        '/posts',
+        {
+          data,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.jwtToken}`,
+          },
+        }
+      )
+
+      return response.data
+    } catch (error) {
+      return []
     }
+  }
 
-    const response = await client.query({
-      query: PostsQuery,
-      variables,
-    })
+  /**
+   *
+   * @param { string } id
+   * @param {{
+   *  content?: string
+   *  name?: string
+   *  tags?: string[]
+   *  path?: string
+   * }} data
+   * @returns
+   */
+  updatePost = async (id, data = {}) => {
+    try {
+      const response = await apiInstance.update(
+        `/posts/${id}`,
+        {
+          data,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.jwtToken}`,
+          },
+        }
+      )
 
-    printErrors('posts', response)
+      return response.data
+    } catch (error) {
+      return []
+    }
+  }
 
-    const postDatas = response.data.posts?.data ?? []
+  /**
+   *
+   * @param {{
+   *  id: string
+   * }} options
+   * @returns
+   */
+  deletePost = async (id) => {
+    try {
+      const response = await apiInstance.delete(`/posts/${id}`, {
+        headers: {
+          Authorization: `Bearer ${this.jwtToken}`,
+        },
+      })
 
-    return postDatas
-  },
+      return response.data
+    } catch (error) {
+      return []
+    }
+  }
 
-  async getTags(pagination = basePagination) {
+  getTags = async (pagination = basePagination) => {
     const variables = {
       pagination,
     }
@@ -84,37 +167,7 @@ const api = {
       })) ?? []
 
     return tagsDatas
-  },
-
-  async getPaths() {
-    const variables = {
-      pagination: basePagination,
-    }
-
-    const response = await client.query({
-      query: PathsQuery,
-      variables,
-    })
-
-    printErrors('paths', response)
-
-    const pathsDatas = (response.data.posts?.data ?? []).reduce((acc, post) => {
-      // const path = post.attributes.path
-
-      // if (path) {
-      //   acc.push(path)
-      // }
-      acc.push({
-        id: post.id,
-        name: post.attributes.name,
-        path: post.attributes.path,
-      })
-
-      return acc
-    }, [])
-
-    return pathsDatas
-  },
+  }
 }
 
-export default api
+export default new Api()

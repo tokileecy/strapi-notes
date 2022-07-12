@@ -1,9 +1,12 @@
 import { ReactNode, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { setAuth } from '@/redux/features/auth/authSlice'
+import { RootState } from '@/redux/store'
+import api from '@/lib/api'
 import BaseThemeProvider from './BaseThemeProvider'
 import Header from './Header'
 import Main from './Main'
+
 export interface LayoutProps {
   children?: ReactNode
   headerText?: string
@@ -11,6 +14,9 @@ export interface LayoutProps {
 
 const Layout = (props: LayoutProps): JSX.Element => {
   const { headerText, children } = props
+
+  const jwt = useSelector((state: RootState) => state.auth.jwt)
+
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -20,6 +26,11 @@ const Layout = (props: LayoutProps): JSX.Element => {
       dispatch(setAuth({ jwt }))
     }
   }, [])
+
+  useEffect(() => {
+    api.setJwtToken(jwt)
+  }, [jwt])
+
   return (
     <BaseThemeProvider>
       <Header text={headerText} />
