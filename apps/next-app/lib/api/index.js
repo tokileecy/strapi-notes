@@ -41,29 +41,17 @@ class Api {
     })
   }
 
-  getPost = async ({ id }) => {
-    try {
-      const response = await apiInstance.get(`/posts/${id}`)
-
-      return response.data
-    } catch (error) {
-      return []
-    }
+  getPost = ({ id }) => {
+    return apiInstance.get(`/posts/${id}`)
   }
 
   listPosts = async ({ tags = [], withContent = '1' }) => {
-    try {
-      const response = await customInstance.get('/posts', {
-        params: {
-          filters: { tags: { $has_some: tags } },
-          with_content: withContent,
-        },
-      })
-
-      return response.data
-    } catch (error) {
-      return []
-    }
+    return customInstance.get('/posts', {
+      params: {
+        filters: { tags: { $has_some: tags } },
+        with_content: withContent,
+      },
+    })
   }
 
   /**
@@ -77,23 +65,17 @@ class Api {
    * @returns
    */
   createPost = async (data = {}) => {
-    try {
-      const response = await apiInstance.post(
-        '/posts',
-        {
-          data,
+    return apiInstance.post(
+      '/posts',
+      {
+        data,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${this.jwtToken}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${this.jwtToken}`,
-          },
-        }
-      )
-
-      return response.data
-    } catch (error) {
-      return []
-    }
+      }
+    )
   }
 
   /**
@@ -107,24 +89,18 @@ class Api {
    * }} data
    * @returns
    */
-  updatePost = async (id, data = {}) => {
-    try {
-      const response = await apiInstance.update(
-        `/posts/${id}`,
-        {
-          data,
+  updatePost = (id, data = {}) => {
+    return apiInstance.update(
+      `/posts/${id}`,
+      {
+        data,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${this.jwtToken}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${this.jwtToken}`,
-          },
-        }
-      )
-
-      return response.data
-    } catch (error) {
-      return []
-    }
+      }
+    )
   }
 
   /**
@@ -134,18 +110,12 @@ class Api {
    * }} options
    * @returns
    */
-  deletePost = async (id) => {
-    try {
-      const response = await apiInstance.delete(`/posts/${id}`, {
-        headers: {
-          Authorization: `Bearer ${this.jwtToken}`,
-        },
-      })
-
-      return response.data
-    } catch (error) {
-      return []
-    }
+  deletePost = (id) => {
+    return apiInstance.delete(`/posts/${id}`, {
+      headers: {
+        Authorization: `Bearer ${this.jwtToken}`,
+      },
+    })
   }
 
   getTags = async (pagination = basePagination) => {

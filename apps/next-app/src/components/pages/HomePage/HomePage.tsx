@@ -41,9 +41,15 @@ const HomePage = (props: HomePageProps): JSX.Element => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const posts: Post[] = await api.listPosts({
-        tags: Array.from(Object.keys(selectedTags)),
-      })
+      let posts: Post[]
+
+      try {
+        const response = await api.listPosts({})
+
+        posts = response.data
+      } catch (error) {
+        posts = []
+      }
 
       const ids: string[] = []
       const itemById: Record<string, Post> = {}

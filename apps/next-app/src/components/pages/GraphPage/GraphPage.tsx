@@ -43,7 +43,15 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const posts: Post[] = await api.listPosts({})
+      let posts: Post[]
+
+      try {
+        const response = await api.listPosts({})
+
+        posts = response.data
+      } catch (error) {
+        posts = []
+      }
 
       const ids: string[] = []
       const itemById: Record<string, Post> = {}
