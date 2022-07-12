@@ -2,7 +2,7 @@ const PostsQuery = require('../../gql/query/posts.gql')
 const PathsQuery = require('../../gql/query/paths.gql')
 const TagsQuery = require('../../gql/query/tags.gql')
 const client = require('../apollo-client')
-const { customInstance } = require('../axios-instance')
+const { customInstance, apiInstance } = require('../axios-instance')
 
 const printErrors = (fetchEntityName, response) => {
   if (response.errors) {
@@ -16,6 +16,23 @@ const printErrors = (fetchEntityName, response) => {
 const basePagination = { start: 0, limit: -1 }
 
 const api = {
+  /**
+   * @param {{
+   *   identifier: string
+   *   password: string
+   * }} param0
+   *
+   * @returns { import('axios').AxiosResponse<{
+   *   jwt: string
+   * }> }
+   */
+  login({ identifier, password }) {
+    return apiInstance.post('/auth/local', {
+      identifier,
+      password,
+    })
+  },
+
   async getCustomPosts({ tags = [], withContent = '1' }) {
     try {
       const response = await customInstance.get('/posts', {
