@@ -34,7 +34,9 @@ class FolderNode {
   }
 
   createChildNode = (path: string, id = '', data?: Post) => {
-    const absolutePath = this.path === '/' ? path : `${this.path}${path}`
+    const absolutePath =
+      this.path === '/' ? path : `${this.absolutePath}${path}`
+
     const child = new FolderNode({ path, absolutePath, parent: this, id, data })
 
     this.children[path] = child
