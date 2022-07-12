@@ -11,7 +11,8 @@ export interface FolderNodeOptions {
 class FolderNode {
   path: string
   absolutePath: string
-  children: Record<string, FolderNode>
+  childrenPaths: string[]
+  childrenByPath: Record<string, FolderNode>
   parent: FolderNode | null
   data: Post | null
   id: string
@@ -28,7 +29,8 @@ class FolderNode {
     this.path = path
     this.id = id
     this.absolutePath = absolutePath
-    this.children = {}
+    this.childrenPaths = []
+    this.childrenByPath = {}
     this.parent = parent
     this.data = data
   }
@@ -39,7 +41,9 @@ class FolderNode {
 
     const child = new FolderNode({ path, absolutePath, parent: this, id, data })
 
-    this.children[path] = child
+    this.childrenPaths.push(path)
+    this.childrenPaths.sort()
+    this.childrenByPath[path] = child
 
     return child
   }
@@ -50,7 +54,7 @@ class FolderNode {
     const strs = path.split(/\//)
     const [, next, ...rest] = strs
 
-    const nextNode = this.children[`/${next}`]
+    const nextNode = this.childrenByPath[`/${next}`]
 
     if (strs.length === 2 && nextNode) {
       return nextNode

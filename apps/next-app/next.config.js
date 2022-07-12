@@ -16,6 +16,9 @@ const nextConfig = {
         test: /\.(graphql|gql)$/,
         exclude: /node_modules/,
         loader: 'graphql-tag/loader'
+      },{
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
       }
     )
 

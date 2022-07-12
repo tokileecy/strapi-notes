@@ -54,14 +54,16 @@ const TagsBlock = (props: TagsBlockProps): JSX.Element => {
         }}
         isSelected={isAllSelected}
       />
-      <Divider
-        orientation="vertical"
-        flexItem
-        sx={{
-          bgcolor: 'white',
-          color: 'white',
-        }}
-      />
+      {tags.length > 0 && (
+        <Divider
+          orientation="vertical"
+          flexItem
+          sx={{
+            bgcolor: 'white',
+            color: 'white',
+          }}
+        />
+      )}
       {tagNodes}
     </Box>
   )

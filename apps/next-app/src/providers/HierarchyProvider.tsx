@@ -1,5 +1,4 @@
-import { useMemo, createContext, ReactNode, useCallback, useRef } from 'react'
-
+import { useMemo, createContext, ReactNode, useCallback } from 'react'
 import FolderNode from '@/core/FolderNode'
 import { Post, Tag } from '@/types'
 import { useSelector, useDispatch } from 'react-redux'
@@ -11,6 +10,7 @@ const usePathTree = (posts: Post[]) => {
     const uncategorizedPaths: Post[] = []
     const workspacePaths: Post[] = []
     const workspaceTree = new FolderNode()
+    const folderNodeByPath: Record<string, FolderNode> = {}
 
     posts.forEach((post) => {
       if (!post.path) {
@@ -23,14 +23,16 @@ const usePathTree = (posts: Post[]) => {
         let current = workspaceTree
 
         strs.forEach((str, index) => {
-          if (!current.children[str]) {
+          if (!current.childrenByPath[str]) {
             if (index === strs.length - 1) {
               current = current.createChildNode(str, post.id, post)
             } else {
               current = current.createChildNode(str)
             }
+
+            folderNodeByPath[current.absolutePath] = current
           } else {
-            current = current.children[str]
+            current = current.childrenByPath[str]
 
             if (index === strs.length - 1) {
               current.id = post.id
@@ -43,6 +45,7 @@ const usePathTree = (posts: Post[]) => {
       uncategorizedPaths,
       workspacePaths,
       workspaceTree,
+      folderNodeByPath,
     }
   }, [posts])
 }
@@ -112,7 +115,7 @@ const useSelectedPost = (
         return
       }
 
-      ;[...Object.values(startNode.children)].forEach((childNode) => {
+      ;[...Object.values(startNode.childrenByPath)].forEach((childNode) => {
         collectPost(childNode)
       })
     }
@@ -122,9 +125,9 @@ const useSelectedPost = (
       selectedNode = workspaceTree
     } else if (selectedPath === '/') {
       relativeTagIdSet = new Set(tagState.ids)
-      selectedNode = workspaceTree.children['/']
+      selectedNode = workspaceTree.childrenByPath['/']
     } else {
-      selectedNode = workspaceTree.children['/'].find(selectedPath)
+      selectedNode = workspaceTree.childrenByPath['/'].find(selectedPath)
 
       if (selectedNode) {
         collectPost(selectedNode)
@@ -170,6 +173,7 @@ export interface HierarchyContextValue {
   uncategorizedPaths: Post[]
   workspacePaths: Post[]
   workspaceTree: FolderNode | null
+  folderNodeByPath: Record<string, FolderNode>
   selectedPath: string
   selectedPost: Post | null
   selectedNode: FolderNode | null
@@ -186,6 +190,7 @@ const defaultHierarchyContextValue = {
   uncategorizedPaths: [],
   workspacePaths: [],
   workspaceTree: null,
+  folderNodeByPath: {},
   selectedPath: '',
   selectedPost: null,
   selectedNode: null,
@@ -222,8 +227,12 @@ const HierarchyProvider = (props: { children: ReactNode }) => {
     (state: RootState) => state.global.selectedPath
   )
 
-  const { uncategorizedPaths, workspacePaths, workspaceTree } =
-    usePathTree(posts)
+  const {
+    uncategorizedPaths,
+    workspacePaths,
+    workspaceTree,
+    folderNodeByPath,
+  } = usePathTree(posts)
 
   const {
     selectedPost,
@@ -255,6 +264,7 @@ const HierarchyProvider = (props: { children: ReactNode }) => {
         uncategorizedPaths,
         workspacePaths,
         workspaceTree,
+        folderNodeByPath,
         selectedPath,
         selectedPost,
         selectedNode,

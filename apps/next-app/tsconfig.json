@@ -23,11 +23,12 @@
       "@/providers/*": ["src/providers/*"],
       "@/hooks/*": ["src/hooks/*"],
       "@/utils/*": ["src/utils/*"],
+      "@/images/*": ["src/images/*"],
       "@/lib/*": ["lib/*"],
       "@/types": ["types"],
       "@/types/*": ["types/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "custom.d.ts"],
   "exclude": ["node_modules"]
 }
