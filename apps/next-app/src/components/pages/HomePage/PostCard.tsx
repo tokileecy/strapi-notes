@@ -80,7 +80,7 @@ const PostCard = (props: PostCardProps): JSX.Element => {
             userSelect: 'none',
           }}
         >
-          <Markdown>{ellipsisContent}</Markdown>
+          <Markdown defaultContent={ellipsisContent} />
         </Box>
       </CardContent>
     </Card>

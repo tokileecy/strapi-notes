@@ -47,7 +47,7 @@ const PostDialog = (inProps: PostDialogProps): JSX.Element => {
           wordBreak: 'break-all',
         }}
       >
-        <Markdown>{targetContent}</Markdown>
+        <Markdown defaultContent={targetContent} />
       </Box>
     </Dialog>
   )

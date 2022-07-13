@@ -85,6 +85,8 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
             left: 0,
             p: 2,
             m: 2,
+            height: '80%',
+            mt: 12,
             borderRadius: 2,
             backgroundColor: 'rgba(15, 108, 176, 0.24)',
           }}
@@ -123,8 +125,10 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
             position: 'absolute',
             zIndex: 1,
             right: 0,
-            height: '100%',
+            height: '80%',
             p: 2,
+            mt: 12,
+            backgroundColor: 'rgba(15, 108, 176, 0.24)',
           }}
         >
           {selectedPost && <PostCard post={selectedPost} />}

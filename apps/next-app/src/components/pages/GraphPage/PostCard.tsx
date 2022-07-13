@@ -4,6 +4,8 @@ import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
 import { Post } from '@/types'
 import Markdown from '@/components/base/Markdown'
+import useMarkdown from '@/components/base/Markdown/useMarkdown'
+import { useEffect } from 'react'
 export interface PostCardProps {
   post: Post
   onClick?: CardProps['onClick']
@@ -14,6 +16,7 @@ const PostCard = (props: PostCardProps): JSX.Element => {
 
   const { content } = post
 
+  const markdown = useMarkdown()
   const bannerProps: Record<string, string> = {}
 
   const targetContent = content?.replace(/<Banner.*\/>/g, (match) => {
@@ -33,6 +36,9 @@ const PostCard = (props: PostCardProps): JSX.Element => {
     return ''
   })
 
+  useEffect(() => {
+    markdown.reset({ id: post.id, content: targetContent })
+  }, [targetContent])
   // const ellipsisContent =
   //   targetContent && targetContent.length > limitContentLength
   //     ? (targetContent?.slice(0, limitContentLength - 10) ?? '') + '...'
@@ -44,10 +50,11 @@ const PostCard = (props: PostCardProps): JSX.Element => {
         {
           maxHeight: '100%',
           overflow: 'auto',
-          width: '500px',
+          width: '900px',
           p: 0,
           m: 0,
-          backgroundColor: 'rgba(15, 108, 176, 0.24)',
+          backgroundColor: 'transparent',
+          boxShadow: 'none',
           color: 'white',
         },
       ]}
@@ -74,7 +81,14 @@ const PostCard = (props: PostCardProps): JSX.Element => {
             wordBreak: 'break-all',
           }}
         >
-          <Markdown>{targetContent}</Markdown>
+          {post.id && (
+            <Markdown
+              type="both"
+              {...markdown}
+              id={post.id}
+              updateAt={post.updated_at}
+            />
+          )}
         </Box>
       </CardContent>
     </Card>
