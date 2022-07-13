@@ -1,4 +1,10 @@
-import { KeyboardEventHandler, useEffect, useMemo, useRef } from 'react'
+import {
+  FocusEventHandler,
+  KeyboardEventHandler,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { SvgIcon } from '@mui/material'
 import Box from '@mui/material/Box'
@@ -26,11 +32,9 @@ const Folder = (props: FolderProps) => {
     (state: RootState) => state.global.pathStatus[node.absolutePath]
   )
 
-  useEffect(() => {
-    if (pathStatus?.isCreating) {
-      inputRef.current?.focus()
-    }
-  }, [pathStatus])
+  const handleBlur: FocusEventHandler<HTMLInputElement> = async () => {
+    dispatch(stopCreatingFile())
+  }
 
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = async (e) => {
     if (e.key === 'Enter') {
@@ -69,6 +73,8 @@ const Folder = (props: FolderProps) => {
       } catch (error) {
         return []
       }
+    } else if (e.key === 'Escape') {
+      dispatch(stopCreatingFile())
     }
   }
 
@@ -105,6 +111,7 @@ const Folder = (props: FolderProps) => {
                 'outline': 'none',
               }}
               defaultValue=""
+              onBlur={handleBlur}
             />
           </Box>
         )}
@@ -122,6 +129,12 @@ const Folder = (props: FolderProps) => {
       </Box>
     )
   }, [node, pathStatus])
+
+  useEffect(() => {
+    if (pathStatus?.isCreating) {
+      inputRef.current?.focus()
+    }
+  }, [pathStatus])
 
   return (
     <Box
