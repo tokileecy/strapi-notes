@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import useIndexeddb from './useIndexeddb'
+import useHandlers from './useHandlers'
 
 const maxCacheCount = 50
 
@@ -71,31 +72,7 @@ const useMarkdown = () => {
     setContent(textareaRef.current?.value ?? '')
   }, [setContent])
 
-  const handleBold = useCallback(() => {
-    saveState?.()
-
-    if (textareaRef.current) {
-      const start = textareaRef.current.selectionStart
-      const end = textareaRef.current.selectionEnd
-
-      const startStr = textareaRef.current.value.slice(0, start)
-      const centerSTr = textareaRef.current.value.slice(start, end)
-
-      const endSTr = textareaRef.current.value.slice(
-        end,
-        textareaRef.current.value.length
-      )
-
-      const nextStr = `${startStr}**${centerSTr}**${endSTr}`
-
-      textareaRef.current.value = nextStr
-      textareaRef.current.selectionStart = start
-      textareaRef.current.selectionEnd = end + 4
-      textareaRef.current?.focus()
-    }
-
-    refreshPreview?.()
-  }, [refreshPreview])
+  const handlers = useHandlers(textareaRef, saveState, refreshPreview)
 
   const textareaRefCallback = useCallback(
     (element: HTMLTextAreaElement) => {
@@ -173,9 +150,7 @@ const useMarkdown = () => {
     saveState,
     undoEdit,
     focus,
-    handlers: {
-      handleBold,
-    },
+    handlers,
   }
 }
 

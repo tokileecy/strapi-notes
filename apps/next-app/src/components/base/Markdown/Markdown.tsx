@@ -3,7 +3,11 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Editor from './Editor'
 import BoldSvg from './images/bold.svg'
+import ItalicSvg from './images/italic.svg'
+import StrikeSvg from './images/strike.svg'
+import HeaderSvg from './images/header.svg'
 import ToolbarIconButton from './ToolbarIconButton'
+import { Handlers } from './useHandlers'
 
 export type MarkdownProps = {
   type?: 'editor' | 'preview' | 'both'
@@ -13,9 +17,7 @@ export type MarkdownProps = {
   refreshPreview?: () => void
   saveState?: () => void
   undoEdit?: () => void
-  handlers?: {
-    handleBold?: () => void
-  }
+  handlers?: Handlers
   id?: string
   updateAt?: string
 }
@@ -25,7 +27,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
     content = '',
     type = 'preview',
     textareaRefCallback,
-    handlers = {},
+    handlers,
   } = props
 
   return (
@@ -45,7 +47,19 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
           p: 1,
         }}
       >
-        <ToolbarIconButton component={BoldSvg} onClick={handlers.handleBold} />
+        <ToolbarIconButton component={BoldSvg} onClick={handlers?.handleBold} />
+        <ToolbarIconButton
+          component={ItalicSvg}
+          onClick={handlers?.handleItalic}
+        />
+        <ToolbarIconButton
+          component={StrikeSvg}
+          onClick={handlers?.handleStrike}
+        />
+        <ToolbarIconButton
+          component={HeaderSvg}
+          onClick={handlers?.handleHeader}
+        />
       </Box>
       <Box sx={{ 'position': 'relative', 'flexGrow': 1 }}>
         <Box
@@ -53,6 +67,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
             'position': 'absolute',
             'display': 'flex',
             'gap': 2,
+            'width': '100%',
             'height': '100%',
           }}
         >
@@ -66,10 +81,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
                 overflow: 'auto',
               }}
             >
-              <Editor
-                // onChange={handleContextChange}
-                textareaRefCallback={textareaRefCallback}
-              />
+              <Editor textareaRefCallback={textareaRefCallback} />
             </Box>
           )}
           {(type === 'preview' || type === 'both') && (
