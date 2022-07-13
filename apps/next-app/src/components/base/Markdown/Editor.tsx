@@ -1,25 +1,24 @@
 import React from 'react'
 
 export type EditorProps = {
-  divRefCallback?: (element: HTMLDivElement) => void
+  textareaRefCallback?: (element: HTMLTextAreaElement) => void
 }
 
 const Editor = (props: EditorProps): JSX.Element => {
-  const { divRefCallback } = props
+  const { textareaRefCallback } = props
 
   return (
-    <div
-      ref={divRefCallback}
-      role="textbox"
-      contentEditable="true"
-      aria-multiline="true"
-      aria-labelledby="txtboxMultilineLabel"
-      aria-required="true"
-      spellCheck="false"
+    <textarea
+      ref={textareaRefCallback}
       style={{
+        backgroundColor: 'transparent',
+        border: 'none',
+        color: 'white',
+        width: '100%',
+        height: '100%',
         outline: 'none',
       }}
-    ></div>
+    ></textarea>
   )
 }
 

@@ -39,16 +39,12 @@ const PostCard = (props: PostCardProps): JSX.Element => {
   useEffect(() => {
     markdown.reset({ id: post.id, content: targetContent })
   }, [targetContent])
-  // const ellipsisContent =
-  //   targetContent && targetContent.length > limitContentLength
-  //     ? (targetContent?.slice(0, limitContentLength - 10) ?? '') + '...'
-  //     : targetContent
 
   return (
     <Card
       sx={[
         {
-          maxHeight: '100%',
+          height: '100%',
           overflow: 'auto',
           width: '900px',
           p: 0,
@@ -66,6 +62,7 @@ const PostCard = (props: PostCardProps): JSX.Element => {
 
       <CardContent
         sx={{
+          'height': '100%',
           'display': 'flex',
           'flexDirection': 'column',
           'pt': 2,
@@ -78,7 +75,8 @@ const PostCard = (props: PostCardProps): JSX.Element => {
       >
         <Box
           sx={{
-            wordBreak: 'break-all',
+            'height': '100%',
+            'wordBreak': 'break-all',
           }}
         >
           {post.id && (

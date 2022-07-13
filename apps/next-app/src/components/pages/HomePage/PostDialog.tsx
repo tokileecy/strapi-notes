@@ -1,7 +1,9 @@
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import Box from '@mui/material/Box'
+import Dialog, { DialogProps } from '@mui/material/Dialog'
 import { Post } from '@/types'
 import Markdown from '@/components/base/Markdown'
-import Dialog, { DialogProps } from '@mui/material/Dialog'
 
 export interface PostDialogProps extends DialogProps {
   post: Post | null
@@ -47,7 +49,9 @@ const PostDialog = (inProps: PostDialogProps): JSX.Element => {
           wordBreak: 'break-all',
         }}
       >
-        <Markdown defaultContent={targetContent} />
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {targetContent ?? ''}
+        </ReactMarkdown>
       </Box>
     </Dialog>
   )

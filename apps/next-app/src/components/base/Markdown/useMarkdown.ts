@@ -4,7 +4,7 @@ import useIndexeddb from './useIndexeddb'
 const maxCacheCount = 50
 
 const useMarkdown = () => {
-  const textDivRef = useRef<HTMLDivElement>()
+  const textareaRef = useRef<HTMLTextAreaElement>()
   const [content, setContent] = useState('')
 
   const previousRevisionRef = useRef<string[]>([])
@@ -17,8 +17,8 @@ const useMarkdown = () => {
   const { dbRef } = useIndexeddb()
 
   const focus = useCallback(() => {
-    textDivRef.current?.focus()
-  }, [textDivRef])
+    textareaRef.current?.focus()
+  }, [textareaRef])
 
   const saveState = useCallback(() => {
     if (callbackRef?.current?.content) {
@@ -33,18 +33,12 @@ const useMarkdown = () => {
   const undoEdit = useCallback(() => {
     const previousRevision = previousRevisionRef.current
 
-    const selection = window.getSelection()
-
-    if (selection) {
-      selection.empty()
-    }
-
     if (previousRevision.length > 0) {
       const prevContext = previousRevision.pop()
 
       if (prevContext) {
-        if (textDivRef.current) {
-          textDivRef.current.innerText = prevContext
+        if (textareaRef.current) {
+          textareaRef.current.value = prevContext
         }
 
         callbackRef.current?.onChange?.(prevContext)
@@ -56,14 +50,14 @@ const useMarkdown = () => {
   }, [])
 
   const reset = useCallback(
-    ({ id, content: nextContext = '' }) => {
-      if (textDivRef?.current) {
+    ({ content: nextContext = '' }) => {
+      if (textareaRef?.current) {
         setContent(nextContext)
-        textDivRef.current.innerText = nextContext
+        textareaRef.current.value = nextContext
         callbackRef.current.content = nextContext
       }
     },
-    [textDivRef, setContent]
+    [textareaRef, setContent]
   )
 
   const onChange = useCallback(
@@ -74,77 +68,41 @@ const useMarkdown = () => {
   )
 
   const refreshPreview = useCallback(() => {
-    setContent(textDivRef.current?.innerText ?? '')
+    setContent(textareaRef.current?.value ?? '')
   }, [setContent])
 
   const handleBold = useCallback(() => {
     saveState?.()
 
-    const selection = window.getSelection()
+    if (textareaRef.current) {
+      const start = textareaRef.current.selectionStart
+      const end = textareaRef.current.selectionEnd
 
-    console.log(selection)
+      const startStr = textareaRef.current.value.slice(0, start)
+      const centerSTr = textareaRef.current.value.slice(start, end)
 
-    if (selection?.rangeCount) {
-      const range = selection?.getRangeAt(0)
-
-      const endNode = range.endContainer
-      const startNode = range.startContainer
-      const prevEndOffset = range.endOffset
-      const prevStartOffset = range.startOffset
-
-      console.log('>>>', range, endNode, startNode)
-
-      if (endNode.textContent) {
-        const endBeforeStr = endNode.textContent.slice(0, prevEndOffset)
-
-        const endAfterStr = endNode.textContent.slice(
-          prevEndOffset,
-          endNode.textContent?.length
-        )
-
-        endNode.textContent = `${endBeforeStr}**${endAfterStr}`
-      }
-
-      if (startNode.textContent) {
-        const startBeforeStr = startNode.textContent.slice(0, prevStartOffset)
-
-        const startAfterStr = startNode.textContent.slice(
-          prevStartOffset,
-          startNode.textContent?.length
-        )
-
-        startNode.textContent = `${startBeforeStr}**${startAfterStr}`
-      }
-
-      console.log(
-        '!',
-        range,
-        startNode,
-        endNode,
-        prevStartOffset,
-        prevEndOffset
+      const endSTr = textareaRef.current.value.slice(
+        end,
+        textareaRef.current.value.length
       )
 
-      // if (startNode === endNode) {
-      //   range.setStart(range.startContainer, prevStartOffset)
-      //   range.setEnd(range.endContainer, prevEndOffset + 4)
-      // } else {
-      //   range.setStart(range.startContainer, prevStartOffset)
-      //   range.setEnd(range.endContainer, prevEndOffset + 2)
-      // }
+      const nextStr = `${startStr}**${centerSTr}**${endSTr}`
 
-      textDivRef.current?.focus()
+      textareaRef.current.value = nextStr
+      textareaRef.current.selectionStart = start
+      textareaRef.current.selectionEnd = end + 4
+      textareaRef.current?.focus()
     }
 
     refreshPreview?.()
   }, [refreshPreview])
 
-  const divRefCallback = useCallback(
-    (element: HTMLDivElement) => {
+  const textareaRefCallback = useCallback(
+    (element: HTMLTextAreaElement) => {
       const handleInput = (e: Event) => {
-        const div = e.target as HTMLDivElement
+        const textarea = e.target as HTMLTextAreaElement
 
-        callbackRef.current.onChange?.(div.innerText)
+        callbackRef.current.onChange?.(textarea.value)
       }
 
       const handleKeydown = (e: KeyboardEvent) => {
@@ -166,27 +124,27 @@ const useMarkdown = () => {
       }
 
       if (
-        textDivRef &&
-        textDivRef.current &&
+        textareaRef &&
+        textareaRef.current &&
         element &&
-        textDivRef.current !== element
+        textareaRef.current !== element
       ) {
-        textDivRef.current.removeEventListener('input', handleInput)
-        textDivRef.current.removeEventListener('keydown', handleKeydown)
-        textDivRef.current = element
-        textDivRef.current.innerText = callbackRef.current.content ?? ''
-        textDivRef.current.addEventListener('input', handleInput)
-        textDivRef.current.addEventListener('keydown', handleKeydown)
+        textareaRef.current.removeEventListener('input', handleInput)
+        textareaRef.current.removeEventListener('keydown', handleKeydown)
+        textareaRef.current = element
+        textareaRef.current.value = callbackRef.current.content ?? ''
+        textareaRef.current.addEventListener('input', handleInput)
+        textareaRef.current.addEventListener('keydown', handleKeydown)
       }
 
-      if (textDivRef && !textDivRef.current && element) {
-        textDivRef.current = element
-        textDivRef.current.innerText = callbackRef.current.content ?? ''
-        textDivRef?.current.addEventListener('input', handleInput)
-        textDivRef?.current.addEventListener('keydown', handleKeydown)
+      if (textareaRef && !textareaRef.current && element) {
+        textareaRef.current = element
+        textareaRef.current.value = callbackRef.current.content ?? ''
+        textareaRef?.current.addEventListener('input', handleInput)
+        textareaRef?.current.addEventListener('keydown', handleKeydown)
       }
     },
-    [callbackRef, textDivRef, dbRef]
+    [callbackRef, textareaRef, dbRef]
   )
 
   if (callbackRef.current) {
@@ -195,18 +153,18 @@ const useMarkdown = () => {
   }
 
   useEffect(() => {
-    if (textDivRef?.current) {
-      textDivRef.current.innerText = callbackRef.current.content ?? ''
+    if (textareaRef?.current) {
+      textareaRef.current.value = callbackRef.current.content ?? ''
     }
-  }, [textDivRef])
+  }, [textareaRef])
 
   useEffect(() => {
     setContent(content?.replace('\\*', '&ast;') ?? '')
   }, [])
 
   return {
-    divRefCallback,
-    textDivRef,
+    textareaRefCallback,
+    textareaRef,
     content,
     setContent,
     reset,
