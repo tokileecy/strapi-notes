@@ -1,5 +1,3 @@
-const PostsQuery = require('../../gql/query/posts.gql')
-const PathsQuery = require('../../gql/query/paths.gql')
 const TagsQuery = require('../../gql/query/tags.gql')
 const client = require('../apollo-client')
 const { customInstance, apiInstance } = require('../axios-instance')
