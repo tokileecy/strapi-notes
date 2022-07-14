@@ -23,8 +23,12 @@ const useHandleBackspace = (editorCoreRef: EditorCoreRef) => {
       if (startContainer === endContainer) {
         const selectedStartLine = contentLineById[selectedStartLineId]
 
-        const startStr = selectedStartLine.slice(0, start)
-        const endStr = selectedStartLine.slice(end, selectedStartLine.length)
+        const startStr = selectedStartLine.text.slice(0, start)
+
+        const endStr = selectedStartLine.text.slice(
+          end,
+          selectedStartLine.text.length
+        )
 
         let nextStr = ''
 
@@ -54,7 +58,7 @@ const useHandleBackspace = (editorCoreRef: EditorCoreRef) => {
             })
             setContentLineById?.((prev) => ({
               ...prev,
-              [lastContentLineId]: nextStr,
+              [lastContentLineId]: { text: nextStr },
             }))
 
             finishedCallbacks.push(() => {
@@ -65,11 +69,11 @@ const useHandleBackspace = (editorCoreRef: EditorCoreRef) => {
               if (lastContainer?.childNodes[0]) {
                 range.setStart(
                   lastContainer.childNodes[0],
-                  lastContentLineStr.length
+                  lastContentLineStr.text.length
                 )
                 range.setEnd(
                   lastContainer.childNodes[0],
-                  lastContentLineStr.length
+                  lastContentLineStr.text.length
                 )
               }
             })
@@ -81,7 +85,7 @@ const useHandleBackspace = (editorCoreRef: EditorCoreRef) => {
 
           setContentLineById?.((prev) => ({
             ...prev,
-            [selectedStartLineId]: nextStr,
+            [selectedStartLineId]: { text: nextStr },
           }))
 
           finishedCallbacks.push(() => {
@@ -93,7 +97,7 @@ const useHandleBackspace = (editorCoreRef: EditorCoreRef) => {
 
           setContentLineById?.((prev) => ({
             ...prev,
-            [selectedStartLineId]: nextStr,
+            [selectedStartLineId]: { text: nextStr },
           }))
 
           finishedCallbacks.push(() => {
@@ -118,9 +122,13 @@ const useHandleBackspace = (editorCoreRef: EditorCoreRef) => {
         }
 
         const selectedStartLine = contentLineById[selectedStartLineId]
-        const startStr = selectedStartLine.slice(0, start)
+        const startStr = selectedStartLine.text.slice(0, start)
         const selectedEndLine = contentLineById[selectedEndLineId]
-        const endStr = selectedEndLine.slice(end, selectedEndLine.length)
+
+        const endStr = selectedEndLine.text.slice(
+          end,
+          selectedEndLine.text.length
+        )
 
         const nextStr = `${startStr}${endStr}`
 
@@ -132,7 +140,7 @@ const useHandleBackspace = (editorCoreRef: EditorCoreRef) => {
         })
         setContentLineById?.((prev) => ({
           ...prev,
-          [selectedStartLineId]: nextStr,
+          [selectedStartLineId]: { text: nextStr },
         }))
 
         finishedCallbacks.push(() => {

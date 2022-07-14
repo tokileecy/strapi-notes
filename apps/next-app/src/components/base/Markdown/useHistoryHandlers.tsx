@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react'
-import { EditorCoreRef } from './useMarkdown'
+import { EditorCoreRef, LineState } from './useMarkdown'
 
 const maxCacheCount = 50
 
@@ -9,7 +9,7 @@ export interface Revision {
   selectedStartLineId: string
   selectedEndLineId: string
   contentLineIds: string[]
-  contentLineById: Record<string, string>
+  contentLineById: Record<string, LineState>
 }
 
 const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {

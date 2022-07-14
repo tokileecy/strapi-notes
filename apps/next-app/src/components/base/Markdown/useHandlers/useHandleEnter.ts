@@ -24,8 +24,12 @@ const useHandleEnter = (editorCoreRef: EditorCoreRef) => {
       if (startContainer === endContainer) {
         const selectedStartLine = contentLineById[selectedStartLineId]
 
-        const startStr = selectedStartLine.slice(0, start)
-        const endStr = selectedStartLine.slice(end, selectedStartLine.length)
+        const startStr = selectedStartLine.text.slice(0, start)
+
+        const endStr = selectedStartLine.text.slice(
+          end,
+          selectedStartLine.text.length
+        )
 
         let selectContentIndex = 0
 
@@ -49,7 +53,7 @@ const useHandleEnter = (editorCoreRef: EditorCoreRef) => {
           })
           setContentLineById?.((prev) => ({
             ...prev,
-            [id]: '',
+            [id]: { text: '' },
           }))
 
           finishedCallbacks.push(() => {
@@ -68,8 +72,8 @@ const useHandleEnter = (editorCoreRef: EditorCoreRef) => {
 
           setContentLineById?.((prev) => ({
             ...prev,
-            [selectedStartLineId]: startStr,
-            [id]: endStr,
+            [selectedStartLineId]: { text: startStr },
+            [id]: { text: endStr },
           }))
 
           finishedCallbacks.push(() => {
@@ -98,9 +102,13 @@ const useHandleEnter = (editorCoreRef: EditorCoreRef) => {
         }
 
         const selectedStartLine = contentLineById[selectedStartLineId]
-        const startStr = selectedStartLine.slice(0, start)
+        const startStr = selectedStartLine.text.slice(0, start)
         const selectedEndLine = contentLineById[selectedEndLineId]
-        const endStr = selectedEndLine.slice(end, selectedEndLine.length)
+
+        const endStr = selectedEndLine.text.slice(
+          end,
+          selectedEndLine.text.length
+        )
 
         setContentLineIds?.((prev) => {
           const next = [...prev]
@@ -110,8 +118,8 @@ const useHandleEnter = (editorCoreRef: EditorCoreRef) => {
         })
         setContentLineById?.((prev) => ({
           ...prev,
-          [selectedStartLineId]: startStr,
-          [selectedEndLineId]: endStr,
+          [selectedStartLineId]: { text: startStr },
+          [selectedEndLineId]: { text: endStr },
         }))
 
         finishedCallbacks.push(() => {

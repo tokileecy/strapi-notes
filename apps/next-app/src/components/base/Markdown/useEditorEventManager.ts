@@ -1,7 +1,7 @@
 import { MutableRefObject, useEffect, useMemo, useRef } from 'react'
 import { Handlers } from './useHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
-import { EditorCoreRef } from './useMarkdown'
+import { EditorCoreRef, LineState } from './useMarkdown'
 
 export type EditorCommend = 'bold' | 'italic' | 'strike' | 'header' | 'code'
 
@@ -18,7 +18,8 @@ export interface EditorCommendEvent {
 export type EditorEvent = EditorKeyboardEvent | EditorCommendEvent
 
 const useKeydownManager = (
-  textareaRef: MutableRefObject<HTMLDivElement | undefined>,
+  textareaRef: MutableRefObject<HTMLTextAreaElement | undefined>,
+  editorDivRef: MutableRefObject<HTMLDivElement | undefined>,
   cursorRef: MutableRefObject<HTMLDivElement | undefined>,
   editorCoreRef: EditorCoreRef,
   handlers: Handlers,
@@ -30,26 +31,194 @@ const useKeydownManager = (
 
   useEffect(() => {
     const update = () => {
-      const range = window.getSelection()?.getRangeAt(0)
+      // const selection = window.getSelection()
+      // let range: Range | null = null
+
+      // if (selection && selection?.rangeCount > 0) {
+      //   range = selection?.getRangeAt(0)
+      // }
+
+      const selectedStartLineId = editorCoreRef.current.selectedStartLineId
+      const selectedEndLineId = editorCoreRef.current.selectedEndLineId
+      const contentLineById = editorCoreRef.current.contentLineById
+      const contentLineIds = editorCoreRef.current.contentLineIds
+      const setContentLineById = editorCoreRef.current.setContentLineById
+
+      if (editorCoreRef.current.isSelectionChange) {
+        if (editorDivRef?.current && editorCoreRef.current.lastSelectionRange) {
+          const lastSelectionRange = editorCoreRef.current.lastSelectionRange
+
+          const startRange = new Range()
+          const endRange = new Range()
+
+          startRange.setStart(
+            lastSelectionRange.startContainer,
+            lastSelectionRange.startOffset
+          )
+          endRange.setStart(
+            lastSelectionRange.endContainer,
+            lastSelectionRange.endOffset
+          )
+
+          const startRect = startRange.getBoundingClientRect()
+          const endRect = endRange.getBoundingClientRect()
+          const containerRect = editorDivRef.current.getBoundingClientRect()
+
+          if (endRect && startRect && cursorRef.current) {
+            cursorRef.current.style.left = `${
+              endRect.x - containerRect.x + endRect.width
+            }px`
+            cursorRef.current.style.top = `${endRect.y - containerRect.y}px`
+          }
+        }
+      }
+
+      const getLastSelection = (contentLineById: Record<string, LineState>) => {
+        const target: Record<string, LineState> = {}
+
+        editorCoreRef.current.lastSelectedLineIds.forEach((id) => {
+          const contentLine = contentLineById[id]
+
+          target[id] = {
+            ...contentLine,
+            isSelected: false,
+            start: undefined,
+            end: undefined,
+          }
+        })
+        return target
+      }
 
       if (
-        editorCoreRef.current.isSelectionEditor &&
-        textareaRef?.current &&
-        range
+        editorCoreRef.current.isMouseDown &&
+        !editorCoreRef.current.prevIsMouseDown
       ) {
-        const cursorRange = new Range()
+        setContentLineById?.((prev) => {
+          const target = getLastSelection(prev)
 
-        cursorRange.setStart(range.endContainer, range.endOffset)
+          editorCoreRef.current.lastSelectedLineIds.length = 0
+          return {
+            ...prev,
+            ...target,
+          }
+        })
+      }
 
-        const rect = cursorRange.getBoundingClientRect()
-        const containerRect = textareaRef.current.getBoundingClientRect()
+      if (
+        editorCoreRef.current.isMouseDown &&
+        editorCoreRef.current.isSelectionChange
+      ) {
+        if (editorCoreRef.current.lastSelectionRange) {
+          const startContainer =
+            editorCoreRef.current.lastSelectionRange.startContainer
 
-        if (rect && cursorRef.current) {
-          cursorRef.current.style.left = `${
-            rect.x - containerRect.x + rect.width
-          }px`
-          cursorRef.current.style.top = `${rect.y - containerRect.y}px`
+          const endContainer =
+            editorCoreRef.current.lastSelectionRange.endContainer
+
+          const start = editorCoreRef.current.lastSelectionRange.startOffset
+          const end = editorCoreRef.current.lastSelectionRange.endOffset
+
+          console.log(start, end, editorCoreRef.current.lastSelectionRange)
+
+          if (startContainer === endContainer) {
+            let startIndex = 0
+
+            for (let i = 0; i < contentLineIds.length; i++) {
+              const id = contentLineIds[i]
+
+              if (id === selectedStartLineId) {
+                startIndex = i
+                break
+              }
+            }
+
+            const lastContentLineId = contentLineIds[startIndex]
+
+            setContentLineById?.((prev) => {
+              const unSelectTarget = getLastSelection(prev)
+
+              editorCoreRef.current.lastSelectedLineIds.length = 0
+
+              editorCoreRef.current.lastSelectedLineIds.push(lastContentLineId)
+              return {
+                ...prev,
+                ...unSelectTarget,
+                [lastContentLineId]: {
+                  ...prev[lastContentLineId],
+                  isSelected: true,
+                  start,
+                  end,
+                },
+              }
+            })
+          } else if (selectedStartLineId !== '' && selectedEndLineId !== '') {
+            let startIndex = 0
+            let endIndex = 0
+
+            for (let i = 0; i < contentLineIds.length; i++) {
+              const id = contentLineIds[i]
+
+              if (id === selectedStartLineId) {
+                startIndex = i
+              }
+
+              if (id === selectedEndLineId) {
+                endIndex = i
+              }
+            }
+
+            setContentLineById?.((prev) => {
+              const target: Record<string, LineState> = {}
+
+              const unSelectTarget = getLastSelection(prev)
+
+              editorCoreRef.current.lastSelectedLineIds.length = 0
+
+              for (let i = startIndex; i <= endIndex; i++) {
+                const lineId = contentLineIds[i]
+                const contentLine = contentLineById[lineId]
+
+                editorCoreRef.current.lastSelectedLineIds.push(lineId)
+
+                if (i === startIndex) {
+                  target[lineId] = {
+                    ...contentLine,
+                    isSelected: true,
+                    start,
+                    end: undefined,
+                  }
+                } else if (i === endIndex) {
+                  target[lineId] = {
+                    ...contentLine,
+                    isSelected: true,
+                    start: undefined,
+                    end,
+                  }
+                } else {
+                  target[lineId] = {
+                    ...contentLine,
+                    isSelected: true,
+                    start: undefined,
+                    end: undefined,
+                  }
+                }
+              }
+
+              return {
+                ...prev,
+                ...unSelectTarget,
+                ...target,
+              }
+            })
+          }
         }
+      }
+
+      if (
+        !editorCoreRef.current.isMouseDown &&
+        editorCoreRef.current.prevIsMouseDown
+      ) {
+        textareaRef.current?.focus()
       }
 
       if (commendCallbackRef.current) {
@@ -106,7 +275,7 @@ const useKeydownManager = (
 
             default: {
               historyHandlers.saveState()
-              commendCallbackRef.current = handlers.handleDefault(e.key)
+              // commendCallbackRef.current = handlers.handleDefault(e.key)
               break
             }
           }
@@ -138,6 +307,9 @@ const useKeydownManager = (
         }
       }
 
+      editorCoreRef.current.prevIsKeyDown = editorCoreRef.current.isKeyDown
+      editorCoreRef.current.prevIsMouseDown = editorCoreRef.current.isMouseDown
+      editorCoreRef.current.isSelectionChange = false
       frameIdRef.current = requestAnimationFrame(update)
     }
 

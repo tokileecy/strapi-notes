@@ -22,14 +22,19 @@ const useHandleWrapSelection = (editorCoreRef: EditorCoreRef, str: string) => {
       if (startContainer === endContainer) {
         const selectedStartLine = contentLineById[selectedStartLineId]
 
-        const startStr = selectedStartLine.slice(0, start)
-        const centerStr = selectedStartLine.slice(start, end)
-        const endStr = selectedStartLine.slice(end, selectedStartLine.length)
+        const startStr = selectedStartLine.text.slice(0, start)
+        const centerStr = selectedStartLine.text.slice(start, end)
+
+        const endStr = selectedStartLine.text.slice(
+          end,
+          selectedStartLine.text.length
+        )
+
         const nextStr = `${startStr}${str}${centerStr}${str}${endStr}`
 
         setContentLineById?.((prev) => ({
           ...prev,
-          [selectedStartLineId]: nextStr,
+          [selectedStartLineId]: { text: nextStr },
         }))
 
         finishedCallbacks.push(() => {
@@ -40,22 +45,30 @@ const useHandleWrapSelection = (editorCoreRef: EditorCoreRef, str: string) => {
         const selectedStartLine = contentLineById[selectedStartLineId]
         const selectedEndLine = contentLineById[selectedEndLineId]
 
-        const startBeforeStr = selectedStartLine.slice(0, start)
+        const startBeforeStr = selectedStartLine.text.slice(0, start)
 
-        const startAfterStr = selectedStartLine.slice(
+        const startAfterStr = selectedStartLine.text.slice(
           start,
-          selectedStartLine.length
+          selectedStartLine.text.length
         )
 
-        const endBeforeStr = selectedEndLine.slice(end, selectedEndLine.length)
-        const endAfterStr = selectedEndLine.slice(end, selectedEndLine.length)
+        const endBeforeStr = selectedEndLine.text.slice(
+          end,
+          selectedEndLine.text.length
+        )
+
+        const endAfterStr = selectedEndLine.text.slice(
+          end,
+          selectedEndLine.text.length
+        )
+
         const nextStartStr = `${startBeforeStr}${str}${startAfterStr}`
         const nextEndStr = `${endBeforeStr}${str}${endAfterStr}`
 
         setContentLineById?.((prev) => ({
           ...prev,
-          [selectedStartLineId]: nextStartStr,
-          [selectedEndLineId]: nextEndStr,
+          [selectedStartLineId]: { text: nextStartStr },
+          [selectedEndLineId]: { text: nextEndStr },
         }))
 
         finishedCallbacks.push(() => {

@@ -25,7 +25,7 @@ export interface FolderProps {
 const Folder = (props: FolderProps) => {
   const { isRoot, node, onSelectedPathChange } = props
 
-  const inputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLInputElement>(null)
   const dispatch = useDispatch()
 
   const pathStatus = useSelector(
@@ -38,7 +38,7 @@ const Folder = (props: FolderProps) => {
 
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = async (e) => {
     if (e.key === 'Enter') {
-      const fileName = inputRef.current?.value
+      const fileName = textareaRef.current?.value
 
       try {
         await api.createPost({
@@ -97,7 +97,7 @@ const Folder = (props: FolderProps) => {
               component={FileSvg}
             />
             <Box
-              ref={inputRef}
+              ref={textareaRef}
               component="input"
               sx={{
                 'ml': '4px',
@@ -132,7 +132,7 @@ const Folder = (props: FolderProps) => {
 
   useEffect(() => {
     if (pathStatus?.isCreating) {
-      inputRef.current?.focus()
+      textareaRef.current?.focus()
     }
   }, [pathStatus])
 

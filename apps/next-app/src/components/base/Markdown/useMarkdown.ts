@@ -13,40 +13,55 @@ import useHandlers from './useHandlers'
 import useHistoryHandlers from './useHistoryHandlers'
 import useKeydownManager from './useEditorEventManager'
 
+export interface LineState {
+  text: string
+  isSelected?: boolean
+  start?: number
+  end?: number
+}
+
 export interface EditorCoreRefData {
+  prevIsKeyDown: boolean
+  prevIsMouseDown: boolean
+  isKeyDown: boolean
+  isMouseDown: boolean
+  isSelectionChange: boolean
+  lastSelectionRange?: Range
   contentLineIds: string[]
-  contentLineById: Record<string, string>
-  isSelectionEditor: boolean
+  contentLineById: Record<string, LineState>
   selectedStartLineId: string
-  startOffset: number
   selectedEndLineId: string
-  endOffset: number
   content?: string
   onChange?: (content: string) => void
+  lastSelectedLineIds: string[]
   setContentLineIds?: Dispatch<SetStateAction<string[]>>
-  setContentLineById?: Dispatch<SetStateAction<Record<string, string>>>
+  setContentLineById?: Dispatch<SetStateAction<Record<string, LineState>>>
 }
 
 export type EditorCoreRef = MutableRefObject<EditorCoreRefData>
 
 const useMarkdown = () => {
-  const textareaRef = useRef<HTMLDivElement>()
+  const textareaRef = useRef<HTMLTextAreaElement>()
+  const editorDivRef = useRef<HTMLDivElement>()
   const cursorRef = useRef<HTMLDivElement>()
 
   const [contentLineIds, setContentLineIds] = useState<string[]>([])
 
   const [contentLineById, setContentLineById] = useState<
-    Record<string, string>
+    Record<string, LineState>
   >({})
 
   const [content, setContent] = useState('')
 
   const editorCoreRef = useRef<EditorCoreRefData>({
-    isSelectionEditor: false,
-    startOffset: 0,
-    endOffset: 0,
+    prevIsKeyDown: false,
+    prevIsMouseDown: false,
+    isSelectionChange: false,
+    isKeyDown: false,
+    isMouseDown: false,
     selectedStartLineId: '',
     selectedEndLineId: '',
+    lastSelectedLineIds: [],
     contentLineIds: [],
     contentLineById: {},
   })
@@ -54,8 +69,8 @@ const useMarkdown = () => {
   const { dbRef } = useIndexeddb()
 
   const focus = useCallback(() => {
-    textareaRef.current?.focus()
-  }, [textareaRef])
+    editorDivRef.current?.focus()
+  }, [editorDivRef])
 
   const historyHandlers = useHistoryHandlers(editorCoreRef)
 
@@ -68,13 +83,15 @@ const useMarkdown = () => {
         const nextLines = nextContext.split('\n')
 
         const nextIds: string[] = []
-        const nextLineById: Record<string, string> = {}
+        const nextLineById: Record<string, LineState> = {}
 
         nextLines.forEach((line: string) => {
           const id = nanoid(6)
 
           nextIds.push(id)
-          nextLineById[id] = line
+          nextLineById[id] = {
+            text: line,
+          }
         })
         setContentLineIds(nextIds)
         setContentLineById(nextLineById)
@@ -82,7 +99,7 @@ const useMarkdown = () => {
 
       initLines()
     },
-    [textareaRef, setContent]
+    [editorDivRef, setContent]
   )
 
   const onChange = useCallback(
@@ -96,6 +113,7 @@ const useMarkdown = () => {
 
   const { pushEvent } = useKeydownManager(
     textareaRef,
+    editorDivRef,
     cursorRef,
     editorCoreRef,
     handlers,
@@ -103,12 +121,21 @@ const useMarkdown = () => {
   )
 
   const textareaRefCallback = useCallback(
-    (element: HTMLDivElement) => {
+    (element: HTMLTextAreaElement) => {
       if (textareaRef.current !== element) {
         textareaRef.current = element
       }
     },
     [textareaRef]
+  )
+
+  const editorDivRefCallback = useCallback(
+    (element: HTMLDivElement) => {
+      if (editorDivRef.current !== element) {
+        editorDivRef.current = element
+      }
+    },
+    [editorDivRef]
   )
 
   const cursorRefCallback = useCallback(
@@ -131,13 +158,27 @@ const useMarkdown = () => {
 
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
-      if (editorCoreRef.current.isSelectionEditor) {
-        e.preventDefault()
-        pushEvent({
-          type: 'keyboard',
-          e,
-        })
-      }
+      editorCoreRef.current.isKeyDown = true
+
+      // if (editorCoreRef.current.isSelectionEditor) {
+      //   // e.preventDefault()
+      //   pushEvent({
+      //     type: 'keyboard',
+      //     e,
+      //   })
+      // }
+    }
+
+    const handleMouseup = () => {
+      editorCoreRef.current.isMouseDown = false
+    }
+
+    const handleMouseDown = () => {
+      editorCoreRef.current.isMouseDown = true
+    }
+
+    const handleKeyup = () => {
+      editorCoreRef.current.isKeyDown = false
     }
 
     const handleSelect = () => {
@@ -148,11 +189,17 @@ const useMarkdown = () => {
         const ancestorContainer = range.commonAncestorContainer
         let current: HTMLElement | Node = ancestorContainer
 
-        editorCoreRef.current.isSelectionEditor = false
+        editorCoreRef.current.isSelectionChange = false
 
-        for (let i = 0; i < 4; i++) {
-          if (current === textareaRef.current) {
-            editorCoreRef.current.isSelectionEditor = true
+        for (let i = 0; i < 5; i++) {
+          if (current === cursorRef.current) {
+            break
+          }
+
+          if (current === editorDivRef.current) {
+            editorCoreRef.current.isSelectionChange = true
+            editorCoreRef.current.lastSelectionRange = range
+
             break
           }
 
@@ -165,13 +212,12 @@ const useMarkdown = () => {
 
         current = range.startContainer
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 5; i++) {
           if (
             current instanceof HTMLElement &&
             current.dataset.type === 'wrapper'
           ) {
             editorCoreRef.current.selectedStartLineId = current.dataset.id ?? ''
-            editorCoreRef.current.startOffset = range.startOffset
             break
           }
 
@@ -190,7 +236,6 @@ const useMarkdown = () => {
             current.dataset.type === 'wrapper'
           ) {
             editorCoreRef.current.selectedEndLineId = current.dataset.id ?? ''
-            editorCoreRef.current.endOffset = range.endOffset
             break
           }
 
@@ -200,34 +245,31 @@ const useMarkdown = () => {
             break
           }
         }
-
-        // if (editorCoreRef.current.isSelectionEditor && textareaRef?.current) {
-        //   const rect = range.getBoundingClientRect()
-        //   const containerRect = textareaRef.current.getBoundingClientRect()
-
-        //   if (rect && cursorRef.current) {
-        //     cursorRef.current.style.left = `${
-        //       rect.x - containerRect.x + rect.width
-        //     }px`
-        //     cursorRef.current.style.top = `${rect.y - containerRect.y}px`
-        //   }
-        // }
       }
     }
 
+    // document.addEventListener('compositionstart', (e) => {
+    //   console.log(e)
+    // })
     document.addEventListener('keydown', handleKeydown)
+    document.addEventListener('keyup', handleKeyup)
+    document.addEventListener('mousedown', handleMouseDown)
+    document.addEventListener('mouseup', handleMouseup)
     document.addEventListener('selectionchange', handleSelect)
 
     return () => {
       document.removeEventListener('keydown', handleKeydown)
+      document.removeEventListener('keyup', handleKeyup)
+      document.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('mouseup', handleMouseup)
       document.removeEventListener('selectionchange', handleSelect)
     }
-  }, [editorCoreRef, textareaRef, dbRef])
+  }, [editorCoreRef, editorDivRef, dbRef])
 
   useEffect(() => {
     setContent(
       contentLineIds
-        .map((id) => contentLineById[id])
+        .map((id) => contentLineById[id].text)
         .join('\n')
         .replace('\\*', '&ast;')
     )
@@ -235,7 +277,8 @@ const useMarkdown = () => {
 
   return {
     textareaRefCallback,
-    textareaRef,
+    editorDivRefCallback,
+    editorDivRef,
     cursorRef,
     cursorRefCallback,
     contentLineById,

@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { EditorCoreRef } from '../useMarkdown'
+import { EditorCoreRef, LineState } from '../useMarkdown'
 
 const useAddHeshSelectionTop = (editorCoreRef: EditorCoreRef, str: string) => {
   return useCallback(() => {
@@ -24,12 +24,18 @@ const useAddHeshSelectionTop = (editorCoreRef: EditorCoreRef, str: string) => {
 
         setContentLineById?.((prev) => ({
           ...prev,
-          [selectedStartLineId]: `${str}${selectedStartLine}`,
+          [selectedStartLineId]: { text: `${str}${selectedStartLine}` },
         }))
 
         finishedCallbacks.push(() => {
-          range.setStart(startContainer, selectedStartLine.length + str.length)
-          range.setEnd(startContainer, selectedStartLine.length + str.length)
+          range.setStart(
+            startContainer,
+            selectedStartLine.text.length + str.length
+          )
+          range.setEnd(
+            startContainer,
+            selectedStartLine.text.length + str.length
+          )
         })
       } else if (selectedStartLineId !== '' && selectedEndLineId !== '') {
         let startIndex = 0
@@ -48,13 +54,15 @@ const useAddHeshSelectionTop = (editorCoreRef: EditorCoreRef, str: string) => {
         }
 
         setContentLineById?.((prev) => {
-          const target: Record<string, string> = {}
+          const target: Record<string, LineState> = {}
 
           for (let i = startIndex; i <= endIndex; i++) {
             const lineId = contentLineIds[i]
             const contentLine = contentLineById[lineId]
 
-            target[lineId] = `${str}${contentLine}`
+            target[lineId] = {
+              text: `${str}${contentLine}`,
+            }
           }
 
           return {

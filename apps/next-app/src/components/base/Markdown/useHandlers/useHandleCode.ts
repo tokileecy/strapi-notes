@@ -25,14 +25,21 @@ const useHandleWrapSelection = (editorCoreRef: EditorCoreRef) => {
       if (startContainer === endContainer) {
         const selectedStartLine = contentLineById[selectedStartLineId]
 
-        const startStr = selectedStartLine.slice(0, start)
-        const centerStr = selectedStartLine.slice(start, end)
-        const endStr = selectedStartLine.slice(end, selectedStartLine.length)
+        const startStr = selectedStartLine.text.slice(0, start)
+        const centerStr = selectedStartLine.text.slice(start, end)
+
+        const endStr = selectedStartLine.text.slice(
+          end,
+          selectedStartLine.text.length
+        )
+
         const nextStr = `${startStr}\`${centerStr}\`${endStr}`
 
         setContentLineById?.((prev) => ({
           ...prev,
-          [selectedStartLineId]: nextStr,
+          [selectedStartLineId]: {
+            text: nextStr,
+          },
         }))
 
         finishedCallbacks.push(() => {
@@ -68,8 +75,12 @@ const useHandleWrapSelection = (editorCoreRef: EditorCoreRef) => {
 
         setContentLineById?.((prev) => ({
           ...prev,
-          [topId]: '```',
-          [bottomId]: '```',
+          [topId]: {
+            text: '```',
+          },
+          [bottomId]: {
+            text: '```',
+          },
         }))
 
         finishedCallbacks.push(() => {

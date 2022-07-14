@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { EditorCoreRef } from '../useMarkdown'
+import { EditorCoreRef, LineState } from '../useMarkdown'
 
 const useAddHeshToSelectionTop = (editorCoreRef: EditorCoreRef) => {
   return useCallback(() => {
@@ -23,23 +23,23 @@ const useAddHeshToSelectionTop = (editorCoreRef: EditorCoreRef) => {
         const selectedStartLine = contentLineById[selectedStartLineId]
         let targetToAdd = '#'
 
-        if (selectedStartLine[0] !== '#') {
+        if (selectedStartLine.text[0] !== '#') {
           targetToAdd += ' '
         }
 
         setContentLineById?.((prev) => ({
           ...prev,
-          [selectedStartLineId]: `${targetToAdd}${selectedStartLine}`,
+          [selectedStartLineId]: { text: `${targetToAdd}${selectedStartLine}` },
         }))
 
         finishedCallbacks.push(() => {
           range.setStart(
             startContainer,
-            selectedStartLine.length + targetToAdd.length
+            selectedStartLine.text.length + targetToAdd.length
           )
           range.setEnd(
             startContainer,
-            selectedStartLine.length + targetToAdd.length
+            selectedStartLine.text.length + targetToAdd.length
           )
         })
       } else if (selectedStartLineId !== '' && selectedEndLineId !== '') {
@@ -64,7 +64,7 @@ const useAddHeshToSelectionTop = (editorCoreRef: EditorCoreRef) => {
         }
 
         setContentLineById?.((prev) => {
-          const target: Record<string, string> = {}
+          const target: Record<string, LineState> = {}
 
           for (let i = startIndex; i <= endIndex; i++) {
             const lineId = contentLineIds[i]
@@ -72,7 +72,7 @@ const useAddHeshToSelectionTop = (editorCoreRef: EditorCoreRef) => {
 
             let targetToAdd = '#'
 
-            if (contentLine[0] !== '#') {
+            if (contentLine.text[0] !== '#') {
               if (i === startIndex) {
                 finishedSelectionOffset.start = 2
               }
@@ -84,7 +84,7 @@ const useAddHeshToSelectionTop = (editorCoreRef: EditorCoreRef) => {
               targetToAdd += ' '
             }
 
-            target[lineId] = `${targetToAdd}${contentLine}`
+            target[lineId] = { text: `${targetToAdd}${contentLine}` }
           }
 
           return {
