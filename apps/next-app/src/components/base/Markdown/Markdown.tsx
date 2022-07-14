@@ -6,18 +6,22 @@ import BoldSvg from './images/bold.svg'
 import ItalicSvg from './images/italic.svg'
 import StrikeSvg from './images/strike.svg'
 import HeaderSvg from './images/header.svg'
+import CodeSvg from './images/code.svg'
 import ToolbarIconButton from './ToolbarIconButton'
-import { Handlers } from './useHandlers'
+import { EditorEvent } from './useEditorEventManager'
 
 export type MarkdownProps = {
   type?: 'editor' | 'preview' | 'both'
   content?: string
-  textareaRefCallback?: (element: HTMLTextAreaElement) => void
+  contentLineIds?: string[]
+  contentLineById?: Record<string, string>
+  textareaRefCallback?: (element: HTMLDivElement) => void
+  cursorRefCallback?: (element: HTMLDivElement) => void
   onChange?: (next: string) => void
+  pushEvent?: (event: EditorEvent) => void
   refreshPreview?: () => void
   saveState?: () => void
   undoEdit?: () => void
-  handlers?: Handlers
   id?: string
   updateAt?: string
 }
@@ -27,7 +31,10 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
     content = '',
     type = 'preview',
     textareaRefCallback,
-    handlers,
+    cursorRefCallback,
+    pushEvent,
+    contentLineIds = [],
+    contentLineById = {},
   } = props
 
   return (
@@ -47,18 +54,50 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
           p: 1,
         }}
       >
-        <ToolbarIconButton component={BoldSvg} onClick={handlers?.handleBold} />
+        <ToolbarIconButton
+          component={BoldSvg}
+          onClick={() => {
+            pushEvent?.({
+              type: 'commend',
+              commend: 'bold',
+            })
+          }}
+        />
         <ToolbarIconButton
           component={ItalicSvg}
-          onClick={handlers?.handleItalic}
+          onClick={() => {
+            pushEvent?.({
+              type: 'commend',
+              commend: 'italic',
+            })
+          }}
         />
         <ToolbarIconButton
           component={StrikeSvg}
-          onClick={handlers?.handleStrike}
+          onClick={() => {
+            pushEvent?.({
+              type: 'commend',
+              commend: 'strike',
+            })
+          }}
         />
         <ToolbarIconButton
           component={HeaderSvg}
-          onClick={handlers?.handleHeader}
+          onClick={() => {
+            pushEvent?.({
+              type: 'commend',
+              commend: 'header',
+            })
+          }}
+        />
+        <ToolbarIconButton
+          component={CodeSvg}
+          onClick={() => {
+            pushEvent?.({
+              type: 'commend',
+              commend: 'code',
+            })
+          }}
         />
       </Box>
       <Box sx={{ 'position': 'relative', 'flexGrow': 1 }}>
@@ -81,7 +120,12 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
                 overflow: 'auto',
               }}
             >
-              <Editor textareaRefCallback={textareaRefCallback} />
+              <Editor
+                cursorRefCallback={cursorRefCallback}
+                textareaRefCallback={textareaRefCallback}
+                contentLineIds={contentLineIds}
+                contentLineById={contentLineById}
+              />
             </Box>
           )}
           {(type === 'preview' || type === 'both') && (

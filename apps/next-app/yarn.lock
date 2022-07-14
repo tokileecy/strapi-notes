@@ -5825,6 +5825,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "nanoid@npm:4.0.0"
+  bin:
+    nanoid: bin/nanoid.js
+  checksum: 7d5946df5c6d383694195b781ae7b5067c149d164ec71e910d6b06676309c3459b68af570b944fb5ecd5065d19df464f05700d141d70bb712ff8ca06642fd8df
+  languageName: node
+  linkType: hard
+
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -5866,6 +5875,7 @@ __metadata:
     graphql-tag: ^2.12.6
     graphql.macro: ^1.4.2
     idb: ^7.0.2
+    nanoid: ^4.0.0
     next: 12.1.0
     prettier: 2.5.1
     qs: ^6.10.3
