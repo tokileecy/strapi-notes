@@ -6,6 +6,7 @@ import useHandleEnter from './useHandleEnter'
 import useHandleWrapSelection from './useHandleWrapSelection'
 import useAddHeshToSelectionTop from './useAddHeshToSelectionTop'
 import useHandleCode from './useHandleCode'
+import useHandleArrow from './useHandleArrow'
 
 const useHandlers = (editorCoreRef: EditorCoreRef) => {
   const handleBackspace = useHandleBackspace(editorCoreRef)
@@ -16,6 +17,7 @@ const useHandlers = (editorCoreRef: EditorCoreRef) => {
   const handleStrike = useHandleWrapSelection(editorCoreRef, '~~')
   const handleHeader = useAddHeshToSelectionTop(editorCoreRef)
   const handleCode = useHandleCode(editorCoreRef)
+  const handleArrow = useHandleArrow(editorCoreRef)
 
   return useMemo(() => {
     return {
@@ -27,6 +29,7 @@ const useHandlers = (editorCoreRef: EditorCoreRef) => {
       handleDefault,
       handleBackspace,
       handleEnter,
+      handleArrow,
     }
   }, [editorCoreRef])
 }

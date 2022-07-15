@@ -15,6 +15,7 @@ export interface EditorCommendEvent {
   type: 'commend'
   commend?: EditorCommend
 }
+
 export interface InputCommendEvent {
   type: 'input'
   value?: string
@@ -366,12 +367,16 @@ const useKeydownManager = (
               case 'Shift':
                 break
               case 'ArrowUp':
+                commendCallbackRef.current.push(handlers.handleArrow('UP'))
                 break
               case 'ArrowDown':
+                commendCallbackRef.current.push(handlers.handleArrow('DOWN'))
                 break
               case 'ArrowLeft':
+                commendCallbackRef.current.push(handlers.handleArrow('LEFT'))
                 break
               case 'ArrowRight':
+                commendCallbackRef.current.push(handlers.handleArrow('RIGHT'))
                 break
               case 'CapsLock':
                 break
