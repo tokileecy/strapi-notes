@@ -2,7 +2,12 @@ import { MutableRefObject, useEffect, useMemo, useRef } from 'react'
 import { Handlers } from './useHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
 import { EditorCoreRef, LineState } from './useMarkdown'
-import { refreshCursorByElement, refreshCursorBySelection } from './utils'
+import {
+  findLineElement,
+  getLineIndexById,
+  refreshCursorByElement,
+  refreshCursorBySelection,
+} from './utils'
 
 export type EditorCommend = 'bold' | 'italic' | 'strike' | 'header' | 'code'
 
@@ -75,8 +80,7 @@ const useEditorEventManager = (
             )
           }
         } catch (error) {
-          console.log(contentStatus.selectedEndLineId)
-          // console.error(error)
+          console.error(error)
         }
 
         editorCoreRef.current.cursorNeedUpdate = false
@@ -123,57 +127,15 @@ const useEditorEventManager = (
           const start = editorCoreRef.current.lastSelectionRange.startOffset
           const end = editorCoreRef.current.lastSelectionRange.endOffset
 
-          let startLine
-          let endLine
+          const startLine = findLineElement(startContainer)
+          const endLine = findLineElement(endContainer)
 
-          let current = startContainer
-
-          for (let i = 0; i < 5; i++) {
-            if (
-              current instanceof HTMLElement &&
-              current.dataset.type === 'line'
-            ) {
-              startLine = current
-              break
-            }
-
-            if (current.parentElement) {
-              current = current.parentElement
-            } else {
-              break
-            }
-          }
-
-          current = endContainer
-
-          for (let i = 0; i < 4; i++) {
-            if (
-              current instanceof HTMLElement &&
-              current.dataset.type === 'line'
-            ) {
-              endLine = current
-              break
-            }
-
-            if (current.parentElement) {
-              current = current.parentElement
-            } else {
-              break
-            }
-          }
+          const startIndex = getLineIndexById(
+            editorCoreRef,
+            editorCoreRef.current.selectedStartLineId
+          )
 
           if (startLine === endLine) {
-            let startIndex = 0
-
-            for (let i = 0; i < contentStatus.ids.length; i++) {
-              const id = contentStatus.ids[i]
-
-              if (id === editorCoreRef.current.selectedStartLineId) {
-                startIndex = i
-                break
-              }
-            }
-
             const lastContentLineId = contentStatus.ids[startIndex]
 
             let nextLineById = { ...contentStatus.lineById }
@@ -231,20 +193,15 @@ const useEditorEventManager = (
             editorCoreRef.current.selectedStartLineId !== '' &&
             contentStatus.selectedEndLineId !== ''
           ) {
-            let startIndex = 0
-            let endIndex = 0
+            const startIndex = getLineIndexById(
+              editorCoreRef,
+              editorCoreRef.current.selectedStartLineId
+            )
 
-            for (let i = 0; i < contentStatus.ids.length; i++) {
-              const id = contentStatus.ids[i]
-
-              if (id === editorCoreRef.current.selectedStartLineId) {
-                startIndex = i
-              }
-
-              if (id === contentStatus.selectedEndLineId) {
-                endIndex = i
-              }
-            }
+            const endIndex = getLineIndexById(
+              editorCoreRef,
+              contentStatus.selectedEndLineId
+            )
 
             const unSelectTarget = getLastSelection(contentStatus.lineById)
 

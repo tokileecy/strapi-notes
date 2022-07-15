@@ -1,7 +1,8 @@
-import React, { ChangeEventHandler } from 'react'
+import React, { ChangeEventHandler, useEffect, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import { ContentStatus } from './useMarkdown'
 import Cursor from './Cursor'
+import Line from './Line'
 
 export type EditorProps = {
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
@@ -21,6 +22,14 @@ const Editor = (props: EditorProps): JSX.Element => {
     contentStatus,
     onTextareaChange,
   } = props
+
+  const lines = useMemo(() => {
+    return contentStatus.ids.map((id) => {
+      const line = contentStatus.lineById[id]
+
+      return <Line key={id} id={id} lineState={line} />
+    })
+  }, [contentStatus.ids, contentStatus.lineById])
 
   return (
     <>
@@ -44,98 +53,7 @@ const Editor = (props: EditorProps): JSX.Element => {
           }}
           data-type="editor"
         >
-          {contentStatus.ids.map((id) => {
-            const line = contentStatus.lineById[id]
-
-            let startText = ''
-            let centerText = ''
-            let endText = ''
-
-            if (line.text !== '') {
-              if (line.start === undefined && line.end === undefined) {
-                centerText = line.text
-              } else if (line.start === undefined) {
-                centerText = line.text.slice(0, line.end)
-                endText = line.text.slice(line.end, line.text.length)
-              } else if (line.end === undefined) {
-                startText = line.text.slice(0, line.start)
-                centerText = line.text.slice(line.start, line.text.length)
-              } else {
-                startText = line.text.slice(0, line.start)
-                centerText = line.text.slice(line.start, line.end)
-                endText = line.text.slice(line.end, line.text.length)
-              }
-            } else {
-              centerText = '\u200b'
-            }
-
-            return (
-              <Box
-                key={id}
-                data-id={id}
-                data-type="wrapper"
-                sx={{
-                  'lineHeight': '1.5em',
-                  '&:first-of-type': {
-                    mt: 0,
-                  },
-                  '& ::selection': {
-                    // color: 'red',
-                    // background: 'transparent',
-                    background: '#191919',
-                  },
-                  'pre, span': {
-                    wordVreak: 'break-all',
-                    whiteSpace: 'break-spaces',
-                  },
-                }}
-              >
-                <Box
-                  component="pre"
-                  data-type="line"
-                  data-start={line.start ?? ''}
-                  data-end={line.end ?? ''}
-                  sx={{
-                    'm': 0,
-                    'background':
-                      line.start === undefined &&
-                      line.end === undefined &&
-                      startText === '' &&
-                      endText === ''
-                        ? '#191919'
-                        : 'transparent',
-                    'borderTop': '1px solid',
-                    'borderBottom': '1px solid',
-                    'borderColor':
-                      line.start === undefined &&
-                      line.end === undefined &&
-                      startText === '' &&
-                      endText === ''
-                        ? '#191919'
-                        : 'transparent',
-                  }}
-                >
-                  <span data-type="line-start">{startText}</span>
-                  {line.input && (
-                    <span data-type="line-input">{textareaValue}</span>
-                  )}
-                  <span
-                    data-type="line-center"
-                    style={{
-                      'background': '#191919',
-                      'borderTop': '1px solid',
-                      'borderBottom': '1px solid',
-                      'borderColor': '#191919',
-                    }}
-                  >
-                    {centerText}
-                  </span>
-
-                  <span data-type="line-end">{endText}</span>
-                </Box>
-              </Box>
-            )
-          })}
+          {lines}
           <Box
             sx={{
               height: 0,

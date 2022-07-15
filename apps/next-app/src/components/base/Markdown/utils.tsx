@@ -51,6 +51,25 @@ export const isUnderEditor = (element: Element) => {
   return false
 }
 
+export const findLineElement = (element: Node) => {
+  let lineElement: HTMLElement | null = null
+
+  for (let i = 0; i < 5; i++) {
+    if (element instanceof HTMLElement && element.dataset.type === 'line') {
+      lineElement = element
+      break
+    }
+
+    if (element.parentElement) {
+      element = element.parentElement
+    } else {
+      break
+    }
+  }
+
+  return lineElement
+}
+
 export const isUnderToolbar = (element: Element) => {
   let current = element
 
@@ -73,7 +92,7 @@ export const getLineIndexById = (
   editorCoreRef: MutableRefObject<EditorCoreRefData>,
   lineId: string
 ) => {
-  let targetIndex: number | undefined
+  let targetIndex = -1
 
   const contentLineIds = editorCoreRef.current.contentStatus.ids
 
