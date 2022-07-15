@@ -9,14 +9,13 @@ import HeaderSvg from './images/header.svg'
 import CodeSvg from './images/code.svg'
 import ToolbarIconButton from './ToolbarIconButton'
 import { EditorEvent } from './useEditorEventManager'
-import { LineState } from './useMarkdown'
+import { ContentStatus, initialContentStatus } from './useMarkdown'
 import { ChangeEventHandler } from 'react'
 
 export type MarkdownProps = {
   type?: 'editor' | 'preview' | 'both'
   content?: string
-  contentLineIds?: string[]
-  contentLineById?: Record<string, LineState>
+  contentStatus?: ContentStatus
   editorDivRefCallback?: (element: HTMLDivElement) => void
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
@@ -39,8 +38,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
     textareaRefCallback,
     cursorRefCallback,
     pushEvent,
-    contentLineIds = [],
-    contentLineById = {},
+    contentStatus = { ...initialContentStatus },
     textareaValue,
     onTextareaChange,
   } = props
@@ -133,8 +131,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
                 textareaRefCallback={textareaRefCallback}
                 cursorRefCallback={cursorRefCallback}
                 editorDivRefCallback={editorDivRefCallback}
-                contentLineIds={contentLineIds}
-                contentLineById={contentLineById}
+                contentStatus={contentStatus}
                 textareaValue={textareaValue}
                 onTextareaChange={onTextareaChange}
               />

@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { EditorCoreRef } from '../useMarkdown'
 import useHandleBackspace from './useHandleBackspace'
-import useHandleDefault from './useHandleDefault'
 import useHandleEnter from './useHandleEnter'
 import useHandleWrapSelection from './useHandleWrapSelection'
 import useAddHeshToSelectionTop from './useAddHeshToSelectionTop'
@@ -10,7 +9,6 @@ import useHandleArrow from './useHandleArrow'
 
 const useHandlers = (editorCoreRef: EditorCoreRef) => {
   const handleBackspace = useHandleBackspace(editorCoreRef)
-  const handleDefault = useHandleDefault(editorCoreRef)
   const handleEnter = useHandleEnter(editorCoreRef)
   const handleBold = useHandleWrapSelection(editorCoreRef, '**')
   const handleItalic = useHandleWrapSelection(editorCoreRef, '*')
@@ -26,7 +24,6 @@ const useHandlers = (editorCoreRef: EditorCoreRef) => {
       handleStrike,
       handleHeader,
       handleCode,
-      handleDefault,
       handleBackspace,
       handleEnter,
       handleArrow,

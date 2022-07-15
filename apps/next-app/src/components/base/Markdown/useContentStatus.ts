@@ -6,10 +6,10 @@ const useContentStatus = (editorCoreRef: EditorCoreRef) => {
     const getLineIndexById = (lineId: string) => {
       let targetIndex: number | undefined
 
-      const contentLineIds = editorCoreRef.current.contentLineIds
+      const lineIds = editorCoreRef.current.contentStatus.ids
 
-      for (let i = 0; i < contentLineIds.length; i++) {
-        const id = contentLineIds[i]
+      for (let i = 0; i < lineIds.length; i++) {
+        const id = lineIds[i]
 
         if (id === lineId) {
           targetIndex = i

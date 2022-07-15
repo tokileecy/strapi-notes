@@ -9,19 +9,16 @@ const useHandleWrapSelection = (editorCoreRef: EditorCoreRef) => {
   return useCallback(() => {
     const finishedCallbacks: (() => void)[] = []
 
-    const lastSelectedLineIds = editorCoreRef.current.lastSelectedLineIds
-    const contentLineById = editorCoreRef.current.contentLineById
-    const contentLineIds = editorCoreRef.current.contentLineIds
-    const setContentLineById = editorCoreRef.current.setContentLineById
-    const setContentLineIds = editorCoreRef.current.setContentLineIds
+    const contentStatus = editorCoreRef.current.contentStatus
+    const setContentStatus = editorCoreRef.current.setContentStatus
 
-    const nextContentLineIds = [...contentLineIds]
-    const nextContentLineById = { ...contentLineById }
+    let nextContentLineIds = contentStatus.ids
+    const nextContentLineById = { ...contentStatus.lineById }
 
-    if (lastSelectedLineIds.length === 1) {
+    if (contentStatus.lastSelectedLineIds.length === 1) {
       const str = '`'
-      const selectedLineId = lastSelectedLineIds[0]
-      const selectedLine = contentLineById[selectedLineId]
+      const selectedLineId = contentStatus.lastSelectedLineIds[0]
+      const selectedLine = nextContentLineById[selectedLineId]
 
       const nextTextArr = Array.from(nextContentLineById[selectedLineId].text)
 
@@ -33,13 +30,14 @@ const useHandleWrapSelection = (editorCoreRef: EditorCoreRef) => {
       nextContentLineById[selectedLineId].text = nextText
       nextContentLineById[selectedLineId].start += str.length
       nextContentLineById[selectedLineId].end += str.length
-      setContentLineById?.(nextContentLineById)
     } else {
       const str = '```'
-      const startSelectedLineId = lastSelectedLineIds[0]
+      const startSelectedLineId = contentStatus.lastSelectedLineIds[0]
 
       const endSelectedLineId =
-        lastSelectedLineIds[lastSelectedLineIds.length - 1]
+        contentStatus.lastSelectedLineIds[
+          contentStatus.lastSelectedLineIds.length - 1
+        ]
 
       const startIndex = getLineIndexById(startSelectedLineId)
       const endIndex = getLineIndexById(endSelectedLineId)
@@ -62,13 +60,16 @@ const useHandleWrapSelection = (editorCoreRef: EditorCoreRef) => {
           input: false,
         }
 
+        nextContentLineIds = [...nextContentLineIds]
         nextContentLineIds.splice(startIndex, 0, topId)
         nextContentLineIds.splice(endIndex + 2, 0, bottomId)
-
-        setContentLineById?.(nextContentLineById)
-        setContentLineIds?.(nextContentLineIds)
       }
     }
+
+    setContentStatus?.({
+      ids: nextContentLineIds,
+      lineById: nextContentLineById,
+    })
 
     return () => {
       finishedCallbacks.forEach((func) => {

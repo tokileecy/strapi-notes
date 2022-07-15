@@ -33,10 +33,8 @@ const useEditorEventManager = (
 
   useEffect(() => {
     const update = () => {
-      const selectedStartLineId = editorCoreRef.current.selectedStartLineId
-      const selectedEndLineId = editorCoreRef.current.selectedEndLineId
-      const contentLineIds = editorCoreRef.current.contentLineIds
-      const setContentLineById = editorCoreRef.current.setContentLineById
+      const contentStatus = editorCoreRef.current.contentStatus
+      const setContentStatus = editorCoreRef.current.setContentStatus
 
       if (editorCoreRef.current.isSelectionChange) {
         if (
@@ -63,7 +61,7 @@ const useEditorEventManager = (
         try {
           if (editorDivRef.current && cursorRef.current) {
             const selectedEndLineElement = document.querySelector(
-              `[data-id="${editorCoreRef.current.selectedEndLineId}"] pre`
+              `[data-id="${contentStatus.selectedEndLineId}"] pre`
             ) as HTMLElement
 
             const centerElement = selectedEndLineElement.querySelector(
@@ -77,7 +75,8 @@ const useEditorEventManager = (
             )
           }
         } catch (error) {
-          console.error(error)
+          console.log(contentStatus.selectedEndLineId)
+          // console.error(error)
         }
 
         editorCoreRef.current.cursorNeedUpdate = false
@@ -86,7 +85,7 @@ const useEditorEventManager = (
       const getLastSelection = (contentLineById: Record<string, LineState>) => {
         const target: Record<string, LineState> = {}
 
-        editorCoreRef.current.lastSelectedLineIds.forEach((id) => {
+        contentStatus.lastSelectedLineIds.forEach((id) => {
           const contentLine = contentLineById[id]
 
           target[id] = {
@@ -102,14 +101,11 @@ const useEditorEventManager = (
         editorCoreRef.current.isMouseDown &&
         !editorCoreRef.current.prevIsMouseDown
       ) {
-        setContentLineById?.((prev) => {
-          const target = getLastSelection(prev)
+        const target = getLastSelection(contentStatus.lineById)
 
-          editorCoreRef.current.lastSelectedLineIds.length = 0
-          return {
-            ...prev,
-            ...target,
-          }
+        editorCoreRef.current.contentStatus.lastSelectedLineIds.length = 0
+        setContentStatus?.({
+          lineById: { ...contentStatus.lineById, ...target },
         })
       }
 
@@ -169,138 +165,143 @@ const useEditorEventManager = (
           if (startLine === endLine) {
             let startIndex = 0
 
-            for (let i = 0; i < contentLineIds.length; i++) {
-              const id = contentLineIds[i]
+            for (let i = 0; i < contentStatus.ids.length; i++) {
+              const id = contentStatus.ids[i]
 
-              if (id === selectedStartLineId) {
+              if (id === editorCoreRef.current.selectedStartLineId) {
                 startIndex = i
                 break
               }
             }
 
-            const lastContentLineId = contentLineIds[startIndex]
+            const lastContentLineId = contentStatus.ids[startIndex]
 
-            setContentLineById?.((prev) => {
-              const next = { ...prev }
+            let nextLineById = { ...contentStatus.lineById }
 
-              if (editorCoreRef.current.lastInputLineId !== undefined) {
-                const lastInputLineId = editorCoreRef.current.lastInputLineId
+            if (editorCoreRef.current.lastInputLineId !== undefined) {
+              const lastInputLineId = editorCoreRef.current.lastInputLineId
 
-                const lastLine = prev[lastInputLineId]
+              const lastLine = nextLineById[lastInputLineId]
 
-                next[lastInputLineId] = { ...lastLine, input: false }
-              }
+              nextLineById[lastInputLineId] = { ...lastLine, input: false }
+            }
 
-              editorCoreRef.current.lastInputLineId = selectedEndLineId
+            editorCoreRef.current.lastInputLineId =
+              contentStatus.selectedEndLineId
 
-              const nextLine = prev[selectedEndLineId]
+            let nextLine = nextLineById[contentStatus.selectedEndLineId]
 
-              next[selectedEndLineId] = { ...nextLine, input: true }
+            nextLineById[contentStatus.selectedEndLineId] = {
+              ...nextLine,
+              input: true,
+            }
 
-              return next
+            const unSelectTarget = getLastSelection(nextLineById)
+
+            nextLineById = { ...nextLineById, ...unSelectTarget }
+
+            const nextLastSelectedLineIds = [lastContentLineId]
+
+            if (editorCoreRef.current.lastInputLineId !== undefined) {
+              const lastInputLineId = editorCoreRef.current.lastInputLineId
+
+              const lastLine = nextLineById[lastInputLineId]
+
+              nextLineById[lastInputLineId] = { ...lastLine, input: false }
+            }
+
+            editorCoreRef.current.lastInputLineId =
+              contentStatus.selectedEndLineId
+
+            nextLine = nextLineById[contentStatus.selectedEndLineId]
+
+            nextLineById[contentStatus.selectedEndLineId] = {
+              ...nextLine,
+              input: true,
+            }
+
+            nextLineById[lastContentLineId].start = start
+            nextLineById[lastContentLineId].end = end
+
+            setContentStatus?.({
+              lineById: nextLineById,
+              lastSelectedLineIds: nextLastSelectedLineIds,
             })
-
-            setContentLineById?.((prev) => {
-              const unSelectTarget = getLastSelection(prev)
-
-              const next = { ...prev, ...unSelectTarget }
-
-              editorCoreRef.current.lastSelectedLineIds.length = 0
-
-              editorCoreRef.current.lastSelectedLineIds.push(lastContentLineId)
-
-              if (editorCoreRef.current.lastInputLineId !== undefined) {
-                const lastInputLineId = editorCoreRef.current.lastInputLineId
-
-                const lastLine = prev[lastInputLineId]
-
-                next[lastInputLineId] = { ...lastLine, input: false }
-              }
-
-              editorCoreRef.current.lastInputLineId = selectedEndLineId
-
-              const nextLine = prev[selectedEndLineId]
-
-              next[selectedEndLineId] = { ...nextLine, input: true }
-
-              return {
-                ...next,
-                [lastContentLineId]: {
-                  ...next[lastContentLineId],
-                  start,
-                  end,
-                },
-              }
-            })
-          } else if (selectedStartLineId !== '' && selectedEndLineId !== '') {
+          } else if (
+            editorCoreRef.current.selectedStartLineId !== '' &&
+            contentStatus.selectedEndLineId !== ''
+          ) {
             let startIndex = 0
             let endIndex = 0
 
-            for (let i = 0; i < contentLineIds.length; i++) {
-              const id = contentLineIds[i]
+            for (let i = 0; i < contentStatus.ids.length; i++) {
+              const id = contentStatus.ids[i]
 
-              if (id === selectedStartLineId) {
+              if (id === editorCoreRef.current.selectedStartLineId) {
                 startIndex = i
               }
 
-              if (id === selectedEndLineId) {
+              if (id === contentStatus.selectedEndLineId) {
                 endIndex = i
               }
             }
 
-            setContentLineById?.((prev) => {
-              const target: Record<string, LineState> = {}
+            const unSelectTarget = getLastSelection(contentStatus.lineById)
 
-              const unSelectTarget = getLastSelection(prev)
-              const next = { ...prev, ...unSelectTarget }
+            const nextLineById = {
+              ...contentStatus.lineById,
+              ...unSelectTarget,
+            }
 
-              if (editorCoreRef.current.lastInputLineId !== undefined) {
-                const lastInputLineId = editorCoreRef.current.lastInputLineId
+            if (editorCoreRef.current.lastInputLineId !== undefined) {
+              const lastInputLineId = editorCoreRef.current.lastInputLineId
 
-                const lastLine = prev[lastInputLineId]
+              const lastLine = nextLineById[lastInputLineId]
 
-                next[lastInputLineId] = { ...lastLine, input: false }
-              }
+              nextLineById[lastInputLineId] = { ...lastLine, input: false }
+            }
 
-              editorCoreRef.current.lastInputLineId = selectedEndLineId
+            editorCoreRef.current.lastInputLineId =
+              contentStatus.selectedEndLineId
 
-              const nextLine = prev[selectedEndLineId]
+            const nextLine = nextLineById[contentStatus.selectedEndLineId]
 
-              next[selectedEndLineId] = { ...nextLine, input: true }
+            nextLineById[contentStatus.selectedEndLineId] = {
+              ...nextLine,
+              input: true,
+            }
 
-              editorCoreRef.current.lastSelectedLineIds.length = 0
+            contentStatus.lastSelectedLineIds.length = 0
 
-              for (let i = startIndex; i <= endIndex; i++) {
-                const lineId = contentLineIds[i]
-                const contentLine = next[lineId]
+            for (let i = startIndex; i <= endIndex; i++) {
+              const lineId = contentStatus.ids[i]
+              const contentLine = nextLineById[lineId]
 
-                editorCoreRef.current.lastSelectedLineIds.push(lineId)
+              contentStatus.lastSelectedLineIds.push(lineId)
 
-                if (i === startIndex) {
-                  target[lineId] = {
-                    ...contentLine,
-                    start,
-                    end: contentLine.text.length,
-                  }
-                } else if (i === endIndex) {
-                  target[lineId] = {
-                    ...contentLine,
-                    start: 0,
-                    end,
-                  }
-                } else {
-                  target[lineId] = {
-                    ...contentLine,
-                    start: 0,
-                    end: contentLine.text.length,
-                  }
+              if (i === startIndex) {
+                nextLineById[lineId] = {
+                  ...contentLine,
+                  start,
+                  end: contentLine.text.length,
+                }
+              } else if (i === endIndex) {
+                nextLineById[lineId] = {
+                  ...contentLine,
+                  start: 0,
+                  end,
+                }
+              } else {
+                nextLineById[lineId] = {
+                  ...contentLine,
+                  start: 0,
+                  end: contentLine.text.length,
                 }
               }
+            }
 
-              return {
-                ...next,
-                ...target,
-              }
+            setContentStatus?.({
+              lineById: nextLineById,
             })
           }
         }

@@ -32,7 +32,8 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
           startOffset = range.startOffset
           endOffset = range.endOffset
           selectedStartLineId = editorCoreRef.current.selectedStartLineId
-          selectedEndLineId = editorCoreRef.current.selectedEndLineId
+          selectedEndLineId =
+            editorCoreRef.current.contentStatus.selectedEndLineId
         }
 
         previousRevisionRef.current.push({
@@ -40,8 +41,8 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
           endOffset,
           selectedStartLineId,
           selectedEndLineId,
-          contentLineIds: editorCoreRef.current.contentLineIds,
-          contentLineById: editorCoreRef.current.contentLineById,
+          contentLineIds: editorCoreRef.current.contentStatus.ids,
+          contentLineById: editorCoreRef.current.contentStatus.lineById,
         })
       }
     }
@@ -59,13 +60,20 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
             ...prevContext.contentLineById,
           }
 
-          editorCoreRef.current.setContentLineIds?.(nextContentLineIds)
-          editorCoreRef.current.setContentLineById?.(nextContentLineById)
+          editorCoreRef.current.setContentStatus?.({
+            ids: nextContentLineIds,
+            lineById: nextContentLineById,
+          })
 
           return () => {
             if (
-              !(editorCoreRef.current.contentLineIds === nextContentLineIds) ||
-              !(editorCoreRef.current.contentLineById === nextContentLineById)
+              !(
+                editorCoreRef.current.contentStatus.ids === nextContentLineIds
+              ) ||
+              !(
+                editorCoreRef.current.contentStatus.lineById ===
+                nextContentLineById
+              )
             ) {
               throw new Error('not metch') // TODO
             } else {

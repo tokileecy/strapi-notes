@@ -5,6 +5,7 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useReducer,
   useRef,
   useState,
 } from 'react'
@@ -22,6 +23,13 @@ export interface LineState {
   end: number
 }
 
+export interface ContentStatus {
+  ids: string[]
+  lineById: Record<string, LineState>
+  selectedEndLineId: string
+  lastSelectedLineIds: string[]
+}
+
 export interface EditorCoreRefData {
   prevIsKeyDown: boolean
   prevIsMouseDown: boolean
@@ -31,20 +39,23 @@ export interface EditorCoreRefData {
   cursorNeedUpdate: boolean
   lastSelectionRange?: Range
   lastInputLineId?: string
-  contentLineIds: string[]
-  contentLineById: Record<string, LineState>
   selectedStartLineId: string
-  selectedEndLineId: string
   content?: string
   onChange?: (content: string) => void
-  lastSelectedLineIds: string[]
-  setContentLineIds?: Dispatch<SetStateAction<string[]>>
-  setContentLineById?: Dispatch<SetStateAction<Record<string, LineState>>>
   textareaValue: string
   setTexteraValue?: Dispatch<SetStateAction<string>>
+  contentStatus: ContentStatus
+  setContentStatus?: Dispatch<Partial<ContentStatus>>
 }
 
 export type EditorCoreRef = MutableRefObject<EditorCoreRefData>
+
+export const initialContentStatus = {
+  ids: [],
+  lineById: {},
+  selectedEndLineId: '',
+  lastSelectedLineIds: [],
+}
 
 const useMarkdown = () => {
   const textareaRef = useRef<HTMLTextAreaElement>()
@@ -52,11 +63,16 @@ const useMarkdown = () => {
   const cursorRef = useRef<HTMLDivElement>()
   const commendCallbackRef = useRef<(() => void)[]>([])
   const [textareaValue, setTexteraValue] = useState<string>('')
-  const [contentLineIds, setContentLineIds] = useState<string[]>([])
 
-  const [contentLineById, setContentLineById] = useState<
-    Record<string, LineState>
-  >({})
+  const [contentStatus, setContentStatus] = useReducer(
+    (prev: ContentStatus, next: Partial<ContentStatus>) => ({
+      ...prev,
+      ...next,
+    }),
+    {
+      ...initialContentStatus,
+    }
+  )
 
   const [content, setContent] = useState('')
 
@@ -68,10 +84,7 @@ const useMarkdown = () => {
     isKeyDown: false,
     isMouseDown: false,
     selectedStartLineId: '',
-    selectedEndLineId: '',
-    lastSelectedLineIds: [],
-    contentLineIds: [],
-    contentLineById: {},
+    contentStatus: { ...initialContentStatus },
     textareaValue: '',
   })
 
@@ -105,8 +118,10 @@ const useMarkdown = () => {
             end: 0,
           }
         })
-        setContentLineIds(nextIds)
-        setContentLineById(nextLineById)
+        setContentStatus({
+          ids: nextIds,
+          lineById: nextLineById,
+        })
       }
 
       initLines()
@@ -197,14 +212,6 @@ const useMarkdown = () => {
     const value = e.target.value
 
     setTexteraValue(value)
-    // setTimeout(() => {
-    //   editorCoreRef.current.setTexteraValue(value)
-    //   // setTexteraValue(value)
-    // }, 0)
-    // pushEvent({
-    //   type: 'input',
-    //   value: e.target.value,
-    // })
   }
 
   const textareaRefCallback = useCallback(
@@ -242,10 +249,8 @@ const useMarkdown = () => {
   if (editorCoreRef.current) {
     editorCoreRef.current.onChange = onChange
     editorCoreRef.current.content = content
-    editorCoreRef.current.contentLineIds = contentLineIds
-    editorCoreRef.current.contentLineById = contentLineById
-    editorCoreRef.current.setContentLineIds = setContentLineIds
-    editorCoreRef.current.setContentLineById = setContentLineById
+    editorCoreRef.current.contentStatus = contentStatus
+    editorCoreRef.current.setContentStatus = setContentStatus
     editorCoreRef.current.textareaValue = textareaValue
     editorCoreRef.current.setTexteraValue = setTexteraValue
   }
@@ -325,7 +330,8 @@ const useMarkdown = () => {
             current instanceof HTMLElement &&
             current.dataset.type === 'wrapper'
           ) {
-            editorCoreRef.current.selectedEndLineId = current.dataset.id ?? ''
+            editorCoreRef.current.contentStatus.selectedEndLineId =
+              current.dataset.id ?? ''
             break
           }
 
@@ -355,12 +361,12 @@ const useMarkdown = () => {
 
   useEffect(() => {
     setContent(
-      contentLineIds
-        .map((id) => contentLineById[id].text)
+      contentStatus.ids
+        .map((id) => contentStatus.lineById[id].text)
         .join('\n')
         .replace('\\*', '&ast;')
     )
-  }, [contentLineIds, contentLineById])
+  }, [contentStatus.ids, contentStatus.lineById])
 
   return {
     textareaValue,
@@ -369,8 +375,7 @@ const useMarkdown = () => {
     editorDivRef,
     cursorRef,
     cursorRefCallback,
-    contentLineById,
-    contentLineIds,
+    contentStatus,
     content,
     setContent,
     reset,

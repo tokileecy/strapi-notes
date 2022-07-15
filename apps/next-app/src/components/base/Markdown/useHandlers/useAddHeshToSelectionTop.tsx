@@ -4,14 +4,14 @@ import { EditorCoreRef } from '../useMarkdown'
 const useAddHeshToSelectionTop = (editorCoreRef: EditorCoreRef) => {
   return useCallback(() => {
     const finishedCallbacks: (() => void)[] = []
-    const lastSelectedLineIds = editorCoreRef.current.lastSelectedLineIds
-    const contentLineById = editorCoreRef.current.contentLineById
-    const setContentLineById = editorCoreRef.current.setContentLineById
 
-    const next = { ...contentLineById }
+    const contentStatus = editorCoreRef.current.contentStatus
+    const setContentStatus = editorCoreRef.current.setContentStatus
 
-    lastSelectedLineIds.forEach((selectedLineId) => {
-      const selectedLine = contentLineById[selectedLineId]
+    const nextLineById = { ...contentStatus.lineById }
+
+    contentStatus.lastSelectedLineIds.forEach((selectedLineId) => {
+      const selectedLine = nextLineById[selectedLineId]
 
       let targetToAdd = '#'
 
@@ -19,12 +19,13 @@ const useAddHeshToSelectionTop = (editorCoreRef: EditorCoreRef) => {
         targetToAdd += ' '
       }
 
-      next[selectedLineId].text = `${targetToAdd}${selectedLine.text}`
-      next[selectedLineId].start += targetToAdd.length
-      next[selectedLineId].end += targetToAdd.length
+      nextLineById[selectedLineId].text = `${targetToAdd}${selectedLine.text}`
+      nextLineById[selectedLineId].start += targetToAdd.length
+      nextLineById[selectedLineId].end += targetToAdd.length
     })
-
-    setContentLineById?.(next)
+    setContentStatus?.({
+      lineById: nextLineById,
+    })
 
     return () => {
       finishedCallbacks.forEach((func) => {

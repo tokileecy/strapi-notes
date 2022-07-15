@@ -1,14 +1,13 @@
 import React, { ChangeEventHandler } from 'react'
 import Box from '@mui/material/Box'
-import { LineState } from './useMarkdown'
+import { ContentStatus } from './useMarkdown'
 import Cursor from './Cursor'
 
 export type EditorProps = {
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
   editorDivRefCallback?: (element: HTMLDivElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
-  contentLineIds: string[]
-  contentLineById: Record<string, LineState>
+  contentStatus: ContentStatus
   textareaValue?: string
   onTextareaChange?: ChangeEventHandler<HTMLTextAreaElement>
 }
@@ -18,9 +17,8 @@ const Editor = (props: EditorProps): JSX.Element => {
     textareaRefCallback,
     cursorRefCallback,
     editorDivRefCallback,
-    contentLineIds,
-    contentLineById,
     textareaValue,
+    contentStatus,
     onTextareaChange,
   } = props
 
@@ -46,8 +44,8 @@ const Editor = (props: EditorProps): JSX.Element => {
           }}
           data-type="editor"
         >
-          {contentLineIds.map((id) => {
-            const line = contentLineById[id]
+          {contentStatus.ids.map((id) => {
+            const line = contentStatus.lineById[id]
 
             let startText = ''
             let centerText = ''

@@ -4,24 +4,14 @@ import { EditorCoreRef } from '../useMarkdown'
 
 const useHandleEnter = (editorCoreRef: EditorCoreRef) => {
   return useCallback(() => {
-    const setContentLineIds = editorCoreRef.current.setContentLineIds
-    const setContentLineById = editorCoreRef.current.setContentLineById
+    const setContentStatus = editorCoreRef.current.setContentStatus
+    let contentStatus = editorCoreRef.current.contentStatus
 
-    let next = {
-      contentLineIds: editorCoreRef.current.contentLineIds,
-      contentLineById: editorCoreRef.current.contentLineById,
-      selectedEndLineId: editorCoreRef.current.selectedEndLineId,
-      lastSelectedLineIds: editorCoreRef.current.lastSelectedLineIds,
-    }
+    contentStatus = fn.enter(editorCoreRef, contentStatus)
 
-    next = fn.enter(editorCoreRef, next)
-
-    setContentLineById?.(next.contentLineById)
-    setContentLineIds?.(next.contentLineIds)
+    setContentStatus?.(contentStatus)
 
     return () => {
-      editorCoreRef.current.selectedEndLineId = next.selectedEndLineId
-      editorCoreRef.current.lastSelectedLineIds = next.lastSelectedLineIds
       editorCoreRef.current.cursorNeedUpdate = true
     }
   }, [editorCoreRef])

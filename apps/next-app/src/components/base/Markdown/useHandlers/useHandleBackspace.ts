@@ -4,22 +4,14 @@ import { EditorCoreRef } from '../useMarkdown'
 
 const useHandleBackspace = (editorCoreRef: EditorCoreRef) => {
   return useCallback(() => {
-    const setContentLineIds = editorCoreRef.current.setContentLineIds
-    const setContentLineById = editorCoreRef.current.setContentLineById
+    let contentStatus = editorCoreRef.current.contentStatus
+    const setContentStatus = editorCoreRef.current.setContentStatus
 
-    const next = fn.backspace(editorCoreRef, {
-      contentLineIds: editorCoreRef.current.contentLineIds,
-      contentLineById: editorCoreRef.current.contentLineById,
-      selectedEndLineId: editorCoreRef.current.selectedEndLineId,
-      lastSelectedLineIds: editorCoreRef.current.lastSelectedLineIds,
-    })
+    contentStatus = fn.backspace(editorCoreRef, contentStatus)
 
-    setContentLineById?.(next.contentLineById)
-    setContentLineIds?.(next.contentLineIds)
+    setContentStatus?.(contentStatus)
 
     return () => {
-      editorCoreRef.current.selectedEndLineId = next.selectedEndLineId
-      editorCoreRef.current.lastSelectedLineIds = next.lastSelectedLineIds
       editorCoreRef.current.cursorNeedUpdate = true
     }
   }, [editorCoreRef])

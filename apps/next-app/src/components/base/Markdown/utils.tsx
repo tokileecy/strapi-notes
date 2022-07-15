@@ -75,7 +75,7 @@ export const getLineIndexById = (
 ) => {
   let targetIndex: number | undefined
 
-  const contentLineIds = editorCoreRef.current.contentLineIds
+  const contentLineIds = editorCoreRef.current.contentStatus.ids
 
   for (let i = 0; i < contentLineIds.length; i++) {
     const id = contentLineIds[i]

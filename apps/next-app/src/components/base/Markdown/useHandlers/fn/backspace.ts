@@ -1,37 +1,31 @@
-import { EditorCoreRef } from '../../useMarkdown'
+import { ContentStatus, EditorCoreRef } from '../../useMarkdown'
 import { getLineIndexById } from '../../utils'
-import { FnProps } from './types'
 
 const handleBackspace = (
   editorCoreRef: EditorCoreRef,
-  options: FnProps
-): FnProps => {
-  let {
-    selectedEndLineId,
-    lastSelectedLineIds,
-    contentLineIds,
-    contentLineById,
-  } = options
+  options: ContentStatus
+): ContentStatus => {
+  let { selectedEndLineId, lastSelectedLineIds, ids, lineById } = options
 
   if (
     lastSelectedLineIds.length === 1 &&
-    contentLineById[lastSelectedLineIds[0]].start === 0
+    lineById[lastSelectedLineIds[0]].start === 0
   ) {
     const selectedLineId = lastSelectedLineIds[0]
-    const selectedLine = contentLineById[selectedLineId]
+    const selectedLine = lineById[selectedLineId]
     const lineIndex = getLineIndexById(editorCoreRef, selectedLineId)
 
     if (lineIndex !== undefined && lineIndex !== 0) {
-      const prevLineId = contentLineIds[lineIndex - 1]
-      const prevLine = contentLineById[prevLineId]
+      const prevLineId = ids[lineIndex - 1]
+      const prevLine = lineById[prevLineId]
 
       lastSelectedLineIds = [...lastSelectedLineIds]
       lastSelectedLineIds[0] = prevLineId
       selectedEndLineId = prevLineId
 
-      contentLineById = { ...contentLineById }
-      contentLineById[selectedLineId] = {
-        ...contentLineById[selectedLineId],
+      lineById = { ...lineById }
+      lineById[selectedLineId] = {
+        ...lineById[selectedLineId],
         text: '',
         start: 0,
         end: 0,
@@ -44,7 +38,7 @@ const handleBackspace = (
         nextPrevLineTextArr.splice(0, nextPrevLineTextArr.length).join('') +
         selectedLine.text
 
-      contentLineById[prevLineId] = {
+      lineById[prevLineId] = {
         ...prevLine,
         text: nextPrevLineText,
         start: prevLine.text.length,
@@ -52,14 +46,14 @@ const handleBackspace = (
         input: true,
       }
 
-      contentLineIds = [...contentLineIds]
-      contentLineIds.splice(lineIndex, 1)
+      ids = [...ids]
+      ids.splice(lineIndex, 1)
     }
   } else {
-    contentLineById = { ...contentLineById }
+    lineById = { ...lineById }
 
     lastSelectedLineIds.forEach((selectedLineId) => {
-      const selectedLine = contentLineById[selectedLineId]
+      const selectedLine = lineById[selectedLineId]
 
       if (selectedLine.start !== selectedLine.end) {
         const nextLineTextArr = Array.from(selectedLine.text)
@@ -69,7 +63,7 @@ const handleBackspace = (
           selectedLine.end - selectedLine.start
         )
 
-        contentLineById[selectedLineId] = {
+        lineById[selectedLineId] = {
           ...selectedLine,
           text: nextLineTextArr.join(''),
           end: selectedLine.start,
@@ -78,7 +72,7 @@ const handleBackspace = (
         const nextLineTextArr = Array.from(selectedLine.text)
 
         nextLineTextArr.splice(selectedLine.start - 1, 1)
-        contentLineById[selectedLineId] = {
+        lineById[selectedLineId] = {
           ...selectedLine,
           text: nextLineTextArr.join(''),
           start: selectedLine.start - 1,
@@ -99,28 +93,27 @@ const handleBackspace = (
 
       if (startIndex && endIndex) {
         const nextStartLineText =
-          contentLineById[startSelectedLineId].text +
-          contentLineById[endSelectedLineId].text
+          lineById[startSelectedLineId].text + lineById[endSelectedLineId].text
 
-        if (contentLineById[startSelectedLineId].text.length === 0) {
-          contentLineById[startSelectedLineId].start = 0
-          contentLineById[startSelectedLineId].end = 0
+        if (lineById[startSelectedLineId].text.length === 0) {
+          lineById[startSelectedLineId].start = 0
+          lineById[startSelectedLineId].end = 0
         }
 
-        contentLineById[startSelectedLineId].text = nextStartLineText
+        lineById[startSelectedLineId].text = nextStartLineText
 
         lastSelectedLineIds = [startSelectedLineId]
         selectedEndLineId = startSelectedLineId
 
-        contentLineIds = [...contentLineIds]
-        contentLineIds.splice(startIndex + 1, endIndex - startIndex)
+        ids = [...ids]
+        ids.splice(startIndex + 1, endIndex - startIndex)
       }
     }
   }
 
   return {
-    contentLineIds,
-    contentLineById,
+    ids,
+    lineById,
     lastSelectedLineIds,
     selectedEndLineId,
   }
