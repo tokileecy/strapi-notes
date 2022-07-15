@@ -1,10 +1,12 @@
 import { ContentStatus, EditorCoreRef } from '../../useMarkdown'
 import { getLineIndexById } from '../../utils'
 
+export type ArrowDirection = 'UP' | 'DOWN' | 'RIGHT' | 'LEFT'
+
 const handleArrow = (
   contentStatus: ContentStatus,
   editorCoreRef: EditorCoreRef,
-  direction: 'UP' | 'DOWN' | 'RIGHT' | 'LEFT'
+  direction: ArrowDirection
 ): ContentStatus => {
   let { ids, lineById, selectedEndLineId, lastSelectedLineIds } = contentStatus
 
@@ -65,7 +67,7 @@ const handleArrow = (
 
       lineById[nextLineId] = nextLine
     } else if (direction === 'LEFT') {
-      let nextLine = lineById[selectedEndLineId]
+      let nextLine = { ...lineById[selectedEndLineId] }
       let nextLineId = selectedEndLineId
 
       if (nextLine.start === 0 && selectedLineIndex !== 0) {
@@ -86,7 +88,7 @@ const handleArrow = (
 
       lineById[nextLineId] = nextLine
     } else if (direction === 'RIGHT') {
-      let nextLine = lineById[selectedEndLineId]
+      let nextLine = { ...lineById[selectedEndLineId] }
       let nextLineId = selectedEndLineId
 
       if (
