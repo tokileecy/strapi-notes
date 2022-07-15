@@ -10,6 +10,7 @@ import CodeSvg from './images/code.svg'
 import ToolbarIconButton from './ToolbarIconButton'
 import { EditorEvent } from './useEditorEventManager'
 import { LineState } from './useMarkdown'
+import { ChangeEventHandler } from 'react'
 
 export type MarkdownProps = {
   type?: 'editor' | 'preview' | 'both'
@@ -26,6 +27,8 @@ export type MarkdownProps = {
   undoEdit?: () => void
   id?: string
   updateAt?: string
+  textareaValue?: string
+  onTextareaChange?: ChangeEventHandler<HTMLTextAreaElement>
 }
 
 const Markdown = (props: MarkdownProps): JSX.Element => {
@@ -34,11 +37,12 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
     type = 'preview',
     editorDivRefCallback,
     textareaRefCallback,
-
     cursorRefCallback,
     pushEvent,
     contentLineIds = [],
     contentLineById = {},
+    textareaValue,
+    onTextareaChange,
   } = props
 
   return (
@@ -57,6 +61,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
           border: '1px solid white',
           p: 1,
         }}
+        data-type="tool-bar"
       >
         <ToolbarIconButton
           component={BoldSvg}
@@ -130,6 +135,8 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
                 editorDivRefCallback={editorDivRefCallback}
                 contentLineIds={contentLineIds}
                 contentLineById={contentLineById}
+                textareaValue={textareaValue}
+                onTextareaChange={onTextareaChange}
               />
             </Box>
           )}

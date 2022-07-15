@@ -5,83 +5,57 @@ const useHandleWrapSelection = (editorCoreRef: EditorCoreRef, str: string) => {
   return useCallback(() => {
     const finishedCallbacks: (() => void)[] = []
 
-    const selectedStartLineId = editorCoreRef.current.selectedStartLineId
-    const selectedEndLineId = editorCoreRef.current.selectedEndLineId
+    const lastSelectedLineIds = editorCoreRef.current.lastSelectedLineIds
     const contentLineById = editorCoreRef.current.contentLineById
     const setContentLineById = editorCoreRef.current.setContentLineById
 
-    const selection = window.getSelection()
-    const range = selection?.getRangeAt(0)
+    const next = { ...contentLineById }
 
-    if (range) {
-      const startContainer = range.startContainer
-      const endContainer = range.endContainer
-      const start = range.startOffset
-      const end = range.endOffset
+    if (lastSelectedLineIds.length === 1) {
+      const selectedLineId = lastSelectedLineIds[0]
+      const selectedLine = contentLineById[selectedLineId]
 
-      if (startContainer === endContainer) {
-        const selectedStartLine = contentLineById[selectedStartLineId]
+      const nextTextArr = Array.from(next[selectedLineId].text)
 
-        const startStr = selectedStartLine.text.slice(0, start)
-        const centerStr = selectedStartLine.text.slice(start, end)
+      nextTextArr.splice(selectedLine.start, 0, str)
+      nextTextArr.splice(selectedLine.end + 1, 0, str)
 
-        const endStr = selectedStartLine.text.slice(
-          end,
-          selectedStartLine.text.length
-        )
+      const nextText = nextTextArr.join('')
 
-        const nextStr = `${startStr}${str}${centerStr}${str}${endStr}`
+      next[selectedLineId].text = nextText
+      next[selectedLineId].start += str.length
+      next[selectedLineId].end += str.length
+    } else {
+      const startSelectedLineId = lastSelectedLineIds[0]
 
-        setContentLineById?.((prev) => ({
-          ...prev,
-          [selectedStartLineId]: { text: nextStr },
-        }))
+      const endSelectedLineId =
+        lastSelectedLineIds[lastSelectedLineIds.length - 1]
 
-        finishedCallbacks.push(() => {
-          range.setStart(startContainer, start + str.length)
-          range.setEnd(startContainer, end + str.length)
-        })
-      } else if (selectedStartLineId !== '' && selectedEndLineId !== '') {
-        const selectedStartLine = contentLineById[selectedStartLineId]
-        const selectedEndLine = contentLineById[selectedEndLineId]
+      const startSelectedLine = contentLineById[startSelectedLineId]
+      const endSelectedLine = contentLineById[endSelectedLineId]
 
-        const startBeforeStr = selectedStartLine.text.slice(0, start)
+      const nextStartTextArr = Array.from(startSelectedLine.text)
+      const nextEndTextArr = Array.from(endSelectedLine.text)
 
-        const startAfterStr = selectedStartLine.text.slice(
-          start,
-          selectedStartLine.text.length
-        )
+      nextStartTextArr.splice(startSelectedLine.start, 0, str)
+      nextEndTextArr.splice(endSelectedLine.end, 0, str)
 
-        const endBeforeStr = selectedEndLine.text.slice(
-          end,
-          selectedEndLine.text.length
-        )
+      const nextStartText = nextStartTextArr.join('')
+      const nextEndText = nextEndTextArr.join('')
 
-        const endAfterStr = selectedEndLine.text.slice(
-          end,
-          selectedEndLine.text.length
-        )
+      next[startSelectedLineId].text = nextStartText
+      next[startSelectedLineId].start += str.length
 
-        const nextStartStr = `${startBeforeStr}${str}${startAfterStr}`
-        const nextEndStr = `${endBeforeStr}${str}${endAfterStr}`
-
-        setContentLineById?.((prev) => ({
-          ...prev,
-          [selectedStartLineId]: { text: nextStartStr },
-          [selectedEndLineId]: { text: nextEndStr },
-        }))
-
-        finishedCallbacks.push(() => {
-          range.setStart(startContainer, start + str.length)
-          range.setEnd(startContainer, end)
-        })
-      }
+      next[endSelectedLineId].text = nextEndText
     }
+
+    setContentLineById?.(next)
 
     return () => {
       finishedCallbacks.forEach((func) => {
         func()
       })
+      editorCoreRef.current.cursorNeedUpdate = true
     }
   }, [])
 }

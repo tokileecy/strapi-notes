@@ -1,4 +1,5 @@
 import {
+  ChangeEventHandler,
   Dispatch,
   MutableRefObject,
   SetStateAction,
@@ -12,12 +13,13 @@ import useIndexeddb from './useIndexeddb'
 import useHandlers from './useHandlers'
 import useHistoryHandlers from './useHistoryHandlers'
 import useKeydownManager from './useEditorEventManager'
+import { isUnderToolbar } from './utils'
 
 export interface LineState {
   text: string
-  isSelected?: boolean
-  start?: number
-  end?: number
+  input: boolean
+  start: number
+  end: number
 }
 
 export interface EditorCoreRefData {
@@ -26,7 +28,9 @@ export interface EditorCoreRefData {
   isKeyDown: boolean
   isMouseDown: boolean
   isSelectionChange: boolean
+  cursorNeedUpdate: boolean
   lastSelectionRange?: Range
+  lastInputLineId?: string
   contentLineIds: string[]
   contentLineById: Record<string, LineState>
   selectedStartLineId: string
@@ -36,6 +40,8 @@ export interface EditorCoreRefData {
   lastSelectedLineIds: string[]
   setContentLineIds?: Dispatch<SetStateAction<string[]>>
   setContentLineById?: Dispatch<SetStateAction<Record<string, LineState>>>
+  textareaValue: string
+  setTexteraValue?: Dispatch<SetStateAction<string>>
 }
 
 export type EditorCoreRef = MutableRefObject<EditorCoreRefData>
@@ -45,6 +51,7 @@ const useMarkdown = () => {
   const editorDivRef = useRef<HTMLDivElement>()
   const cursorRef = useRef<HTMLDivElement>()
 
+  const [textareaValue, setTexteraValue] = useState<string>('')
   const [contentLineIds, setContentLineIds] = useState<string[]>([])
 
   const [contentLineById, setContentLineById] = useState<
@@ -57,6 +64,7 @@ const useMarkdown = () => {
     prevIsKeyDown: false,
     prevIsMouseDown: false,
     isSelectionChange: false,
+    cursorNeedUpdate: false,
     isKeyDown: false,
     isMouseDown: false,
     selectedStartLineId: '',
@@ -64,6 +72,7 @@ const useMarkdown = () => {
     lastSelectedLineIds: [],
     contentLineIds: [],
     contentLineById: {},
+    textareaValue: '',
   })
 
   const { dbRef } = useIndexeddb()
@@ -91,6 +100,9 @@ const useMarkdown = () => {
           nextIds.push(id)
           nextLineById[id] = {
             text: line,
+            input: false,
+            start: 0,
+            end: 0,
           }
         })
         setContentLineIds(nextIds)
@@ -120,10 +132,38 @@ const useMarkdown = () => {
     historyHandlers
   )
 
+  // const hanldeKeypress = () => {}
+
+  const hanldeTextareaKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+    }
+
+    pushEvent({
+      type: 'keyboard',
+      e,
+    })
+  }
+
+  const handleTextareaChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    e.preventDefault()
+    pushEvent({
+      type: 'input',
+      value: e.target.value,
+    })
+  }
+
   const textareaRefCallback = useCallback(
     (element: HTMLTextAreaElement) => {
       if (textareaRef.current !== element) {
+        // textareaRef.current?.removeEventListener('keypress', hanldeKeypress)
+        textareaRef.current?.removeEventListener(
+          'keydown',
+          hanldeTextareaKeydown
+        )
         textareaRef.current = element
+        // textareaRef.current?.addEventListener('keypress', hanldeKeypress)
+        textareaRef.current?.addEventListener('keydown', hanldeTextareaKeydown)
       }
     },
     [textareaRef]
@@ -154,6 +194,8 @@ const useMarkdown = () => {
     editorCoreRef.current.contentLineById = contentLineById
     editorCoreRef.current.setContentLineIds = setContentLineIds
     editorCoreRef.current.setContentLineById = setContentLineById
+    editorCoreRef.current.textareaValue = textareaValue
+    editorCoreRef.current.setTexteraValue = setTexteraValue
   }
 
   useEffect(() => {
@@ -173,8 +215,12 @@ const useMarkdown = () => {
       editorCoreRef.current.isMouseDown = false
     }
 
-    const handleMouseDown = () => {
-      editorCoreRef.current.isMouseDown = true
+    const handleMouseDown = (e: MouseEvent) => {
+      if (e.target) {
+        if (!isUnderToolbar(e.target as Element)) {
+          editorCoreRef.current.isMouseDown = true
+        }
+      }
     }
 
     const handleKeyup = () => {
@@ -276,6 +322,7 @@ const useMarkdown = () => {
   }, [contentLineIds, contentLineById])
 
   return {
+    textareaValue,
     textareaRefCallback,
     editorDivRefCallback,
     editorDivRef,
@@ -289,6 +336,7 @@ const useMarkdown = () => {
     onChange,
     focus,
     pushEvent,
+    onTextareaChange: handleTextareaChange,
   }
 }
 

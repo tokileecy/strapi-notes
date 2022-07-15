@@ -1,105 +1,72 @@
 import { useCallback } from 'react'
 import { nanoid } from 'nanoid'
 import { EditorCoreRef } from '../useMarkdown'
+import useContentStatus from '../useContentStatus'
 
 const useHandleWrapSelection = (editorCoreRef: EditorCoreRef) => {
+  const { getLineIndexById } = useContentStatus(editorCoreRef)
+
   return useCallback(() => {
     const finishedCallbacks: (() => void)[] = []
 
-    const selectedStartLineId = editorCoreRef.current.selectedStartLineId
-    const selectedEndLineId = editorCoreRef.current.selectedEndLineId
-    const contentLineIds = editorCoreRef.current.contentLineIds
+    const lastSelectedLineIds = editorCoreRef.current.lastSelectedLineIds
     const contentLineById = editorCoreRef.current.contentLineById
-    const setContentLineIds = editorCoreRef.current.setContentLineIds
+    const contentLineIds = editorCoreRef.current.contentLineIds
     const setContentLineById = editorCoreRef.current.setContentLineById
+    const setContentLineIds = editorCoreRef.current.setContentLineIds
 
-    const selection = window.getSelection()
-    const range = selection?.getRangeAt(0)
+    const nextContentLineIds = [...contentLineIds]
+    const nextContentLineById = { ...contentLineById }
 
-    if (range) {
-      const startContainer = range.startContainer
-      const endContainer = range.endContainer
-      const start = range.startOffset
-      const end = range.endOffset
+    if (lastSelectedLineIds.length === 1) {
+      const str = '`'
+      const selectedLineId = lastSelectedLineIds[0]
+      const selectedLine = contentLineById[selectedLineId]
 
-      if (startContainer === endContainer) {
-        const selectedStartLine = contentLineById[selectedStartLineId]
+      const nextTextArr = Array.from(nextContentLineById[selectedLineId].text)
 
-        const startStr = selectedStartLine.text.slice(0, start)
-        const centerStr = selectedStartLine.text.slice(start, end)
+      nextTextArr.splice(selectedLine.start, 0, str)
+      nextTextArr.splice(selectedLine.end + 1, 0, str)
 
-        const endStr = selectedStartLine.text.slice(
-          end,
-          selectedStartLine.text.length
-        )
+      const nextText = nextTextArr.join('')
 
-        const nextStr = `${startStr}\`${centerStr}\`${endStr}`
+      nextContentLineById[selectedLineId].text = nextText
+      nextContentLineById[selectedLineId].start += str.length
+      nextContentLineById[selectedLineId].end += str.length
+      setContentLineById?.(nextContentLineById)
+    } else {
+      const str = '```'
+      const startSelectedLineId = lastSelectedLineIds[0]
 
-        setContentLineById?.((prev) => ({
-          ...prev,
-          [selectedStartLineId]: {
-            text: nextStr,
-          },
-        }))
+      const endSelectedLineId =
+        lastSelectedLineIds[lastSelectedLineIds.length - 1]
 
-        finishedCallbacks.push(() => {
-          range.setStart(startContainer, start + 1)
-          range.setEnd(startContainer, end + 1)
-        })
-      } else if (selectedStartLineId !== '' && selectedEndLineId !== '') {
-        let startIndex = 0
-        let endIndex = 0
+      const startIndex = getLineIndexById(startSelectedLineId)
+      const endIndex = getLineIndexById(endSelectedLineId)
 
-        for (let i = 0; i < contentLineIds.length; i++) {
-          const id = contentLineIds[i]
-
-          if (id === selectedStartLineId) {
-            startIndex = i
-          }
-
-          if (id === selectedEndLineId) {
-            endIndex = i
-          }
-        }
-
+      if (startIndex !== undefined && endIndex !== undefined) {
         const topId = nanoid(6)
+
         const bottomId = nanoid(6)
 
-        setContentLineIds?.((prev) => {
-          const nextLineIds = [...prev]
+        nextContentLineById[topId] = {
+          start: 0,
+          text: str,
+          end: 0,
+          input: false,
+        }
+        nextContentLineById[bottomId] = {
+          start: 0,
+          text: str,
+          end: 0,
+          input: false,
+        }
 
-          nextLineIds.splice(startIndex, 0, topId)
-          nextLineIds.splice(endIndex + 2, 0, bottomId)
-          return nextLineIds
-        })
+        nextContentLineIds.splice(startIndex, 0, topId)
+        nextContentLineIds.splice(endIndex + 2, 0, bottomId)
 
-        setContentLineById?.((prev) => ({
-          ...prev,
-          [topId]: {
-            text: '```',
-          },
-          [bottomId]: {
-            text: '```',
-          },
-        }))
-
-        finishedCallbacks.push(() => {
-          const topContainerElement = document.querySelector(
-            `[data-id="${selectedStartLineId}"] pre`
-          )
-
-          const bottomContainerElement = document.querySelector(
-            `[data-id="${selectedEndLineId}"] pre`
-          )
-
-          if (topContainerElement?.childNodes[0]) {
-            range.setStart(topContainerElement.childNodes[0], start)
-          }
-
-          if (bottomContainerElement?.childNodes[0]) {
-            range.setEnd(bottomContainerElement.childNodes[0], end)
-          }
-        })
+        setContentLineById?.(nextContentLineById)
+        setContentLineIds?.(nextContentLineIds)
       }
     }
 
@@ -108,7 +75,7 @@ const useHandleWrapSelection = (editorCoreRef: EditorCoreRef) => {
         func()
       })
     }
-  }, [])
+  }, [editorCoreRef])
 }
 
 export default useHandleWrapSelection

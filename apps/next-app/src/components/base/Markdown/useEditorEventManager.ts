@@ -2,6 +2,7 @@ import { MutableRefObject, useEffect, useMemo, useRef } from 'react'
 import { Handlers } from './useHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
 import { EditorCoreRef, LineState } from './useMarkdown'
+import { refreshCursorByElement, refreshCursorBySelection } from './utils'
 
 export type EditorCommend = 'bold' | 'italic' | 'strike' | 'header' | 'code'
 
@@ -14,8 +15,15 @@ export interface EditorCommendEvent {
   type: 'commend'
   commend?: EditorCommend
 }
+export interface InputCommendEvent {
+  type: 'input'
+  value?: string
+}
 
-export type EditorEvent = EditorKeyboardEvent | EditorCommendEvent
+export type EditorEvent =
+  | EditorKeyboardEvent
+  | EditorCommendEvent
+  | InputCommendEvent
 
 const useKeydownManager = (
   textareaRef: MutableRefObject<HTMLTextAreaElement | undefined>,
@@ -26,51 +34,59 @@ const useKeydownManager = (
   historyHandlers: HistoryHandlers
 ) => {
   const eventsQueueRef = useRef<EditorEvent[]>([])
-  const commendCallbackRef = useRef<() => void>()
+  const commendCallbackRef = useRef<(() => void)[]>([])
   const frameIdRef = useRef<number>()
 
   useEffect(() => {
     const update = () => {
-      // const selection = window.getSelection()
-      // let range: Range | null = null
-
-      // if (selection && selection?.rangeCount > 0) {
-      //   range = selection?.getRangeAt(0)
-      // }
-
       const selectedStartLineId = editorCoreRef.current.selectedStartLineId
       const selectedEndLineId = editorCoreRef.current.selectedEndLineId
-      const contentLineById = editorCoreRef.current.contentLineById
       const contentLineIds = editorCoreRef.current.contentLineIds
       const setContentLineById = editorCoreRef.current.setContentLineById
 
       if (editorCoreRef.current.isSelectionChange) {
-        if (editorDivRef?.current && editorCoreRef.current.lastSelectionRange) {
-          const lastSelectionRange = editorCoreRef.current.lastSelectionRange
-
-          const startRange = new Range()
+        if (
+          editorDivRef?.current &&
+          cursorRef.current &&
+          editorCoreRef.current.lastSelectionRange
+        ) {
           const endRange = new Range()
 
-          startRange.setStart(
-            lastSelectionRange.startContainer,
-            lastSelectionRange.startOffset
-          )
           endRange.setStart(
-            lastSelectionRange.endContainer,
-            lastSelectionRange.endOffset
+            editorCoreRef.current.lastSelectionRange.endContainer,
+            editorCoreRef.current.lastSelectionRange.endOffset
           )
 
-          const startRect = startRange.getBoundingClientRect()
-          const endRect = endRange.getBoundingClientRect()
-          const containerRect = editorDivRef.current.getBoundingClientRect()
-
-          if (endRect && startRect && cursorRef.current) {
-            cursorRef.current.style.left = `${
-              endRect.x - containerRect.x + endRect.width
-            }px`
-            cursorRef.current.style.top = `${endRect.y - containerRect.y}px`
-          }
+          refreshCursorBySelection(
+            editorDivRef.current,
+            cursorRef.current,
+            endRange
+          )
         }
+      }
+
+      if (editorCoreRef.current.cursorNeedUpdate) {
+        try {
+          if (editorDivRef.current && cursorRef.current) {
+            const selectedEndLineElement = document.querySelector(
+              `[data-id="${editorCoreRef.current.selectedEndLineId}"] pre`
+            ) as HTMLElement
+
+            const centerElement = selectedEndLineElement.querySelector(
+              `[data-type="line-center"]`
+            ) as HTMLElement
+
+            refreshCursorByElement(
+              editorDivRef.current,
+              cursorRef.current,
+              centerElement
+            )
+          }
+        } catch (error) {
+          console.error(error)
+        }
+
+        editorCoreRef.current.cursorNeedUpdate = false
       }
 
       const getLastSelection = (contentLineById: Record<string, LineState>) => {
@@ -81,9 +97,8 @@ const useKeydownManager = (
 
           target[id] = {
             ...contentLine,
-            isSelected: false,
-            start: undefined,
-            end: undefined,
+            start: 0,
+            end: 0,
           }
         })
         return target
@@ -105,8 +120,8 @@ const useKeydownManager = (
       }
 
       if (
-        editorCoreRef.current.isMouseDown &&
-        editorCoreRef.current.isSelectionChange
+        !editorCoreRef.current.isMouseDown &&
+        editorCoreRef.current.prevIsMouseDown
       ) {
         if (editorCoreRef.current.lastSelectionRange) {
           const startContainer =
@@ -118,9 +133,46 @@ const useKeydownManager = (
           const start = editorCoreRef.current.lastSelectionRange.startOffset
           const end = editorCoreRef.current.lastSelectionRange.endOffset
 
-          console.log(start, end, editorCoreRef.current.lastSelectionRange)
+          let startLine
+          let endLine
 
-          if (startContainer === endContainer) {
+          let current = startContainer
+
+          for (let i = 0; i < 5; i++) {
+            if (
+              current instanceof HTMLElement &&
+              current.dataset.type === 'line'
+            ) {
+              startLine = current
+              break
+            }
+
+            if (current.parentElement) {
+              current = current.parentElement
+            } else {
+              break
+            }
+          }
+
+          current = endContainer
+
+          for (let i = 0; i < 4; i++) {
+            if (
+              current instanceof HTMLElement &&
+              current.dataset.type === 'line'
+            ) {
+              endLine = current
+              break
+            }
+
+            if (current.parentElement) {
+              current = current.parentElement
+            } else {
+              break
+            }
+          }
+
+          if (startLine === endLine) {
             let startIndex = 0
 
             for (let i = 0; i < contentLineIds.length; i++) {
@@ -135,17 +187,52 @@ const useKeydownManager = (
             const lastContentLineId = contentLineIds[startIndex]
 
             setContentLineById?.((prev) => {
+              const next = { ...prev }
+
+              if (editorCoreRef.current.lastInputLineId !== undefined) {
+                const lastInputLineId = editorCoreRef.current.lastInputLineId
+
+                const lastLine = prev[lastInputLineId]
+
+                next[lastInputLineId] = { ...lastLine, input: false }
+              }
+
+              editorCoreRef.current.lastInputLineId = selectedEndLineId
+
+              const nextLine = prev[selectedEndLineId]
+
+              next[selectedEndLineId] = { ...nextLine, input: true }
+
+              return next
+            })
+
+            setContentLineById?.((prev) => {
               const unSelectTarget = getLastSelection(prev)
+
+              const next = { ...prev, ...unSelectTarget }
 
               editorCoreRef.current.lastSelectedLineIds.length = 0
 
               editorCoreRef.current.lastSelectedLineIds.push(lastContentLineId)
+
+              if (editorCoreRef.current.lastInputLineId !== undefined) {
+                const lastInputLineId = editorCoreRef.current.lastInputLineId
+
+                const lastLine = prev[lastInputLineId]
+
+                next[lastInputLineId] = { ...lastLine, input: false }
+              }
+
+              editorCoreRef.current.lastInputLineId = selectedEndLineId
+
+              const nextLine = prev[selectedEndLineId]
+
+              next[selectedEndLineId] = { ...nextLine, input: true }
+
               return {
-                ...prev,
-                ...unSelectTarget,
+                ...next,
                 [lastContentLineId]: {
-                  ...prev[lastContentLineId],
-                  isSelected: true,
+                  ...next[lastContentLineId],
                   start,
                   end,
                 },
@@ -171,139 +258,164 @@ const useKeydownManager = (
               const target: Record<string, LineState> = {}
 
               const unSelectTarget = getLastSelection(prev)
+              const next = { ...prev, ...unSelectTarget }
+
+              if (editorCoreRef.current.lastInputLineId !== undefined) {
+                const lastInputLineId = editorCoreRef.current.lastInputLineId
+
+                const lastLine = prev[lastInputLineId]
+
+                next[lastInputLineId] = { ...lastLine, input: false }
+              }
+
+              editorCoreRef.current.lastInputLineId = selectedEndLineId
+
+              const nextLine = prev[selectedEndLineId]
+
+              next[selectedEndLineId] = { ...nextLine, input: true }
 
               editorCoreRef.current.lastSelectedLineIds.length = 0
 
               for (let i = startIndex; i <= endIndex; i++) {
                 const lineId = contentLineIds[i]
-                const contentLine = contentLineById[lineId]
+                const contentLine = next[lineId]
 
                 editorCoreRef.current.lastSelectedLineIds.push(lineId)
 
                 if (i === startIndex) {
                   target[lineId] = {
                     ...contentLine,
-                    isSelected: true,
                     start,
-                    end: undefined,
+                    end: contentLine.text.length,
                   }
                 } else if (i === endIndex) {
                   target[lineId] = {
                     ...contentLine,
-                    isSelected: true,
-                    start: undefined,
+                    start: 0,
                     end,
                   }
                 } else {
                   target[lineId] = {
                     ...contentLine,
-                    isSelected: true,
-                    start: undefined,
-                    end: undefined,
+                    start: 0,
+                    end: contentLine.text.length,
                   }
                 }
               }
 
               return {
-                ...prev,
-                ...unSelectTarget,
+                ...next,
                 ...target,
               }
             })
           }
         }
-      }
 
-      if (
-        !editorCoreRef.current.isMouseDown &&
-        editorCoreRef.current.prevIsMouseDown
-      ) {
         textareaRef.current?.focus()
       }
 
       if (commendCallbackRef.current) {
-        try {
-          commendCallbackRef.current()
-          commendCallbackRef.current = undefined
-        } catch (error) {
-          console.error(error)
-        }
-      }
+        while (commendCallbackRef.current.length > 0) {
+          const callback = commendCallbackRef.current.shift()
 
-      const keydownManagerEvent = eventsQueueRef.current.pop()
-
-      eventsQueueRef.current.length = 0
-
-      if (keydownManagerEvent?.type === 'keyboard' && keydownManagerEvent.e) {
-        const e = keydownManagerEvent.e
-
-        if (e.ctrlKey || e.metaKey) {
-          if (e.key === 'z') {
-            commendCallbackRef.current = historyHandlers.handleUndo?.()
-          }
-        } else {
-          switch (e.key) {
-            case 'Enter':
-              historyHandlers.saveState()
-              commendCallbackRef.current = handlers.handleEnter()
-              break
-            case 'Backspace':
-              historyHandlers.saveState()
-              commendCallbackRef.current = handlers.handleBackspace()
-              break
-            case 'Escape':
-              historyHandlers.saveState()
-              break
-            case 'Tab':
-            case 'Meta':
-            case 'Alt':
-            case 'Control':
-            case 'Shift':
-              break
-            case 'ArrowUp':
-              break
-            case 'ArrowDown':
-              break
-            case 'ArrowLeft':
-              break
-            case 'ArrowRight':
-              break
-            case 'CapsLock':
-              break
-            case 'Space':
-              break
-
-            default: {
-              historyHandlers.saveState()
-              // commendCallbackRef.current = handlers.handleDefault(e.key)
-              break
+          if (callback) {
+            try {
+              callback()
+            } catch (error) {
+              console.error(error)
             }
           }
         }
-      } else if (
-        keydownManagerEvent?.type === 'commend' &&
-        keydownManagerEvent.commend
-      ) {
-        const commend = keydownManagerEvent.commend
+      }
 
-        switch (commend) {
-          case 'bold':
-            commendCallbackRef.current = handlers.handleBold()
-            break
-          case 'italic':
-            commendCallbackRef.current = handlers.handleItalic()
-            break
-          case 'strike':
-            commendCallbackRef.current = handlers.handleStrike()
-            break
-          case 'header':
-            commendCallbackRef.current = handlers.handleHeader()
-            break
-          case 'code':
-            commendCallbackRef.current = handlers.handleCode()
-            break
-          default:
-            break
+      while (eventsQueueRef.current.length > 0) {
+        const keydownManagerEvent = eventsQueueRef.current.shift()
+
+        if (keydownManagerEvent?.type === 'keyboard' && keydownManagerEvent.e) {
+          const e = keydownManagerEvent.e
+
+          if (e.ctrlKey || e.metaKey) {
+            if (e.key === 'z') {
+              commendCallbackRef.current.push(historyHandlers.handleUndo?.())
+            }
+          } else {
+            switch (e.key) {
+              case 'Enter':
+                if (editorCoreRef.current?.textareaValue.length === 0) {
+                  historyHandlers.saveState()
+
+                  commendCallbackRef.current.push(handlers.handleEnter())
+                  e.preventDefault()
+                }
+
+                break
+              case 'Backspace':
+                if (editorCoreRef.current?.textareaValue.length === 0) {
+                  historyHandlers.saveState()
+                  commendCallbackRef.current.push(handlers.handleBackspace())
+                }
+
+                break
+              case 'Escape':
+                historyHandlers.saveState()
+                break
+              case 'Tab':
+              case 'Meta':
+              case 'Alt':
+              case 'Control':
+              case 'Shift':
+                break
+              case 'ArrowUp':
+                break
+              case 'ArrowDown':
+                break
+              case 'ArrowLeft':
+                break
+              case 'ArrowRight':
+                break
+              case 'CapsLock':
+                break
+              case 'Space':
+                break
+
+              default: {
+                // historyHandlers.saveState()
+                // commendCallbackRef.current = handlers.handleDefault(e.key)
+                break
+              }
+            }
+          }
+        } else if (
+          keydownManagerEvent?.type === 'commend' &&
+          keydownManagerEvent.commend
+        ) {
+          const commend = keydownManagerEvent.commend
+
+          switch (commend) {
+            case 'bold':
+              commendCallbackRef.current.push(handlers.handleBold())
+              break
+            case 'italic':
+              commendCallbackRef.current.push(handlers.handleItalic())
+              break
+            case 'strike':
+              commendCallbackRef.current.push(handlers.handleStrike())
+              break
+            case 'header':
+              commendCallbackRef.current.push(handlers.handleHeader())
+              break
+            case 'code':
+              commendCallbackRef.current.push(handlers.handleCode())
+              break
+            default:
+              break
+          }
+        } else if (
+          keydownManagerEvent?.type === 'input' &&
+          keydownManagerEvent.value !== undefined
+        ) {
+          editorCoreRef.current?.setTexteraValue?.(keydownManagerEvent.value)
+          // editorCoreRef.current.cursorNeedUpdate = true
         }
       }
 
