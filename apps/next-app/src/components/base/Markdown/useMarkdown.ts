@@ -12,7 +12,7 @@ import { nanoid } from 'nanoid'
 import useIndexeddb from './useIndexeddb'
 import useHandlers from './useHandlers'
 import useHistoryHandlers from './useHistoryHandlers'
-import useKeydownManager from './useEditorEventManager'
+import useEditorEventManager from './useEditorEventManager'
 import { isUnderToolbar } from './utils'
 
 export interface LineState {
@@ -50,7 +50,7 @@ const useMarkdown = () => {
   const textareaRef = useRef<HTMLTextAreaElement>()
   const editorDivRef = useRef<HTMLDivElement>()
   const cursorRef = useRef<HTMLDivElement>()
-
+  const commendCallbackRef = useRef<(() => void)[]>([])
   const [textareaValue, setTexteraValue] = useState<string>('')
   const [contentLineIds, setContentLineIds] = useState<string[]>([])
 
@@ -123,7 +123,8 @@ const useMarkdown = () => {
 
   const handlers = useHandlers(editorCoreRef)
 
-  const { pushEvent } = useKeydownManager(
+  const { pushEvent } = useEditorEventManager(
+    commendCallbackRef,
     textareaRef,
     editorDivRef,
     cursorRef,
@@ -132,37 +133,88 @@ const useMarkdown = () => {
     historyHandlers
   )
 
-  // const hanldeKeypress = () => {}
-
   const hanldeTextareaKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault()
     }
 
-    pushEvent({
-      type: 'keyboard',
-      e,
-    })
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 'z') {
+        commendCallbackRef.current.push(historyHandlers.handleUndo?.())
+      }
+    } else {
+      switch (e.key) {
+        case 'Enter':
+          if (editorCoreRef.current?.textareaValue.length === 0) {
+            historyHandlers.saveState()
+
+            commendCallbackRef.current.push(handlers.handleEnter())
+            e.preventDefault()
+          }
+
+          break
+        case 'Backspace':
+          if (editorCoreRef.current?.textareaValue.length === 0) {
+            historyHandlers.saveState()
+            commendCallbackRef.current.push(handlers.handleBackspace())
+          }
+
+          break
+        case 'Escape':
+          historyHandlers.saveState()
+          break
+        case 'Tab':
+        case 'Meta':
+        case 'Alt':
+        case 'Control':
+        case 'Shift':
+          break
+        case 'ArrowUp':
+          commendCallbackRef.current.push(handlers.handleArrow('UP'))
+          break
+        case 'ArrowDown':
+          commendCallbackRef.current.push(handlers.handleArrow('DOWN'))
+          break
+        case 'ArrowLeft':
+          commendCallbackRef.current.push(handlers.handleArrow('LEFT'))
+          break
+        case 'ArrowRight':
+          commendCallbackRef.current.push(handlers.handleArrow('RIGHT'))
+          break
+        case 'CapsLock':
+          break
+        case 'Space':
+          break
+
+        default: {
+          break
+        }
+      }
+    }
   }
 
   const handleTextareaChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-    e.preventDefault()
-    pushEvent({
-      type: 'input',
-      value: e.target.value,
-    })
+    const value = e.target.value
+
+    setTexteraValue(value)
+    // setTimeout(() => {
+    //   editorCoreRef.current.setTexteraValue(value)
+    //   // setTexteraValue(value)
+    // }, 0)
+    // pushEvent({
+    //   type: 'input',
+    //   value: e.target.value,
+    // })
   }
 
   const textareaRefCallback = useCallback(
     (element: HTMLTextAreaElement) => {
       if (textareaRef.current !== element) {
-        // textareaRef.current?.removeEventListener('keypress', hanldeKeypress)
         textareaRef.current?.removeEventListener(
           'keydown',
           hanldeTextareaKeydown
         )
         textareaRef.current = element
-        // textareaRef.current?.addEventListener('keypress', hanldeKeypress)
         textareaRef.current?.addEventListener('keydown', hanldeTextareaKeydown)
       }
     },
@@ -199,16 +251,8 @@ const useMarkdown = () => {
   }
 
   useEffect(() => {
-    const handleKeydown = (e: KeyboardEvent) => {
+    const handleKeydown = () => {
       editorCoreRef.current.isKeyDown = true
-
-      // if (editorCoreRef.current.isSelectionEditor) {
-      //   // e.preventDefault()
-      //   pushEvent({
-      //     type: 'keyboard',
-      //     e,
-      //   })
-      // }
     }
 
     const handleMouseup = () => {
@@ -294,9 +338,6 @@ const useMarkdown = () => {
       }
     }
 
-    // document.addEventListener('compositionstart', (e) => {
-    //   console.log(e)
-    // })
     document.addEventListener('keydown', handleKeydown)
     document.addEventListener('keyup', handleKeyup)
     document.addEventListener('mousedown', handleMouseDown)

@@ -6,11 +6,6 @@ import { refreshCursorByElement, refreshCursorBySelection } from './utils'
 
 export type EditorCommend = 'bold' | 'italic' | 'strike' | 'header' | 'code'
 
-export interface EditorKeyboardEvent {
-  type: 'keyboard'
-  e?: KeyboardEvent
-}
-
 export interface EditorCommendEvent {
   type: 'commend'
   commend?: EditorCommend
@@ -21,12 +16,10 @@ export interface InputCommendEvent {
   value?: string
 }
 
-export type EditorEvent =
-  | EditorKeyboardEvent
-  | EditorCommendEvent
-  | InputCommendEvent
+export type EditorEvent = EditorCommendEvent | InputCommendEvent
 
-const useKeydownManager = (
+const useEditorEventManager = (
+  commendCallbackRef: MutableRefObject<(() => void)[]>,
   textareaRef: MutableRefObject<HTMLTextAreaElement | undefined>,
   editorDivRef: MutableRefObject<HTMLDivElement | undefined>,
   cursorRef: MutableRefObject<HTMLDivElement | undefined>,
@@ -35,7 +28,7 @@ const useKeydownManager = (
   historyHandlers: HistoryHandlers
 ) => {
   const eventsQueueRef = useRef<EditorEvent[]>([])
-  const commendCallbackRef = useRef<(() => void)[]>([])
+
   const frameIdRef = useRef<number>()
 
   useEffect(() => {
@@ -330,71 +323,13 @@ const useKeydownManager = (
       }
 
       while (eventsQueueRef.current.length > 0) {
-        const keydownManagerEvent = eventsQueueRef.current.shift()
+        const editorManagerEvent = eventsQueueRef.current.shift()
 
-        if (keydownManagerEvent?.type === 'keyboard' && keydownManagerEvent.e) {
-          const e = keydownManagerEvent.e
-
-          if (e.ctrlKey || e.metaKey) {
-            if (e.key === 'z') {
-              commendCallbackRef.current.push(historyHandlers.handleUndo?.())
-            }
-          } else {
-            switch (e.key) {
-              case 'Enter':
-                if (editorCoreRef.current?.textareaValue.length === 0) {
-                  historyHandlers.saveState()
-
-                  commendCallbackRef.current.push(handlers.handleEnter())
-                  e.preventDefault()
-                }
-
-                break
-              case 'Backspace':
-                if (editorCoreRef.current?.textareaValue.length === 0) {
-                  historyHandlers.saveState()
-                  commendCallbackRef.current.push(handlers.handleBackspace())
-                }
-
-                break
-              case 'Escape':
-                historyHandlers.saveState()
-                break
-              case 'Tab':
-              case 'Meta':
-              case 'Alt':
-              case 'Control':
-              case 'Shift':
-                break
-              case 'ArrowUp':
-                commendCallbackRef.current.push(handlers.handleArrow('UP'))
-                break
-              case 'ArrowDown':
-                commendCallbackRef.current.push(handlers.handleArrow('DOWN'))
-                break
-              case 'ArrowLeft':
-                commendCallbackRef.current.push(handlers.handleArrow('LEFT'))
-                break
-              case 'ArrowRight':
-                commendCallbackRef.current.push(handlers.handleArrow('RIGHT'))
-                break
-              case 'CapsLock':
-                break
-              case 'Space':
-                break
-
-              default: {
-                // historyHandlers.saveState()
-                // commendCallbackRef.current = handlers.handleDefault(e.key)
-                break
-              }
-            }
-          }
-        } else if (
-          keydownManagerEvent?.type === 'commend' &&
-          keydownManagerEvent.commend
+        if (
+          editorManagerEvent?.type === 'commend' &&
+          editorManagerEvent.commend
         ) {
-          const commend = keydownManagerEvent.commend
+          const commend = editorManagerEvent.commend
 
           switch (commend) {
             case 'bold':
@@ -416,10 +351,10 @@ const useKeydownManager = (
               break
           }
         } else if (
-          keydownManagerEvent?.type === 'input' &&
-          keydownManagerEvent.value !== undefined
+          editorManagerEvent?.type === 'input' &&
+          editorManagerEvent.value !== undefined
         ) {
-          editorCoreRef.current?.setTexteraValue?.(keydownManagerEvent.value)
+          editorCoreRef.current?.setTexteraValue?.(editorManagerEvent.value)
           // editorCoreRef.current.cursorNeedUpdate = true
         }
       }
@@ -448,4 +383,4 @@ const useKeydownManager = (
   }, [handlers, historyHandlers])
 }
 
-export default useKeydownManager
+export default useEditorEventManager
