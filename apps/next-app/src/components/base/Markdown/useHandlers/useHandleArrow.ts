@@ -8,7 +8,7 @@ const useHandleEnter = (editorCoreRef: EditorCoreRef) => {
       let contentStatus = editorCoreRef.current.contentStatus
       const setContentStatus = editorCoreRef.current.setContentStatus
 
-      contentStatus = fn.arrow(editorCoreRef, direction, contentStatus)
+      contentStatus = fn.arrow(contentStatus, editorCoreRef, direction)
 
       setContentStatus?.(contentStatus)
 

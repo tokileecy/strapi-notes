@@ -2,10 +2,10 @@ import { ContentStatus, EditorCoreRef } from '../../useMarkdown'
 import { getLineIndexById } from '../../utils'
 
 const handleBackspace = (
-  editorCoreRef: EditorCoreRef,
-  options: ContentStatus
+  contentStatus: ContentStatus,
+  editorCoreRef: EditorCoreRef
 ): ContentStatus => {
-  let { selectedEndLineId, lastSelectedLineIds, ids, lineById } = options
+  let { selectedEndLineId, lastSelectedLineIds, ids, lineById } = contentStatus
 
   if (
     lastSelectedLineIds.length === 1 &&

@@ -1,20 +1,25 @@
 import { useCallback } from 'react'
-import * as fn from './fn'
 import { EditorCoreRef } from '../useMarkdown'
+import * as fn from './fn'
 
-const useHandleBackspace = (editorCoreRef: EditorCoreRef) => {
+const useAddHeshToSelectionTop = (editorCoreRef: EditorCoreRef) => {
   return useCallback(() => {
+    const finishedCallbacks: (() => void)[] = []
+
     let contentStatus = editorCoreRef.current.contentStatus
     const setContentStatus = editorCoreRef.current.setContentStatus
 
-    contentStatus = fn.backspace(contentStatus, editorCoreRef)
+    contentStatus = fn.addHeshToTop(contentStatus)
 
     setContentStatus?.(contentStatus)
 
     return () => {
+      finishedCallbacks.forEach((func) => {
+        func()
+      })
       editorCoreRef.current.cursorNeedUpdate = true
     }
   }, [editorCoreRef])
 }
 
-export default useHandleBackspace
+export default useAddHeshToSelectionTop

@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useEffect, useMemo } from 'react'
+import React, { ChangeEventHandler, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import { ContentStatus } from './useMarkdown'
 import Cursor from './Cursor'

@@ -4,10 +4,10 @@ import { getLineIndexById } from '../../utils'
 import handleBackspace from './backspace'
 
 const handleEnter = (
-  editorCoreRef: EditorCoreRef,
-  options: ContentStatus
+  contentStatus: ContentStatus,
+  editorCoreRef: EditorCoreRef
 ): ContentStatus => {
-  let { ids, lineById, selectedEndLineId, lastSelectedLineIds } = options
+  let { ids, lineById, selectedEndLineId, lastSelectedLineIds } = contentStatus
 
   if (
     lastSelectedLineIds.length > 1 ||
@@ -15,12 +15,15 @@ const handleEnter = (
       lineById[lastSelectedLineIds[0]].end
   ) {
     ;({ ids, lineById, selectedEndLineId, lastSelectedLineIds } =
-      handleBackspace(editorCoreRef, {
-        ids,
-        lineById,
-        selectedEndLineId,
-        lastSelectedLineIds,
-      }))
+      handleBackspace(
+        {
+          ids,
+          lineById,
+          selectedEndLineId,
+          lastSelectedLineIds,
+        },
+        editorCoreRef
+      ))
   }
 
   const lineIndex = getLineIndexById(editorCoreRef, selectedEndLineId)

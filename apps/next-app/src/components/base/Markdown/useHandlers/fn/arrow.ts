@@ -2,11 +2,11 @@ import { ContentStatus, EditorCoreRef } from '../../useMarkdown'
 import { getLineIndexById } from '../../utils'
 
 const handleArrow = (
+  contentStatus: ContentStatus,
   editorCoreRef: EditorCoreRef,
-  direction: 'UP' | 'DOWN' | 'RIGHT' | 'LEFT',
-  options: ContentStatus
+  direction: 'UP' | 'DOWN' | 'RIGHT' | 'LEFT'
 ): ContentStatus => {
-  let { ids, lineById, selectedEndLineId, lastSelectedLineIds } = options
+  let { ids, lineById, selectedEndLineId, lastSelectedLineIds } = contentStatus
 
   lineById = { ...lineById }
 
