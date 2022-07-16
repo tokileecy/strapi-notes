@@ -7,8 +7,7 @@ const handleArrow = (
   editorCoreRef: EditorCoreRef,
   direction: ArrowDirection
 ): ContentStatus => {
-  let { actionHistory, ids, lineById, selectedRange, inputIndex } =
-    contentStatus
+  let { actionHistory, ids, lineById, selectedRange } = contentStatus
 
   actionHistory = [...actionHistory, 'arrow']
   lineById = { ...lineById }
@@ -123,7 +122,6 @@ const handleArrow = (
     ids,
     lineById,
     selectedRange,
-    inputIndex,
   }
 }
 

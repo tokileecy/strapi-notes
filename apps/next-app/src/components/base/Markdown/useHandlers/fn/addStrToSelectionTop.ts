@@ -5,8 +5,7 @@ const addStrToTop = (
   contentStatus: ContentStatus,
   str: string
 ): ContentStatus => {
-  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
-    contentStatus
+  let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
   actionHistory = [...actionHistory, 'add-str-to-top']
   lineById = { ...contentStatus.lineById }
@@ -30,7 +29,6 @@ const addStrToTop = (
     ids,
     lineById,
     selectedRange,
-    inputIndex,
   }
 }
 

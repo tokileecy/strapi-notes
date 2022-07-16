@@ -39,7 +39,6 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
     cursorRefCallback,
     pushEvent,
     contentStatus = { ...initialContentStatus },
-    textareaValue,
     onTextareaChange,
   } = props
 
@@ -132,7 +131,6 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
                 cursorRefCallback={cursorRefCallback}
                 editorDivRefCallback={editorDivRefCallback}
                 contentStatus={contentStatus}
-                textareaValue={textareaValue}
                 onTextareaChange={onTextareaChange}
               />
             </Box>

@@ -6,8 +6,7 @@ const code = (
   contentStatus: ContentStatus,
   editorCoreRef: EditorCoreRef
 ): ContentStatus => {
-  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
-    contentStatus
+  let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
   actionHistory = [...actionHistory, 'code']
   lineById = { ...lineById }
@@ -69,7 +68,6 @@ const code = (
     ids,
     lineById,
     selectedRange,
-    inputIndex,
   }
 }
 
