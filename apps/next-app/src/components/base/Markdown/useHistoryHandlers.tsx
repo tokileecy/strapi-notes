@@ -17,6 +17,8 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
 
   return useMemo(() => {
     const saveState = () => {
+      const contentStatus = editorCoreRef.current.contentStatus
+
       if (editorCoreRef.current) {
         if (previousRevisionRef.current.length > maxCacheCount) {
           previousRevisionRef.current.shift()
@@ -31,9 +33,9 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
         if (range) {
           startOffset = range.startOffset
           endOffset = range.endOffset
-          selectedStartLineId = editorCoreRef.current.selectedStartLineId
-          selectedEndLineId =
-            editorCoreRef.current.contentStatus.selectedEndLineId
+          selectedStartLineId =
+            contentStatus.ids[contentStatus.selectedRange.start]
+          selectedEndLineId = contentStatus.ids[contentStatus.selectedRange.end]
         }
 
         previousRevisionRef.current.push({
@@ -41,8 +43,8 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
           endOffset,
           selectedStartLineId,
           selectedEndLineId,
-          contentLineIds: editorCoreRef.current.contentStatus.ids,
-          contentLineById: editorCoreRef.current.contentStatus.lineById,
+          contentLineIds: contentStatus.ids,
+          contentLineById: contentStatus.lineById,
         })
       }
     }
@@ -61,6 +63,7 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
           }
 
           editorCoreRef.current.setContentStatus?.({
+            actionHistory: ['undo'],
             ids: nextContentLineIds,
             lineById: nextContentLineById,
           })

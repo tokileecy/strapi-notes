@@ -1,9 +1,9 @@
 import { MutableRefObject, useEffect, useMemo, useRef } from 'react'
 import { Handlers } from './useHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
-import { EditorCoreRef, LineState } from './useMarkdown'
+import { EditorCoreRef } from './useMarkdown'
 import {
-  findLineElement,
+  getLineIdByElement,
   getLineIndexById,
   refreshCursorByElement,
   refreshCursorBySelection,
@@ -38,9 +38,6 @@ const useEditorEventManager = (
 
   useEffect(() => {
     const update = () => {
-      const contentStatus = editorCoreRef.current.contentStatus
-      const setContentStatus = editorCoreRef.current.setContentStatus
-
       if (editorCoreRef.current.isSelectionChange) {
         if (
           editorDivRef?.current &&
@@ -65,8 +62,13 @@ const useEditorEventManager = (
       if (editorCoreRef.current.cursorNeedUpdate) {
         try {
           if (editorDivRef.current && cursorRef.current) {
+            const contentStatus = editorCoreRef.current.contentStatus
+
+            const selectedEndLineId =
+              contentStatus.ids[contentStatus.selectedRange.end]
+
             const selectedEndLineElement = document.querySelector(
-              `[data-id="${contentStatus.selectedEndLineId}"] pre`
+              `[data-id="${selectedEndLineId}"] pre`
             ) as HTMLElement
 
             const centerElement = selectedEndLineElement.querySelector(
@@ -86,184 +88,50 @@ const useEditorEventManager = (
         editorCoreRef.current.cursorNeedUpdate = false
       }
 
-      const getLastSelection = (contentLineById: Record<string, LineState>) => {
-        const target: Record<string, LineState> = {}
-
-        contentStatus.lastSelectedLineIds.forEach((id) => {
-          const contentLine = contentLineById[id]
-
-          target[id] = {
-            ...contentLine,
-            start: 0,
-            end: 0,
-          }
-        })
-        return target
-      }
-
       if (
         editorCoreRef.current.isMouseDown &&
         !editorCoreRef.current.prevIsMouseDown
       ) {
-        const target = getLastSelection(contentStatus.lineById)
+        const lastSelectionRange = editorCoreRef.current.lastSelectionRange
 
-        editorCoreRef.current.contentStatus.lastSelectedLineIds.length = 0
-        setContentStatus?.({
-          lineById: { ...contentStatus.lineById, ...target },
-        })
+        if (lastSelectionRange) {
+          commendCallbackRef.current.push(handlers.handleClearSelectLines())
+        }
       }
 
       if (
         !editorCoreRef.current.isMouseDown &&
         editorCoreRef.current.prevIsMouseDown
       ) {
-        if (editorCoreRef.current.lastSelectionRange) {
-          const startContainer =
-            editorCoreRef.current.lastSelectionRange.startContainer
+        const lastSelectionRange = editorCoreRef.current.lastSelectionRange
 
-          const endContainer =
-            editorCoreRef.current.lastSelectionRange.endContainer
-
-          const start = editorCoreRef.current.lastSelectionRange.startOffset
-          const end = editorCoreRef.current.lastSelectionRange.endOffset
-
-          const startLine = findLineElement(startContainer)
-          const endLine = findLineElement(endContainer)
+        if (lastSelectionRange) {
+          const start = lastSelectionRange.startOffset
+          const end = lastSelectionRange.endOffset
 
           const startIndex = getLineIndexById(
             editorCoreRef,
-            editorCoreRef.current.selectedStartLineId
+            getLineIdByElement(lastSelectionRange.startContainer)
           )
 
-          if (startLine === endLine) {
-            const lastContentLineId = contentStatus.ids[startIndex]
+          const endIndex = getLineIndexById(
+            editorCoreRef,
+            getLineIdByElement(lastSelectionRange.endContainer)
+          )
 
-            let nextLineById = { ...contentStatus.lineById }
-
-            if (editorCoreRef.current.lastInputLineId !== undefined) {
-              const lastInputLineId = editorCoreRef.current.lastInputLineId
-
-              const lastLine = nextLineById[lastInputLineId]
-
-              nextLineById[lastInputLineId] = { ...lastLine, input: false }
-            }
-
-            editorCoreRef.current.lastInputLineId =
-              contentStatus.selectedEndLineId
-
-            let nextLine = nextLineById[contentStatus.selectedEndLineId]
-
-            nextLineById[contentStatus.selectedEndLineId] = {
-              ...nextLine,
-              input: true,
-            }
-
-            const unSelectTarget = getLastSelection(nextLineById)
-
-            nextLineById = { ...nextLineById, ...unSelectTarget }
-
-            const nextLastSelectedLineIds = [lastContentLineId]
-
-            if (editorCoreRef.current.lastInputLineId !== undefined) {
-              const lastInputLineId = editorCoreRef.current.lastInputLineId
-
-              const lastLine = nextLineById[lastInputLineId]
-
-              nextLineById[lastInputLineId] = { ...lastLine, input: false }
-            }
-
-            editorCoreRef.current.lastInputLineId =
-              contentStatus.selectedEndLineId
-
-            nextLine = nextLineById[contentStatus.selectedEndLineId]
-
-            nextLineById[contentStatus.selectedEndLineId] = {
-              ...nextLine,
-              input: true,
-            }
-
-            nextLineById[lastContentLineId].start = start
-            nextLineById[lastContentLineId].end = end
-
-            setContentStatus?.({
-              lineById: nextLineById,
-              lastSelectedLineIds: nextLastSelectedLineIds,
-            })
-          } else if (
-            editorCoreRef.current.selectedStartLineId !== '' &&
-            contentStatus.selectedEndLineId !== ''
-          ) {
-            const startIndex = getLineIndexById(
-              editorCoreRef,
-              editorCoreRef.current.selectedStartLineId
+          commendCallbackRef.current.push(
+            handlers.handleChangeSelectLines(
+              {
+                selectedRange: {
+                  start: startIndex,
+                  end: endIndex,
+                },
+                line: { start, end },
+              },
+              { textureAreaFocus: true, cursorNeedUpdate: true }
             )
-
-            const endIndex = getLineIndexById(
-              editorCoreRef,
-              contentStatus.selectedEndLineId
-            )
-
-            const unSelectTarget = getLastSelection(contentStatus.lineById)
-
-            const nextLineById = {
-              ...contentStatus.lineById,
-              ...unSelectTarget,
-            }
-
-            if (editorCoreRef.current.lastInputLineId !== undefined) {
-              const lastInputLineId = editorCoreRef.current.lastInputLineId
-
-              const lastLine = nextLineById[lastInputLineId]
-
-              nextLineById[lastInputLineId] = { ...lastLine, input: false }
-            }
-
-            editorCoreRef.current.lastInputLineId =
-              contentStatus.selectedEndLineId
-
-            const nextLine = nextLineById[contentStatus.selectedEndLineId]
-
-            nextLineById[contentStatus.selectedEndLineId] = {
-              ...nextLine,
-              input: true,
-            }
-
-            contentStatus.lastSelectedLineIds.length = 0
-
-            for (let i = startIndex; i <= endIndex; i++) {
-              const lineId = contentStatus.ids[i]
-              const contentLine = nextLineById[lineId]
-
-              contentStatus.lastSelectedLineIds.push(lineId)
-
-              if (i === startIndex) {
-                nextLineById[lineId] = {
-                  ...contentLine,
-                  start,
-                  end: contentLine.text.length,
-                }
-              } else if (i === endIndex) {
-                nextLineById[lineId] = {
-                  ...contentLine,
-                  start: 0,
-                  end,
-                }
-              } else {
-                nextLineById[lineId] = {
-                  ...contentLine,
-                  start: 0,
-                  end: contentLine.text.length,
-                }
-              }
-            }
-
-            setContentStatus?.({
-              lineById: nextLineById,
-            })
-          }
+          )
         }
-
-        textareaRef.current?.focus()
       }
 
       if (commendCallbackRef.current) {

@@ -77,7 +77,6 @@ const Line = (props: LineProps) => {
           background: '#191919',
         },
         'pre, span': {
-          wordVreak: 'break-all',
           whiteSpace: 'break-spaces',
         },
       }}

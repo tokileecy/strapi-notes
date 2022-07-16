@@ -58,6 +58,10 @@ const Cursor = (props: CursorProps) => {
         sx={{
           userSelect: 'none',
           outline: 'none',
+          width: '0',
+          pointerEvents: 'none',
+          p: 0,
+          border: 'none',
         }}
         component="textarea"
         value={textareaValue}

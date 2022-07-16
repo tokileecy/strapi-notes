@@ -1,39 +1,41 @@
 import { nanoid } from 'nanoid'
 import { EditorCoreRef, ContentStatus } from '../../useMarkdown'
-import { getLineIndexById } from '../../utils'
 import handleBackspace from './backspace'
 
 const handleEnter = (
   contentStatus: ContentStatus,
   editorCoreRef: EditorCoreRef
 ): ContentStatus => {
-  let { ids, lineById, selectedEndLineId, lastSelectedLineIds } = contentStatus
+  let { actionHistory, ids, lineById, selectedRange } = contentStatus
+
+  actionHistory = [...actionHistory, 'enter']
+  selectedRange = { ...selectedRange }
+
+  let startLineId = ids[selectedRange.start]
 
   if (
-    lastSelectedLineIds.length > 1 ||
-    lineById[lastSelectedLineIds[0]].start !==
-      lineById[lastSelectedLineIds[0]].end
+    selectedRange.end - selectedRange.start > 0 ||
+    lineById[startLineId].start !== lineById[startLineId].end
   ) {
-    ;({ ids, lineById, selectedEndLineId, lastSelectedLineIds } =
-      handleBackspace(
-        {
-          ids,
-          lineById,
-          selectedEndLineId,
-          lastSelectedLineIds,
-        },
-        editorCoreRef
-      ))
+    ;({ ids, lineById, selectedRange } = handleBackspace(
+      {
+        actionHistory,
+        ids,
+        lineById,
+        selectedRange,
+      },
+      editorCoreRef
+    ))
   }
 
-  const lineIndex = getLineIndexById(editorCoreRef, selectedEndLineId)
+  startLineId = ids[selectedRange.start]
 
-  if (lineIndex !== undefined) {
-    if (lineById[lastSelectedLineIds[0]].start === 0) {
+  if (selectedRange.end !== -1) {
+    if (lineById[startLineId].start === 0) {
       const newLineId = nanoid(6)
 
       ids = [...ids]
-      ids.splice(lineIndex, 0, newLineId)
+      ids.splice(selectedRange.end, 0, newLineId)
 
       lineById[newLineId] = {
         text: '',
@@ -41,9 +43,13 @@ const handleEnter = (
         start: 0,
         end: 0,
       }
+      selectedRange.start++
+      selectedRange.end++
     } else {
       const newLineId = nanoid(6)
-      const selectedLine = lineById[selectedEndLineId]
+
+      const selectedId = ids[selectedRange.end]
+      const selectedLine = lineById[selectedId]
 
       const nextSelectedLineText = selectedLine.text.slice(
         0,
@@ -56,7 +62,7 @@ const handleEnter = (
       )
 
       ids = [...ids]
-      ids.splice(lineIndex + 1, 0, newLineId)
+      ids.splice(selectedRange.end + 1, 0, newLineId)
 
       lineById[newLineId] = {
         text: newLineText,
@@ -65,23 +71,23 @@ const handleEnter = (
         end: 0,
       }
 
-      lineById[selectedEndLineId] = {
+      lineById[startLineId] = {
         text: nextSelectedLineText,
         input: false,
         start: 0,
         end: 0,
       }
 
-      lastSelectedLineIds = [newLineId]
-      selectedEndLineId = newLineId
+      selectedRange.start++
+      selectedRange.end++
     }
   }
 
   return {
+    actionHistory,
     ids,
     lineById,
-    selectedEndLineId,
-    lastSelectedLineIds,
+    selectedRange,
   }
 }
 

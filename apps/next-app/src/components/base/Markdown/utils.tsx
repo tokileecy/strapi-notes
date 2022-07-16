@@ -33,7 +33,7 @@ export const refreshCursorByElement = (
   }
 }
 
-export const isUnderEditor = (element: Element) => {
+export const isUnderEditor = (element: Node) => {
   let current = element
 
   for (let i = 0; i < 5; i++) {
@@ -106,4 +106,92 @@ export const getLineIndexById = (
   }
 
   return targetIndex
+}
+
+export const getLineIdByElement = (element: Node) => {
+  let current = element
+  let id = ''
+
+  for (let i = 0; i < 5; i++) {
+    if (current instanceof HTMLElement && current.dataset.type === 'wrapper') {
+      id = current.dataset.id ?? ''
+      break
+    }
+
+    if (current.parentElement) {
+      current = current.parentElement
+    } else {
+      break
+    }
+  }
+
+  return id
+}
+
+const selectedIdsByIndexRangeCache = (() => {
+  let lastIds: string[] = []
+  let lastIndexRange = { start: -1, end: -1 }
+  let lastRes: string[] = []
+
+  return {
+    getCache: (
+      ids: string[],
+      indexRange: {
+        start: number
+        end: number
+      }
+    ) => {
+      if (lastIds === ids && indexRange === lastIndexRange) {
+        return lastRes
+      } else {
+        return null
+      }
+    },
+    setCache: (
+      ids: string[],
+      indexRange: {
+        start: number
+        end: number
+      },
+      res: string[]
+    ) => {
+      lastIds = ids
+      lastIndexRange = indexRange
+      lastRes = res
+    },
+  }
+})()
+
+export const getSelectedIdsByIndexRange = (
+  ids: string[],
+  indexRange: {
+    start: number
+    end: number
+  }
+) => {
+  // const cache = selectedIdsByIndexRangeCache.getCache(ids, indexRange)
+
+  // if (cache) {
+  //   return cache
+  // } else {
+  //   const res = []
+
+  //   if (indexRange.start !== -1 && indexRange.end !== -1) {
+  //     for (let i = indexRange.start; i <= indexRange.end; i++) {
+  //       res.push(ids[i])
+  //     }
+  //   }
+
+  //   selectedIdsByIndexRangeCache.setCache(ids, indexRange, res)
+  //   return res
+  // }
+  const res = []
+
+  if (indexRange.start !== -1 && indexRange.end !== -1) {
+    for (let i = indexRange.start; i <= indexRange.end; i++) {
+      res.push(ids[i])
+    }
+  }
+
+  return res
 }

@@ -1,14 +1,21 @@
 import { ContentStatus } from '../../useMarkdown'
+import { getSelectedIdsByIndexRange } from '../../utils'
 
-const addHeshToTop = (
+const addStrToTop = (
   contentStatus: ContentStatus,
   str: string
 ): ContentStatus => {
-  let { selectedEndLineId, lastSelectedLineIds, ids, lineById } = contentStatus
+  let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
+  actionHistory = [...actionHistory, 'add-str-to-top']
   lineById = { ...contentStatus.lineById }
 
-  contentStatus.lastSelectedLineIds.forEach((selectedLineId) => {
+  const lastSelectedLineIds = getSelectedIdsByIndexRange(
+    contentStatus.ids,
+    contentStatus.selectedRange
+  )
+
+  lastSelectedLineIds.forEach((selectedLineId) => {
     const selectedLine = lineById[selectedLineId]
 
     lineById[selectedLineId] = { ...lineById[selectedLineId] }
@@ -18,11 +25,11 @@ const addHeshToTop = (
   })
 
   return {
+    actionHistory,
     ids,
     lineById,
-    lastSelectedLineIds,
-    selectedEndLineId,
+    selectedRange,
   }
 }
 
-export default addHeshToTop
+export default addStrToTop

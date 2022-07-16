@@ -14,7 +14,7 @@ import useIndexeddb from './useIndexeddb'
 import useHandlers from './useHandlers'
 import useHistoryHandlers from './useHistoryHandlers'
 import useEditorEventManager from './useEditorEventManager'
-import { isUnderToolbar } from './utils'
+import { isUnderEditor, isUnderToolbar } from './utils'
 
 export interface LineState {
   text: string
@@ -24,10 +24,13 @@ export interface LineState {
 }
 
 export interface ContentStatus {
+  actionHistory: string[]
   ids: string[]
   lineById: Record<string, LineState>
-  selectedEndLineId: string
-  lastSelectedLineIds: string[]
+  selectedRange: {
+    start: number
+    end: number
+  }
 }
 
 export interface EditorCoreRefData {
@@ -38,8 +41,6 @@ export interface EditorCoreRefData {
   isSelectionChange: boolean
   cursorNeedUpdate: boolean
   lastSelectionRange?: Range
-  lastInputLineId?: string
-  selectedStartLineId: string
   content?: string
   onChange?: (content: string) => void
   textareaValue: string
@@ -50,11 +51,14 @@ export interface EditorCoreRefData {
 
 export type EditorCoreRef = MutableRefObject<EditorCoreRefData>
 
-export const initialContentStatus = {
+export const initialContentStatus: ContentStatus = {
+  actionHistory: [],
   ids: [],
   lineById: {},
-  selectedEndLineId: '',
-  lastSelectedLineIds: [],
+  selectedRange: {
+    start: -1,
+    end: -1,
+  },
 }
 
 const useMarkdown = () => {
@@ -65,10 +69,17 @@ const useMarkdown = () => {
   const [textareaValue, setTexteraValue] = useState<string>('')
 
   const [contentStatus, setContentStatus] = useReducer(
-    (prev: ContentStatus, next: Partial<ContentStatus>) => ({
-      ...prev,
-      ...next,
-    }),
+    (prev: ContentStatus, next: Partial<ContentStatus>) => {
+      // if (process.env.NODE_ENV === 'development') {
+      //   console.log('contentStatus updeate:', next.actionHistory, next)
+      // }
+
+      return {
+        ...prev,
+        ...next,
+        actionHistory: [] as string[],
+      }
+    },
     {
       ...initialContentStatus,
     }
@@ -83,7 +94,6 @@ const useMarkdown = () => {
     cursorNeedUpdate: false,
     isKeyDown: false,
     isMouseDown: false,
-    selectedStartLineId: '',
     contentStatus: { ...initialContentStatus },
     textareaValue: '',
   })
@@ -119,6 +129,7 @@ const useMarkdown = () => {
           }
         })
         setContentStatus({
+          actionHistory: ['reset'],
           ids: nextIds,
           lineById: nextLineById,
         })
@@ -136,7 +147,7 @@ const useMarkdown = () => {
     [setContent]
   )
 
-  const handlers = useHandlers(editorCoreRef)
+  const handlers = useHandlers(editorCoreRef, textareaRef)
 
   const { pushEvent } = useEditorEventManager(
     commendCallbackRef,
@@ -282,64 +293,12 @@ const useMarkdown = () => {
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0)
         const ancestorContainer = range.commonAncestorContainer
-        let current: HTMLElement | Node = ancestorContainer
 
         editorCoreRef.current.isSelectionChange = false
 
-        for (let i = 0; i < 5; i++) {
-          if (current === cursorRef.current) {
-            break
-          }
-
-          if (current === editorDivRef.current) {
-            editorCoreRef.current.isSelectionChange = true
-            editorCoreRef.current.lastSelectionRange = range
-
-            break
-          }
-
-          if (current.parentElement) {
-            current = current.parentElement
-          } else {
-            break
-          }
-        }
-
-        current = range.startContainer
-
-        for (let i = 0; i < 5; i++) {
-          if (
-            current instanceof HTMLElement &&
-            current.dataset.type === 'wrapper'
-          ) {
-            editorCoreRef.current.selectedStartLineId = current.dataset.id ?? ''
-            break
-          }
-
-          if (current.parentElement) {
-            current = current.parentElement
-          } else {
-            break
-          }
-        }
-
-        current = range.endContainer
-
-        for (let i = 0; i < 4; i++) {
-          if (
-            current instanceof HTMLElement &&
-            current.dataset.type === 'wrapper'
-          ) {
-            editorCoreRef.current.contentStatus.selectedEndLineId =
-              current.dataset.id ?? ''
-            break
-          }
-
-          if (current.parentElement) {
-            current = current.parentElement
-          } else {
-            break
-          }
+        if (isUnderEditor(ancestorContainer)) {
+          editorCoreRef.current.isSelectionChange = true
+          editorCoreRef.current.lastSelectionRange = range
         }
       }
     }

@@ -6,13 +6,14 @@ const code = (
   contentStatus: ContentStatus,
   editorCoreRef: EditorCoreRef
 ): ContentStatus => {
-  let { selectedEndLineId, lastSelectedLineIds, ids, lineById } = contentStatus
+  let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
+  actionHistory = [...actionHistory, 'code']
   lineById = { ...lineById }
 
-  if (contentStatus.lastSelectedLineIds.length === 1) {
+  if (selectedRange.end - selectedRange.start === 0) {
     const str = '`'
-    const selectedLineId = contentStatus.lastSelectedLineIds[0]
+    const selectedLineId = ids[selectedRange.end]
     const selectedLine = lineById[selectedLineId]
 
     const nextTextArr = Array.from(lineById[selectedLineId].text)
@@ -28,12 +29,9 @@ const code = (
     lineById[selectedLineId].end += str.length
   } else {
     const str = '```'
-    const startSelectedLineId = contentStatus.lastSelectedLineIds[0]
+    const startSelectedLineId = ids[selectedRange.start]
 
-    const endSelectedLineId =
-      contentStatus.lastSelectedLineIds[
-        contentStatus.lastSelectedLineIds.length - 1
-      ]
+    const endSelectedLineId = ids[selectedRange.end]
 
     const startIndex = getLineIndexById(editorCoreRef, startSelectedLineId)
     const endIndex = getLineIndexById(editorCoreRef, endSelectedLineId)
@@ -63,10 +61,10 @@ const code = (
   }
 
   return {
+    actionHistory,
     ids,
     lineById,
-    lastSelectedLineIds,
-    selectedEndLineId,
+    selectedRange,
   }
 }
 

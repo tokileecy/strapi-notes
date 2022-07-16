@@ -1,27 +1,28 @@
 import { ContentStatus, EditorCoreRef } from '../../useMarkdown'
-import { getLineIndexById } from '../../utils'
+import { getLineIndexById, getSelectedIdsByIndexRange } from '../../utils'
 
 const handleBackspace = (
   contentStatus: ContentStatus,
   editorCoreRef: EditorCoreRef
 ): ContentStatus => {
-  let { selectedEndLineId, lastSelectedLineIds, ids, lineById } = contentStatus
+  let { actionHistory, selectedRange, ids, lineById } = contentStatus
+
+  actionHistory = [...actionHistory, 'backspace']
+  selectedRange = { ...selectedRange }
+
+  const lastSelectedLineIds = getSelectedIdsByIndexRange(ids, selectedRange)
 
   if (
-    lastSelectedLineIds.length === 1 &&
+    selectedRange.end - selectedRange.start === 0 &&
     lineById[lastSelectedLineIds[0]].start === 0
   ) {
     const selectedLineId = lastSelectedLineIds[0]
     const selectedLine = lineById[selectedLineId]
-    const lineIndex = getLineIndexById(editorCoreRef, selectedLineId)
 
-    if (lineIndex !== undefined && lineIndex !== 0) {
-      const prevLineId = ids[lineIndex - 1]
+    if (selectedRange.end !== undefined && selectedRange.end !== 0) {
+      const preLineIndex = selectedRange.end - 1
+      const prevLineId = ids[preLineIndex]
       const prevLine = lineById[prevLineId]
-
-      lastSelectedLineIds = [...lastSelectedLineIds]
-      lastSelectedLineIds[0] = prevLineId
-      selectedEndLineId = prevLineId
 
       lineById = { ...lineById }
       lineById[selectedLineId] = {
@@ -47,7 +48,10 @@ const handleBackspace = (
       }
 
       ids = [...ids]
-      ids.splice(lineIndex, 1)
+      ids.splice(selectedRange.end, 1)
+
+      selectedRange.end = preLineIndex
+      selectedRange.start = preLineIndex
     }
   } else {
     lineById = { ...lineById }
@@ -102,8 +106,7 @@ const handleBackspace = (
 
         lineById[startSelectedLineId].text = nextStartLineText
 
-        lastSelectedLineIds = [startSelectedLineId]
-        selectedEndLineId = startSelectedLineId
+        selectedRange.end = selectedRange.start
 
         ids = [...ids]
         ids.splice(startIndex + 1, endIndex - startIndex)
@@ -112,10 +115,10 @@ const handleBackspace = (
   }
 
   return {
+    actionHistory,
     ids,
     lineById,
-    lastSelectedLineIds,
-    selectedEndLineId,
+    selectedRange,
   }
 }
 
