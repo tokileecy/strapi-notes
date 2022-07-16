@@ -1,8 +1,9 @@
 import { ContentStatus } from '../../useMarkdown'
 import { getSelectedIdsByIndexRange } from '../../utils'
 
-const clearSelection = (contentStatus: ContentStatus) => {
-  let { actionHistory, selectedRange, ids, lineById } = contentStatus
+const clearSelection = (contentStatus: ContentStatus): ContentStatus => {
+  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
+    contentStatus
 
   const selectedLineIds = getSelectedIdsByIndexRange(ids, selectedRange)
 
@@ -11,7 +12,7 @@ const clearSelection = (contentStatus: ContentStatus) => {
   lineById = { ...lineById }
 
   if (selectedRange.end !== -1) {
-    lineById[ids[selectedRange.end]].input = false
+    inputIndex = -1
   }
 
   for (let i = selectedRange.start; i <= selectedRange.end; i++) {
@@ -25,7 +26,7 @@ const clearSelection = (contentStatus: ContentStatus) => {
   }
 
   selectedRange.start = selectedRange.end
-  return { actionHistory, selectedRange, ids, lineById }
+  return { actionHistory, selectedRange, ids, lineById, inputIndex }
 }
 
 export default clearSelection

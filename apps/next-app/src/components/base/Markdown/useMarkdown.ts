@@ -2,7 +2,6 @@ import {
   ChangeEventHandler,
   Dispatch,
   MutableRefObject,
-  SetStateAction,
   useCallback,
   useEffect,
   useReducer,
@@ -18,7 +17,7 @@ import { isUnderEditor, isUnderToolbar } from './utils'
 
 export interface LineState {
   text: string
-  input: boolean
+  inputText: string
   start: number
   end: number
 }
@@ -27,6 +26,7 @@ export interface ContentStatus {
   actionHistory: string[]
   ids: string[]
   lineById: Record<string, LineState>
+  inputIndex: number
   selectedRange: {
     start: number
     end: number
@@ -43,8 +43,6 @@ export interface EditorCoreRefData {
   lastSelectionRange?: Range
   content?: string
   onChange?: (content: string) => void
-  textareaValue: string
-  setTexteraValue?: Dispatch<SetStateAction<string>>
   contentStatus: ContentStatus
   setContentStatus?: Dispatch<Partial<ContentStatus>>
 }
@@ -55,6 +53,7 @@ export const initialContentStatus: ContentStatus = {
   actionHistory: [],
   ids: [],
   lineById: {},
+  inputIndex: -1,
   selectedRange: {
     start: -1,
     end: -1,
@@ -66,7 +65,6 @@ const useMarkdown = () => {
   const editorDivRef = useRef<HTMLDivElement>()
   const cursorRef = useRef<HTMLDivElement>()
   const commendCallbackRef = useRef<(() => void)[]>([])
-  const [textareaValue, setTexteraValue] = useState<string>('')
 
   const [contentStatus, setContentStatus] = useReducer(
     (prev: ContentStatus, next: Partial<ContentStatus>) => {
@@ -95,7 +93,6 @@ const useMarkdown = () => {
     isKeyDown: false,
     isMouseDown: false,
     contentStatus: { ...initialContentStatus },
-    textareaValue: '',
   })
 
   const { dbRef } = useIndexeddb()
@@ -123,7 +120,7 @@ const useMarkdown = () => {
           nextIds.push(id)
           nextLineById[id] = {
             text: line,
-            input: false,
+            inputText: '',
             start: 0,
             end: 0,
           }
@@ -171,7 +168,7 @@ const useMarkdown = () => {
     } else {
       switch (e.key) {
         case 'Enter':
-          if (editorCoreRef.current?.textareaValue.length === 0) {
+          if (editorCoreRef.current?.contentStatus.inputIndex === -1) {
             historyHandlers.saveState()
 
             commendCallbackRef.current.push(handlers.handleEnter())
@@ -180,7 +177,7 @@ const useMarkdown = () => {
 
           break
         case 'Backspace':
-          if (editorCoreRef.current?.textareaValue.length === 0) {
+          if (editorCoreRef.current?.contentStatus.inputIndex === -1) {
             historyHandlers.saveState()
             commendCallbackRef.current.push(handlers.handleBackspace())
           }
@@ -221,8 +218,18 @@ const useMarkdown = () => {
 
   const handleTextareaChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     const value = e.target.value
+    const inputLineId = contentStatus.ids[contentStatus.inputIndex]
+    const nextLineById = { ...editorCoreRef.current.contentStatus.lineById }
 
-    setTexteraValue(value)
+    nextLineById[inputLineId] = {
+      ...nextLineById[inputLineId],
+      inputText: value,
+    }
+
+    setContentStatus({
+      actionHistory: ['input'],
+      lineById: nextLineById,
+    })
   }
 
   const textareaRefCallback = useCallback(
@@ -262,8 +269,6 @@ const useMarkdown = () => {
     editorCoreRef.current.content = content
     editorCoreRef.current.contentStatus = contentStatus
     editorCoreRef.current.setContentStatus = setContentStatus
-    editorCoreRef.current.textareaValue = textareaValue
-    editorCoreRef.current.setTexteraValue = setTexteraValue
   }
 
   useEffect(() => {
@@ -303,6 +308,9 @@ const useMarkdown = () => {
       }
     }
 
+    document.addEventListener('compositionstart', (e) => {
+      console.log(e)
+    })
     document.addEventListener('keydown', handleKeydown)
     document.addEventListener('keyup', handleKeyup)
     document.addEventListener('mousedown', handleMouseDown)
@@ -328,7 +336,6 @@ const useMarkdown = () => {
   }, [contentStatus.ids, contentStatus.lineById])
 
   return {
-    textareaValue,
     textareaRefCallback,
     editorDivRefCallback,
     editorDivRef,

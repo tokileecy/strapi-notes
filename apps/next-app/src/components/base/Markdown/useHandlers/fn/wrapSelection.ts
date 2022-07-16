@@ -4,7 +4,8 @@ const wrapSelection = (
   contentStatus: ContentStatus,
   str: string
 ): ContentStatus => {
-  let { actionHistory, selectedRange, ids, lineById } = contentStatus
+  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
+    contentStatus
 
   actionHistory = [...actionHistory, 'wrap-selection']
   lineById = { ...lineById }
@@ -47,6 +48,7 @@ const wrapSelection = (
     lineById[startSelectedLineId] = { ...lineById[startSelectedLineId] }
     lineById[startSelectedLineId].text = nextStartText
     lineById[startSelectedLineId].start += str.length
+    lineById[endSelectedLineId] = { ...lineById[endSelectedLineId] }
     lineById[endSelectedLineId].text = nextEndText
   }
 
@@ -55,6 +57,7 @@ const wrapSelection = (
     ids,
     lineById,
     selectedRange,
+    inputIndex,
   }
 }
 

@@ -9,16 +9,17 @@ export interface ChangeSelectLinesOptions {
 const changeSelectLines = (
   contentStatus: ContentStatus,
   options: ChangeSelectLinesOptions = {}
-) => {
-  let { actionHistory, selectedRange, ids, lineById } = contentStatus
+): ContentStatus => {
+  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
+    contentStatus
 
   const prevSelectedLineIds = getSelectedIdsByIndexRange(ids, selectedRange)
 
   actionHistory = [...actionHistory, 'change-select-lines']
   lineById = { ...lineById }
 
-  if (selectedRange.end !== -1) {
-    lineById[ids[selectedRange.end]].input = false
+  if (inputIndex !== -1) {
+    inputIndex = -1
   }
 
   if (options.selectedRange) {
@@ -97,10 +98,10 @@ const changeSelectLines = (
   }
 
   if (selectedRange.end !== -1) {
-    lineById[ids[selectedRange.end]].input = true
+    inputIndex = selectedRange.end
   }
 
-  return { actionHistory, selectedRange, ids, lineById }
+  return { actionHistory, selectedRange, ids, lineById, inputIndex }
 }
 
 export default changeSelectLines

@@ -5,63 +5,68 @@ import { LineState } from './useMarkdown'
 export interface LineProps {
   id: string
   lineState: LineState
-  textareaValue?: string
 }
 
 const Line = (props: LineProps) => {
-  const { id, lineState, textareaValue } = props
+  const { id, lineState } = props
 
-  const { lineCenter, lineEnd, lineStart, selectAll } = useMemo(() => {
-    let startText = ''
-    let centerText = ''
-    let endText = ''
+  const { lineCenter, lineEnd, lineStart, lineInput, selectAll } =
+    useMemo(() => {
+      let startText = ''
+      let centerText = ''
+      let endText = ''
 
-    if (lineState.text !== '') {
-      if (lineState.start === undefined && lineState.end === undefined) {
-        centerText = lineState.text
-      } else if (lineState.start === undefined) {
-        centerText = lineState.text.slice(0, lineState.end)
-        endText = lineState.text.slice(lineState.end, lineState.text.length)
-      } else if (lineState.end === undefined) {
-        startText = lineState.text.slice(0, lineState.start)
-        centerText = lineState.text.slice(
-          lineState.start,
-          lineState.text.length
-        )
+      if (lineState.text !== '') {
+        if (lineState.start === undefined && lineState.end === undefined) {
+          centerText = lineState.text
+        } else if (lineState.start === undefined) {
+          centerText = lineState.text.slice(0, lineState.end)
+          endText = lineState.text.slice(lineState.end, lineState.text.length)
+        } else if (lineState.end === undefined) {
+          startText = lineState.text.slice(0, lineState.start)
+          centerText = lineState.text.slice(
+            lineState.start,
+            lineState.text.length
+          )
+        } else {
+          startText = lineState.text.slice(0, lineState.start)
+          centerText = lineState.text.slice(lineState.start, lineState.end)
+          endText = lineState.text.slice(lineState.end, lineState.text.length)
+        }
       } else {
-        startText = lineState.text.slice(0, lineState.start)
-        centerText = lineState.text.slice(lineState.start, lineState.end)
-        endText = lineState.text.slice(lineState.end, lineState.text.length)
+        centerText = '\u200b'
       }
-    } else {
-      centerText = '\u200b'
-    }
 
-    const lineStart = <span data-type="line-start">{startText}</span>
+      const lineStart = <span data-type="line-start">{startText}</span>
 
-    const lineCenter = (
-      <span
-        data-type="line-center"
-        style={{
-          'background': '#191919',
-          'borderTop': '1px solid',
-          'borderBottom': '1px solid',
-          'borderColor': '#191919',
-        }}
-      >
-        {centerText}
-      </span>
-    )
+      const lineCenter = (
+        <span
+          data-type="line-center"
+          style={{
+            'background': '#191919',
+            'borderTop': '1px solid',
+            'borderBottom': '1px solid',
+            'borderColor': '#191919',
+          }}
+        >
+          {centerText}
+        </span>
+      )
 
-    const lineEnd = <span data-type="line-end">{endText}</span>
+      const lineInput = (
+        <span data-type="line-input">{lineState.inputText}</span>
+      )
 
-    return {
-      selectAll: startText === '' && endText === '',
-      lineStart,
-      lineCenter,
-      lineEnd,
-    }
-  }, [lineState])
+      const lineEnd = <span data-type="line-end">{endText}</span>
+
+      return {
+        selectAll: startText === '' && endText === '',
+        lineStart,
+        lineCenter,
+        lineInput,
+        lineEnd,
+      }
+    }, [lineState])
 
   return (
     <Box
@@ -105,7 +110,7 @@ const Line = (props: LineProps) => {
         }}
       >
         {lineStart}
-        {lineState.input && <span data-type="line-input">{textareaValue}</span>}
+        {lineInput}
         {lineCenter}
         {lineEnd}
       </Box>

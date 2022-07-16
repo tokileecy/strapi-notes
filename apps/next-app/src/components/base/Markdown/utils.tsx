@@ -169,29 +169,20 @@ export const getSelectedIdsByIndexRange = (
     end: number
   }
 ) => {
-  // const cache = selectedIdsByIndexRangeCache.getCache(ids, indexRange)
+  const cache = selectedIdsByIndexRangeCache.getCache(ids, indexRange)
 
-  // if (cache) {
-  //   return cache
-  // } else {
-  //   const res = []
+  if (cache) {
+    return cache
+  } else {
+    const res = []
 
-  //   if (indexRange.start !== -1 && indexRange.end !== -1) {
-  //     for (let i = indexRange.start; i <= indexRange.end; i++) {
-  //       res.push(ids[i])
-  //     }
-  //   }
-
-  //   selectedIdsByIndexRangeCache.setCache(ids, indexRange, res)
-  //   return res
-  // }
-  const res = []
-
-  if (indexRange.start !== -1 && indexRange.end !== -1) {
-    for (let i = indexRange.start; i <= indexRange.end; i++) {
-      res.push(ids[i])
+    if (indexRange.start !== -1 && indexRange.end !== -1) {
+      for (let i = indexRange.start; i <= indexRange.end; i++) {
+        res.push(ids[i])
+      }
     }
-  }
 
-  return res
+    selectedIdsByIndexRangeCache.setCache(ids, indexRange, res)
+    return res
+  }
 }

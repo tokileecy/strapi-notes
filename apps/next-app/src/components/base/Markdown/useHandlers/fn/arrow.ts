@@ -7,7 +7,8 @@ const handleArrow = (
   editorCoreRef: EditorCoreRef,
   direction: ArrowDirection
 ): ContentStatus => {
-  let { actionHistory, ids, lineById, selectedRange } = contentStatus
+  let { actionHistory, ids, lineById, selectedRange, inputIndex } =
+    contentStatus
 
   actionHistory = [...actionHistory, 'arrow']
   lineById = { ...lineById }
@@ -20,16 +21,13 @@ const handleArrow = (
   if (selectedLineIndex !== undefined) {
     if (direction === 'DOWN') {
       let nextLineId = selectedEndLineId
-      let nextLine = selectedLine
+      let nextLine = { ...selectedLine }
 
       if (selectedLineIndex < ids.length) {
-        nextLine.input = false
-
         const nextLineIndex = selectedLineIndex + 1
 
         nextLineId = ids[nextLineIndex]
-        nextLine = lineById[nextLineId]
-        nextLine.input = true
+        nextLine = { ...lineById[nextLineId] }
         selectedRange.start = nextLineIndex
         selectedRange.end = nextLineIndex
 
@@ -48,16 +46,13 @@ const handleArrow = (
       lineById[nextLineId] = nextLine
     } else if (direction === 'UP') {
       let nextLineId = selectedEndLineId
-      let nextLine = selectedLine
+      let nextLine = { ...selectedLine }
 
       if (selectedLineIndex !== 0) {
-        nextLine.input = false
-
         const nextLineIndex = selectedLineIndex - 1
 
         nextLineId = ids[nextLineIndex]
-        nextLine = lineById[nextLineId]
-        nextLine.input = true
+        nextLine = { ...lineById[nextLineId] }
 
         selectedRange.start = nextLineIndex
         selectedRange.end = nextLineIndex
@@ -76,19 +71,17 @@ const handleArrow = (
 
       lineById[nextLineId] = nextLine
     } else if (direction === 'LEFT') {
-      let nextLine = { ...lineById[selectedEndLineId] }
+      let nextLine = { ...selectedLine }
       let nextLineId = selectedEndLineId
       let nextLineIndex = selectedLineIndex
 
       if (nextLine.start === 0 && selectedLineIndex !== 0) {
-        nextLine.input = false
         nextLineIndex = selectedLineIndex - 1
         nextLineId = ids[nextLineIndex]
-        nextLine = lineById[nextLineId]
-        nextLine.input = true
+        nextLine = { ...lineById[nextLineId] }
 
-        nextLine.start = 0
-        nextLine.end = 0
+        nextLine.start = nextLine.text.length
+        nextLine.end = nextLine.text.length
       } else if (nextLine.start !== 0) {
         nextLine.start--
         nextLine.end--
@@ -99,7 +92,7 @@ const handleArrow = (
 
       lineById[nextLineId] = nextLine
     } else if (direction === 'RIGHT') {
-      let nextLine = { ...lineById[selectedEndLineId] }
+      let nextLine = { ...selectedLine }
       let nextLineId = selectedEndLineId
       let nextLineIndex = selectedLineIndex
 
@@ -107,14 +100,12 @@ const handleArrow = (
         nextLine.start === nextLine.text.length &&
         selectedLineIndex !== ids.length
       ) {
-        nextLine.input = false
         nextLineIndex = selectedLineIndex + 1
         nextLineId = ids[nextLineIndex]
-        nextLine = lineById[nextLineId]
-        nextLine.input = true
+        nextLine = { ...lineById[nextLineId] }
 
-        nextLine.start = nextLine.text.length
-        nextLine.end = nextLine.text.length
+        nextLine.start = 0
+        nextLine.end = 0
       } else if (nextLine.start !== nextLine.text.length) {
         nextLine.start++
         nextLine.end++
@@ -132,6 +123,7 @@ const handleArrow = (
     ids,
     lineById,
     selectedRange,
+    inputIndex,
   }
 }
 

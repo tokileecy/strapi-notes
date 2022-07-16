@@ -6,7 +6,8 @@ const code = (
   contentStatus: ContentStatus,
   editorCoreRef: EditorCoreRef
 ): ContentStatus => {
-  let { actionHistory, selectedRange, ids, lineById } = contentStatus
+  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
+    contentStatus
 
   actionHistory = [...actionHistory, 'code']
   lineById = { ...lineById }
@@ -37,6 +38,8 @@ const code = (
     const endIndex = getLineIndexById(editorCoreRef, endSelectedLineId)
 
     if (startIndex !== undefined && endIndex !== undefined) {
+      selectedRange = { ...selectedRange }
+
       const topId = nanoid(6)
 
       const bottomId = nanoid(6)
@@ -45,18 +48,19 @@ const code = (
         start: 0,
         text: str,
         end: 0,
-        input: false,
+        inputText: '',
       }
       lineById[bottomId] = {
         start: 0,
         text: str,
         end: 0,
-        input: false,
+        inputText: '',
       }
 
       ids = [...ids]
       ids.splice(startIndex, 0, topId)
       ids.splice(endIndex + 2, 0, bottomId)
+      selectedRange.end += 2
     }
   }
 
@@ -65,6 +69,7 @@ const code = (
     ids,
     lineById,
     selectedRange,
+    inputIndex,
   }
 }
 

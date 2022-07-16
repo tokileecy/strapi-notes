@@ -64,22 +64,24 @@ const useEditorEventManager = (
           if (editorDivRef.current && cursorRef.current) {
             const contentStatus = editorCoreRef.current.contentStatus
 
-            const selectedEndLineId =
-              contentStatus.ids[contentStatus.selectedRange.end]
+            if (contentStatus.selectedRange.end !== -1) {
+              const selectedEndLineId =
+                contentStatus.ids[contentStatus.selectedRange.end]
 
-            const selectedEndLineElement = document.querySelector(
-              `[data-id="${selectedEndLineId}"] pre`
-            ) as HTMLElement
+              const selectedEndLineElement = document.querySelector(
+                `[data-id="${selectedEndLineId}"] pre`
+              ) as HTMLElement
 
-            const centerElement = selectedEndLineElement.querySelector(
-              `[data-type="line-center"]`
-            ) as HTMLElement
+              const centerElement = selectedEndLineElement.querySelector(
+                `[data-type="line-center"]`
+              ) as HTMLElement
 
-            refreshCursorByElement(
-              editorDivRef.current,
-              cursorRef.current,
-              centerElement
-            )
+              refreshCursorByElement(
+                editorDivRef.current,
+                cursorRef.current,
+                centerElement
+              )
+            }
           }
         } catch (error) {
           console.error(error)
@@ -176,12 +178,6 @@ const useEditorEventManager = (
             default:
               break
           }
-        } else if (
-          editorManagerEvent?.type === 'input' &&
-          editorManagerEvent.value !== undefined
-        ) {
-          editorCoreRef.current?.setTexteraValue?.(editorManagerEvent.value)
-          // editorCoreRef.current.cursorNeedUpdate = true
         }
       }
 

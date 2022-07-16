@@ -9,7 +9,6 @@ export type EditorProps = {
   editorDivRefCallback?: (element: HTMLDivElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
   contentStatus: ContentStatus
-  textareaValue?: string
   onTextareaChange?: ChangeEventHandler<HTMLTextAreaElement>
 }
 
@@ -18,7 +17,6 @@ const Editor = (props: EditorProps): JSX.Element => {
     textareaRefCallback,
     cursorRefCallback,
     editorDivRefCallback,
-    textareaValue,
     contentStatus,
     onTextareaChange,
   } = props
@@ -30,6 +28,19 @@ const Editor = (props: EditorProps): JSX.Element => {
       return <Line key={id} id={id} lineState={line} />
     })
   }, [contentStatus.ids, contentStatus.lineById])
+
+  const textareaValue = useMemo(() => {
+    let inputText = ''
+
+    if (contentStatus.inputIndex !== -1) {
+      const lineById = contentStatus.lineById
+      const lineId = contentStatus.ids[contentStatus.inputIndex]
+
+      inputText = lineById[lineId].inputText
+    }
+
+    return inputText
+  }, [contentStatus])
 
   return (
     <>
