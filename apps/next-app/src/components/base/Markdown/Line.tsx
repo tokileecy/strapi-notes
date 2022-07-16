@@ -54,7 +54,14 @@ const Line = (props: LineProps) => {
       )
 
       const lineInput = (
-        <span data-type="line-input">{lineState.inputText}</span>
+        <span
+          data-type="line-input"
+          style={{
+            background: '#4e4e4e',
+          }}
+        >
+          {lineState.inputText}
+        </span>
       )
 
       const lineEnd = <span data-type="line-end">{endText}</span>

@@ -6,6 +6,7 @@ import { ChangeSelectLinesOptions } from './fn/changeSelectLines'
 interface Config {
   cursorNeedUpdate?: boolean
   textureAreaFocus?: boolean
+  finishedComposition?: boolean
 }
 
 const defaultConfig: Config = {
@@ -34,6 +35,10 @@ const useHandlers = (
           if (config.textureAreaFocus) {
             textareaRef.current?.focus()
           }
+
+          if (config.finishedComposition) {
+            editorCoreRef.current.isCompositionstart = false
+          }
         }
       }
     }
@@ -54,6 +59,10 @@ const useHandlers = (
 
           if (config.textureAreaFocus) {
             textareaRef.current?.focus()
+          }
+
+          if (config.finishedComposition) {
+            editorCoreRef.current.isCompositionstart = false
           }
         }
       }
@@ -95,6 +104,11 @@ const useHandlers = (
             return fn.changeSelectLines(contentStatus, options)
           }
         ),
+      handleAddWord: withContentStatusWithOptions<string>(
+        (contentStatus, word) => {
+          return fn.addWord(contentStatus, word)
+        }
+      ),
     }
   }, [editorCoreRef, textareaRef])
 }

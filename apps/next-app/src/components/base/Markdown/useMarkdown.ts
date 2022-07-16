@@ -34,6 +34,7 @@ export interface ContentStatus {
 }
 
 export interface EditorCoreRefData {
+  isCompositionstart: boolean
   prevIsKeyDown: boolean
   prevIsMouseDown: boolean
   isKeyDown: boolean
@@ -86,6 +87,7 @@ const useMarkdown = () => {
   const [content, setContent] = useState('')
 
   const editorCoreRef = useRef<EditorCoreRefData>({
+    isCompositionstart: false,
     prevIsKeyDown: false,
     prevIsMouseDown: false,
     isSelectionChange: false,
@@ -167,22 +169,57 @@ const useMarkdown = () => {
       }
     } else {
       switch (e.key) {
-        case 'Enter':
+        case 'Enter': {
           if (editorCoreRef.current?.contentStatus.inputIndex === -1) {
             historyHandlers.saveState()
 
             commendCallbackRef.current.push(handlers.handleEnter())
             e.preventDefault()
+          } else {
+            const inputLineId =
+              editorCoreRef.current?.contentStatus.ids[
+                editorCoreRef.current?.contentStatus.inputIndex
+              ]
+
+            const inputText =
+              editorCoreRef.current?.contentStatus.lineById[inputLineId]
+                .inputText
+
+            if (inputText.length === 0) {
+              historyHandlers.saveState()
+              commendCallbackRef.current.push(handlers.handleEnter())
+              e.preventDefault()
+            }
           }
 
           break
-        case 'Backspace':
+        }
+
+        case 'Backspace': {
           if (editorCoreRef.current?.contentStatus.inputIndex === -1) {
             historyHandlers.saveState()
             commendCallbackRef.current.push(handlers.handleBackspace())
+            e.preventDefault()
+          } else {
+            const inputLineId =
+              editorCoreRef.current?.contentStatus.ids[
+                editorCoreRef.current?.contentStatus.inputIndex
+              ]
+
+            const inputText =
+              editorCoreRef.current?.contentStatus.lineById[inputLineId]
+                .inputText
+
+            if (inputText.length === 0) {
+              historyHandlers.saveState()
+              commendCallbackRef.current.push(handlers.handleBackspace())
+              e.preventDefault()
+            }
           }
 
           break
+        }
+
         case 'Escape':
           historyHandlers.saveState()
           break
@@ -218,6 +255,7 @@ const useMarkdown = () => {
 
   const handleTextareaChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     const value = e.target.value
+
     const inputLineId = contentStatus.ids[contentStatus.inputIndex]
     const nextLineById = { ...editorCoreRef.current.contentStatus.lineById }
 
@@ -226,10 +264,36 @@ const useMarkdown = () => {
       inputText: value,
     }
 
-    setContentStatus({
-      actionHistory: ['input'],
-      lineById: nextLineById,
-    })
+    if (!editorCoreRef.current.isCompositionstart) {
+      commendCallbackRef.current.push(
+        handlers.handleAddWord(value, {
+          cursorNeedUpdate: true,
+          finishedComposition: true,
+        })
+      )
+    } else {
+      setContentStatus({
+        actionHistory: ['input'],
+        lineById: nextLineById,
+      })
+    }
+  }
+
+  const handleCompositionstart = () => {
+    editorCoreRef.current.isCompositionstart = true
+  }
+
+  const handleCompositionend = (e: CompositionEvent) => {
+    const value = e.data
+
+    if (editorCoreRef.current.isCompositionstart) {
+      commendCallbackRef.current.push(
+        handlers.handleAddWord(value, {
+          cursorNeedUpdate: true,
+          finishedComposition: true,
+        })
+      )
+    }
   }
 
   const textareaRefCallback = useCallback(
@@ -239,7 +303,23 @@ const useMarkdown = () => {
           'keydown',
           hanldeTextareaKeydown
         )
+        textareaRef.current?.removeEventListener(
+          'compositionstart',
+          handleCompositionstart
+        )
+        textareaRef.current?.removeEventListener(
+          'compositionend',
+          handleCompositionend
+        )
         textareaRef.current = element
+        textareaRef.current?.addEventListener(
+          'compositionstart',
+          handleCompositionstart
+        )
+        textareaRef.current?.addEventListener(
+          'compositionend',
+          handleCompositionend
+        )
         textareaRef.current?.addEventListener('keydown', hanldeTextareaKeydown)
       }
     },
@@ -308,9 +388,6 @@ const useMarkdown = () => {
       }
     }
 
-    document.addEventListener('compositionstart', (e) => {
-      console.log(e)
-    })
     document.addEventListener('keydown', handleKeydown)
     document.addEventListener('keyup', handleKeyup)
     document.addEventListener('mousedown', handleMouseDown)
