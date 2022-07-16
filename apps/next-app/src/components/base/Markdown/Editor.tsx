@@ -32,9 +32,9 @@ const Editor = (props: EditorProps): JSX.Element => {
   const textareaValue = useMemo(() => {
     let inputText = ''
 
-    if (contentStatus.inputIndex !== -1) {
+    if (contentStatus.selectedRange.end !== -1) {
       const lineById = contentStatus.lineById
-      const lineId = contentStatus.ids[contentStatus.inputIndex]
+      const lineId = contentStatus.ids[contentStatus.selectedRange.end]
 
       inputText = lineById[lineId].inputText
     }

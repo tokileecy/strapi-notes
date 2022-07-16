@@ -6,8 +6,7 @@ const handleEnter = (
   contentStatus: ContentStatus,
   editorCoreRef: EditorCoreRef
 ): ContentStatus => {
-  let { actionHistory, ids, lineById, selectedRange, inputIndex } =
-    contentStatus
+  let { actionHistory, ids, lineById, selectedRange } = contentStatus
 
   actionHistory = [...actionHistory, 'enter']
   selectedRange = { ...selectedRange }
@@ -24,7 +23,6 @@ const handleEnter = (
         ids,
         lineById,
         selectedRange,
-        inputIndex,
       },
       editorCoreRef
     ))
@@ -91,7 +89,6 @@ const handleEnter = (
     ids,
     lineById,
     selectedRange,
-    inputIndex,
   }
 }
 

@@ -2,8 +2,7 @@ import { ContentStatus } from '../../useMarkdown'
 import { getSelectedIdsByIndexRange } from '../../utils'
 
 const addHeshToTop = (contentStatus: ContentStatus): ContentStatus => {
-  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
-    contentStatus
+  let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
   actionHistory = [...actionHistory, 'add-hesh-to-top']
   lineById = { ...contentStatus.lineById }
@@ -32,7 +31,6 @@ const addHeshToTop = (contentStatus: ContentStatus): ContentStatus => {
     ids,
     lineById,
     selectedRange,
-    inputIndex,
   }
 }
 

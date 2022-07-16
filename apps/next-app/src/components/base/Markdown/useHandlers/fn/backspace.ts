@@ -5,8 +5,7 @@ const handleBackspace = (
   contentStatus: ContentStatus,
   editorCoreRef: EditorCoreRef
 ): ContentStatus => {
-  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
-    contentStatus
+  let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
   actionHistory = [...actionHistory, 'backspace']
   selectedRange = { ...selectedRange }
@@ -118,7 +117,6 @@ const handleBackspace = (
     ids,
     lineById,
     selectedRange,
-    inputIndex,
   }
 }
 

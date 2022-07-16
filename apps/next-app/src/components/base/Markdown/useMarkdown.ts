@@ -26,7 +26,6 @@ export interface ContentStatus {
   actionHistory: string[]
   ids: string[]
   lineById: Record<string, LineState>
-  inputIndex: number
   selectedRange: {
     start: number
     end: number
@@ -54,7 +53,6 @@ export const initialContentStatus: ContentStatus = {
   actionHistory: [],
   ids: [],
   lineById: {},
-  inputIndex: -1,
   selectedRange: {
     start: -1,
     end: -1,
@@ -170,7 +168,7 @@ const useMarkdown = () => {
     } else {
       switch (e.key) {
         case 'Enter': {
-          if (editorCoreRef.current?.contentStatus.inputIndex === -1) {
+          if (editorCoreRef.current?.contentStatus.selectedRange.end === -1) {
             historyHandlers.saveState()
 
             commendCallbackRef.current.push(handlers.handleEnter())
@@ -178,7 +176,7 @@ const useMarkdown = () => {
           } else {
             const inputLineId =
               editorCoreRef.current?.contentStatus.ids[
-                editorCoreRef.current?.contentStatus.inputIndex
+                editorCoreRef.current?.contentStatus.selectedRange.end
               ]
 
             const inputText =
@@ -196,14 +194,14 @@ const useMarkdown = () => {
         }
 
         case 'Backspace': {
-          if (editorCoreRef.current?.contentStatus.inputIndex === -1) {
+          if (editorCoreRef.current?.contentStatus.selectedRange.end === -1) {
             historyHandlers.saveState()
             commendCallbackRef.current.push(handlers.handleBackspace())
             e.preventDefault()
           } else {
             const inputLineId =
               editorCoreRef.current?.contentStatus.ids[
-                editorCoreRef.current?.contentStatus.inputIndex
+                editorCoreRef.current?.contentStatus.selectedRange.end
               ]
 
             const inputText =
@@ -256,7 +254,7 @@ const useMarkdown = () => {
   const handleTextareaChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     const value = e.target.value
 
-    const inputLineId = contentStatus.ids[contentStatus.inputIndex]
+    const inputLineId = contentStatus.ids[contentStatus.selectedRange.end]
     const nextLineById = { ...editorCoreRef.current.contentStatus.lineById }
 
     nextLineById[inputLineId] = {

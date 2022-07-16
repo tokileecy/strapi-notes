@@ -1,14 +1,13 @@
 import { ContentStatus } from '../../useMarkdown'
 
 const code = (contentStatus: ContentStatus, word: string): ContentStatus => {
-  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
-    contentStatus
+  let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
   selectedRange = { ...selectedRange }
   actionHistory = [...actionHistory, 'add-word']
   lineById = { ...lineById }
 
-  const inputLineId = ids[inputIndex]
+  const inputLineId = ids[selectedRange.end]
   const nextLine = { ...lineById[inputLineId] }
   const nextTextArr = Array.from(nextLine.text)
 
@@ -27,7 +26,6 @@ const code = (contentStatus: ContentStatus, word: string): ContentStatus => {
     ids,
     lineById,
     selectedRange,
-    inputIndex,
   }
 }
 

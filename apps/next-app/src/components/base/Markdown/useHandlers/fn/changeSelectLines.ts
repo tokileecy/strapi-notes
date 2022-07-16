@@ -10,17 +10,12 @@ const changeSelectLines = (
   contentStatus: ContentStatus,
   options: ChangeSelectLinesOptions = {}
 ): ContentStatus => {
-  let { actionHistory, selectedRange, ids, lineById, inputIndex } =
-    contentStatus
+  let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
   const prevSelectedLineIds = getSelectedIdsByIndexRange(ids, selectedRange)
 
   actionHistory = [...actionHistory, 'change-select-lines']
   lineById = { ...lineById }
-
-  if (inputIndex !== -1) {
-    inputIndex = -1
-  }
 
   if (options.selectedRange) {
     selectedRange = {
@@ -97,11 +92,7 @@ const changeSelectLines = (
     }
   }
 
-  if (selectedRange.end !== -1) {
-    inputIndex = selectedRange.end
-  }
-
-  return { actionHistory, selectedRange, ids, lineById, inputIndex }
+  return { actionHistory, selectedRange, ids, lineById }
 }
 
 export default changeSelectLines
