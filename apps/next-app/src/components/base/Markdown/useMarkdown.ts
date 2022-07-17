@@ -281,6 +281,10 @@ const useMarkdown = () => {
     editorCoreRef.current.isCompositionstart = true
   }
 
+  const handleCompositionupdate = () => {
+    editorCoreRef.current.cursorNeedUpdate = true
+  }
+
   const handleCompositionend = (e: CompositionEvent) => {
     const value = e.data
 
@@ -305,6 +309,11 @@ const useMarkdown = () => {
           'compositionstart',
           handleCompositionstart
         )
+
+        textareaRef.current?.removeEventListener(
+          'compositionupdate',
+          handleCompositionupdate
+        )
         textareaRef.current?.removeEventListener(
           'compositionend',
           handleCompositionend
@@ -313,6 +322,10 @@ const useMarkdown = () => {
         textareaRef.current?.addEventListener(
           'compositionstart',
           handleCompositionstart
+        )
+        textareaRef.current?.addEventListener(
+          'compositionupdate',
+          handleCompositionupdate
         )
         textareaRef.current?.addEventListener(
           'compositionend',
