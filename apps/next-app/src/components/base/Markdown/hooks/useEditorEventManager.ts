@@ -1,7 +1,6 @@
 import { MutableRefObject, useEffect, useMemo, useRef } from 'react'
 import { Handlers } from './useHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
-import { EditorCoreRef } from './useMarkdown'
 import {
   getLineIdByElement,
   getLineIndexById,
@@ -9,6 +8,8 @@ import {
   refreshCursorBySelection,
 } from '../utils'
 import { DocumentStatusRef } from './useDodumentEvent'
+import { ContentStatus, initialContentStatus } from './useContentStatus'
+import { CursorStatus } from './useCursor'
 
 export type EditorCommend = 'bold' | 'italic' | 'strike' | 'header' | 'code'
 
@@ -25,17 +26,26 @@ export interface InputCommendEvent {
 export type EditorEvent = EditorCommendEvent | InputCommendEvent
 
 const useEditorEventManager = (
-  commendCallbackRef: MutableRefObject<(() => void)[]>,
   editorDivRef: MutableRefObject<HTMLDivElement | undefined>,
   documentStatusRef: DocumentStatusRef,
   cursorRef: MutableRefObject<HTMLDivElement | undefined>,
-  editorCoreRef: EditorCoreRef,
+  textareaRef: MutableRefObject<HTMLTextAreaElement | undefined>,
+  cursorStatusRef: MutableRefObject<CursorStatus>,
   handlers: Handlers,
-  historyHandlers: HistoryHandlers
+  historyHandlers: HistoryHandlers,
+  contentStatus: ContentStatus
 ) => {
   const eventsQueueRef = useRef<EditorEvent[]>([])
 
   const frameIdRef = useRef<number>()
+
+  const contentStatusRef = useRef<{
+    contentStatus: ContentStatus
+  }>({
+    contentStatus: { ...initialContentStatus },
+  })
+
+  contentStatusRef.current.contentStatus = contentStatus
 
   useEffect(() => {
     const update = () => {
@@ -60,10 +70,10 @@ const useEditorEventManager = (
         }
       }
 
-      if (editorCoreRef.current.cursorNeedUpdate) {
+      if (cursorStatusRef.current.cursorNeedUpdate) {
         try {
           if (editorDivRef.current && cursorRef.current) {
-            const contentStatus = editorCoreRef.current.contentStatus
+            const contentStatus = contentStatusRef.current.contentStatus
 
             if (contentStatus.selectedRange.end !== -1) {
               const selectedEndLineId =
@@ -88,7 +98,7 @@ const useEditorEventManager = (
           console.error(error)
         }
 
-        editorCoreRef.current.cursorNeedUpdate = false
+        cursorStatusRef.current.cursorNeedUpdate = false
       }
 
       if (
@@ -98,7 +108,7 @@ const useEditorEventManager = (
         const lastSelectionRange = documentStatusRef.current.lastSelectionRange
 
         if (lastSelectionRange) {
-          commendCallbackRef.current.push(handlers.handleClearSelectLines())
+          handlers.handleClearSelectLines()
         }
       }
 
@@ -113,40 +123,41 @@ const useEditorEventManager = (
           const end = lastSelectionRange.endOffset
 
           const startIndex = getLineIndexById(
-            editorCoreRef,
+            contentStatusRef.current.contentStatus.ids,
             getLineIdByElement(lastSelectionRange.startContainer)
           )
 
           const endIndex = getLineIndexById(
-            editorCoreRef,
+            contentStatusRef.current.contentStatus.ids,
             getLineIdByElement(lastSelectionRange.endContainer)
           )
 
-          commendCallbackRef.current.push(
-            handlers.handleChangeSelectLines(
-              {
-                selectedRange: {
-                  start: startIndex,
-                  end: endIndex,
-                },
-                line: { start, end },
+          handlers.handleChangeSelectLines(
+            {
+              selectedRange: {
+                start: startIndex,
+                end: endIndex,
               },
-              { textureAreaFocus: true, cursorNeedUpdate: true }
-            )
+              line: { start, end },
+            },
+            {
+              cursorNeedUpdate: true,
+              handleFinished: () => {
+                textareaRef.current?.focus()
+              },
+            }
           )
         }
       }
 
-      if (commendCallbackRef.current) {
-        while (commendCallbackRef.current.length > 0) {
-          const callback = commendCallbackRef.current.shift()
+      while (handlers.commendCallbackQueue.length > 0) {
+        const callback = handlers.commendCallbackQueue.shift()
 
-          if (callback) {
-            try {
-              callback()
-            } catch (error) {
-              console.error(error)
-            }
+        if (callback) {
+          try {
+            callback()
+          } catch (error) {
+            console.error(error)
           }
         }
       }
@@ -162,19 +173,19 @@ const useEditorEventManager = (
 
           switch (commend) {
             case 'bold':
-              commendCallbackRef.current.push(handlers.handleBold())
+              handlers.handleBold()
               break
             case 'italic':
-              commendCallbackRef.current.push(handlers.handleItalic())
+              handlers.handleItalic()
               break
             case 'strike':
-              commendCallbackRef.current.push(handlers.handleStrike())
+              handlers.handleStrike()
               break
             case 'header':
-              commendCallbackRef.current.push(handlers.handleHeader())
+              handlers.handleHeader()
               break
             case 'code':
-              commendCallbackRef.current.push(handlers.handleCode())
+              handlers.handleCode()
               break
             default:
               break

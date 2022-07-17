@@ -1,11 +1,9 @@
-import { EditorCoreRef } from '../hooks/useMarkdown'
 import { ContentStatus } from '../hooks/useContentStatus'
 
 export type ArrowDirection = 'UP' | 'DOWN' | 'RIGHT' | 'LEFT'
 
 const handleArrow = (
   contentStatus: ContentStatus,
-  editorCoreRef: EditorCoreRef,
   direction: ArrowDirection
 ): ContentStatus => {
   let { actionHistory, ids, lineById, selectedRange } = contentStatus

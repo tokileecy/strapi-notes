@@ -1,11 +1,7 @@
-import { EditorCoreRef } from '../hooks/useMarkdown'
 import { ContentStatus } from '../hooks/useContentStatus'
 import { getLineIndexById, getSelectedIdsByIndexRange } from '../utils'
 
-const handleBackspace = (
-  contentStatus: ContentStatus,
-  editorCoreRef: EditorCoreRef
-): ContentStatus => {
+const handleBackspace = (contentStatus: ContentStatus): ContentStatus => {
   let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
   actionHistory = [...actionHistory, 'backspace']
@@ -90,9 +86,8 @@ const handleBackspace = (
       const endSelectedLineId =
         lastSelectedLineIds[lastSelectedLineIds.length - 1]
 
-      const startIndex = getLineIndexById(editorCoreRef, startSelectedLineId)
-
-      const endIndex = getLineIndexById(editorCoreRef, endSelectedLineId)
+      const startIndex = getLineIndexById(ids, startSelectedLineId)
+      const endIndex = getLineIndexById(ids, endSelectedLineId)
 
       if (startIndex && endIndex) {
         const nextStartLineText =

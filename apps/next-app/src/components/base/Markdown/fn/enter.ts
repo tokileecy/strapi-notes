@@ -1,12 +1,8 @@
 import { nanoid } from 'nanoid'
-import { EditorCoreRef } from '../hooks/useMarkdown'
 import { ContentStatus } from '../hooks/useContentStatus'
 import handleBackspace from './backspace'
 
-const handleEnter = (
-  contentStatus: ContentStatus,
-  editorCoreRef: EditorCoreRef
-): ContentStatus => {
+const handleEnter = (contentStatus: ContentStatus): ContentStatus => {
   let { actionHistory, ids, lineById, selectedRange } = contentStatus
 
   actionHistory = [...actionHistory, 'enter']
@@ -18,15 +14,12 @@ const handleEnter = (
     selectedRange.end - selectedRange.start > 0 ||
     lineById[startLineId].start !== lineById[startLineId].end
   ) {
-    ;({ ids, lineById, selectedRange } = handleBackspace(
-      {
-        actionHistory,
-        ids,
-        lineById,
-        selectedRange,
-      },
-      editorCoreRef
-    ))
+    ;({ ids, lineById, selectedRange } = handleBackspace({
+      actionHistory,
+      ids,
+      lineById,
+      selectedRange,
+    }))
   }
 
   startLineId = ids[selectedRange.start]

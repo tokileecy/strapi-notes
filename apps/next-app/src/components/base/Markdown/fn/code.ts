@@ -1,12 +1,8 @@
 import { nanoid } from 'nanoid'
-import { EditorCoreRef } from '../hooks/useMarkdown'
 import { ContentStatus } from '../hooks/useContentStatus'
 import { getLineIndexById } from '../utils'
 
-const code = (
-  contentStatus: ContentStatus,
-  editorCoreRef: EditorCoreRef
-): ContentStatus => {
+const code = (contentStatus: ContentStatus): ContentStatus => {
   let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
   actionHistory = [...actionHistory, 'code']
@@ -34,8 +30,8 @@ const code = (
 
     const endSelectedLineId = ids[selectedRange.end]
 
-    const startIndex = getLineIndexById(editorCoreRef, startSelectedLineId)
-    const endIndex = getLineIndexById(editorCoreRef, endSelectedLineId)
+    const startIndex = getLineIndexById(ids, startSelectedLineId)
+    const endIndex = getLineIndexById(ids, endSelectedLineId)
 
     if (startIndex !== undefined && endIndex !== undefined) {
       selectedRange = { ...selectedRange }

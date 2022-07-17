@@ -82,9 +82,7 @@ export const initDB = async () => {
       })
 
       db.createObjectStore('editorCache', {
-        // The 'id' property of the object will be the key.
         keyPath: 'id',
-        // If it isn't explicitly set, create a value by auto incrementing.
         autoIncrement: true,
       })
     },

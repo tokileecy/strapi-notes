@@ -1,6 +1,9 @@
-import { useMemo, useRef } from 'react'
-import { LineState } from './useContentStatus'
-import { EditorCoreRef } from './useMarkdown'
+import { Dispatch, useMemo, useRef } from 'react'
+import {
+  ContentStatus,
+  initialContentStatus,
+  LineState,
+} from './useContentStatus'
 
 const maxCacheCount = 50
 
@@ -13,41 +16,50 @@ export interface Revision {
   contentLineById: Record<string, LineState>
 }
 
-const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
+const useHistoryHandlers = (
+  contentStatus: ContentStatus,
+  setContentStatus: Dispatch<Partial<ContentStatus>>
+) => {
   const previousRevisionRef = useRef<Revision[]>([])
+
+  const contentStatusRef = useRef<{
+    contentStatus: ContentStatus
+  }>({
+    contentStatus: { ...initialContentStatus },
+  })
+
+  contentStatusRef.current.contentStatus = contentStatus
 
   return useMemo(() => {
     const saveState = () => {
-      const contentStatus = editorCoreRef.current.contentStatus
+      const contentStatus = contentStatusRef.current.contentStatus
 
-      if (editorCoreRef.current) {
-        if (previousRevisionRef.current.length > maxCacheCount) {
-          previousRevisionRef.current.shift()
-        }
-
-        const range = window.getSelection()?.getRangeAt(0)
-        let startOffset = 0
-        let endOffset = 0
-        let selectedStartLineId = ''
-        let selectedEndLineId = ''
-
-        if (range) {
-          startOffset = range.startOffset
-          endOffset = range.endOffset
-          selectedStartLineId =
-            contentStatus.ids[contentStatus.selectedRange.start]
-          selectedEndLineId = contentStatus.ids[contentStatus.selectedRange.end]
-        }
-
-        previousRevisionRef.current.push({
-          startOffset,
-          endOffset,
-          selectedStartLineId,
-          selectedEndLineId,
-          contentLineIds: contentStatus.ids,
-          contentLineById: contentStatus.lineById,
-        })
+      if (previousRevisionRef.current.length > maxCacheCount) {
+        previousRevisionRef.current.shift()
       }
+
+      const range = window.getSelection()?.getRangeAt(0)
+      let startOffset = 0
+      let endOffset = 0
+      let selectedStartLineId = ''
+      let selectedEndLineId = ''
+
+      if (range) {
+        startOffset = range.startOffset
+        endOffset = range.endOffset
+        selectedStartLineId =
+          contentStatus.ids[contentStatus.selectedRange.start]
+        selectedEndLineId = contentStatus.ids[contentStatus.selectedRange.end]
+      }
+
+      previousRevisionRef.current.push({
+        startOffset,
+        endOffset,
+        selectedStartLineId,
+        selectedEndLineId,
+        contentLineIds: contentStatus.ids,
+        contentLineById: contentStatus.lineById,
+      })
     }
 
     const handleUndo = () => {
@@ -56,14 +68,14 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
       if (previousRevision.length > 0) {
         const prevContext = previousRevision.pop()
 
-        if (prevContext && editorCoreRef.current) {
+        if (prevContext) {
           const nextContentLineIds = [...prevContext.contentLineIds]
 
           const nextContentLineById = {
             ...prevContext.contentLineById,
           }
 
-          editorCoreRef.current.setContentStatus?.({
+          setContentStatus({
             actionHistory: ['undo'],
             ids: nextContentLineIds,
             lineById: nextContentLineById,
@@ -72,10 +84,11 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
           return () => {
             if (
               !(
-                editorCoreRef.current.contentStatus.ids === nextContentLineIds
+                contentStatusRef.current.contentStatus.ids ===
+                nextContentLineIds
               ) ||
               !(
-                editorCoreRef.current.contentStatus.lineById ===
+                contentStatusRef.current.contentStatus.lineById ===
                 nextContentLineById
               )
             ) {
@@ -121,7 +134,7 @@ const useHistoryHandlers = (editorCoreRef: EditorCoreRef) => {
     }
 
     return { saveState, handleUndo, clearHistory }
-  }, [previousRevisionRef, editorCoreRef])
+  }, [])
 }
 
 export type HistoryHandlers = ReturnType<typeof useHistoryHandlers>

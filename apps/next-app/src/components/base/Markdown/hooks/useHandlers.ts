@@ -1,72 +1,72 @@
-import { useMemo } from 'react'
+import { Dispatch, MutableRefObject, useMemo, useRef } from 'react'
 import * as fn from '../fn'
-import type { ChangeSelectLinesOptions } from '../fn/changeSelectLines'
-import type { ContentStatus } from './useContentStatus'
-import type { EditorCoreRef } from './useMarkdown'
+import { ChangeSelectLinesOptions } from '../fn/changeSelectLines'
+import { ContentStatus, initialContentStatus } from './useContentStatus'
+import { CursorStatus } from './useCursor'
 
 interface Config {
   cursorNeedUpdate?: boolean
-  textureAreaFocus?: boolean
-  finishedComposition?: boolean
+  handleFinished?: () => void
 }
 
 const defaultConfig: Config = {
   cursorNeedUpdate: true,
 }
 
-const useHandlers = (editorCoreRef: EditorCoreRef) => {
+const useHandlers = (
+  cursorStatusRef: MutableRefObject<CursorStatus>,
+  contentStatus: ContentStatus,
+  setContentStatus: Dispatch<Partial<ContentStatus>>
+) => {
+  const contentStatusRef = useRef<{
+    contentStatus: ContentStatus
+  }>({
+    contentStatus: { ...initialContentStatus },
+  })
+
+  contentStatusRef.current.contentStatus = contentStatus
+
   return useMemo(() => {
+    const commendCallbackQueue: (() => void)[] = []
+
     const withContentStatus = (
       func: (contentStatus: ContentStatus) => ContentStatus
-    ): ((config?: Config) => () => void) => {
+    ): ((config?: Config) => void) => {
       return (config: Config = defaultConfig) => {
-        const contentStatus = editorCoreRef.current.contentStatus
-        const setContentStatus = editorCoreRef.current.setContentStatus
+        const contentStatus = contentStatusRef.current.contentStatus
 
         setContentStatus?.(func(contentStatus))
 
-        return () => {
+        commendCallbackQueue.push(() => {
           if (config.cursorNeedUpdate) {
-            editorCoreRef.current.cursorNeedUpdate = true
+            cursorStatusRef.current.cursorNeedUpdate = true
           }
 
-          if (config.textureAreaFocus) {
-            editorCoreRef.current.focus()
-          }
-
-          if (config.finishedComposition) {
-            editorCoreRef.current.isCompositionstart = false
-          }
-        }
+          config.handleFinished?.()
+        })
       }
     }
 
     const withContentStatusWithOptions = <T>(
       func: (contentStatus: ContentStatus, option: T) => ContentStatus
-    ): ((option: T, config?: Config) => () => void) => {
+    ): ((option: T, config?: Config) => void) => {
       return (option: T, config: Config = defaultConfig) => {
-        const contentStatus = editorCoreRef.current.contentStatus
-        const setContentStatus = editorCoreRef.current.setContentStatus
+        const contentStatus = contentStatusRef.current.contentStatus
 
         setContentStatus?.(func(contentStatus, option))
 
-        return () => {
+        commendCallbackQueue.push(() => {
           if (config.cursorNeedUpdate) {
-            editorCoreRef.current.cursorNeedUpdate = true
+            cursorStatusRef.current.cursorNeedUpdate = true
           }
 
-          if (config.textureAreaFocus) {
-            editorCoreRef.current.focus()
-          }
-
-          if (config.finishedComposition) {
-            editorCoreRef.current.isCompositionstart = false
-          }
-        }
+          config.handleFinished?.()
+        })
       }
     }
 
     return {
+      commendCallbackQueue,
       handleBold: withContentStatus((contentStatus) => {
         return fn.wrapSelection(contentStatus, '**')
       }),
@@ -80,17 +80,17 @@ const useHandlers = (editorCoreRef: EditorCoreRef) => {
         return fn.addHeshToTop(contentStatus)
       }),
       handleCode: withContentStatus((contentStatus) => {
-        return fn.code(contentStatus, editorCoreRef)
+        return fn.code(contentStatus)
       }),
       handleBackspace: withContentStatus((contentStatus) => {
-        return fn.backspace(contentStatus, editorCoreRef)
+        return fn.backspace(contentStatus)
       }),
       handleEnter: withContentStatus((contentStatus) => {
-        return fn.enter(contentStatus, editorCoreRef)
+        return fn.enter(contentStatus)
       }),
       handleArrow: withContentStatusWithOptions<fn.ArrowDirection>(
         (contentStatus, direction: fn.ArrowDirection) => {
-          return fn.arrow(contentStatus, editorCoreRef, direction)
+          return fn.arrow(contentStatus, direction)
         }
       ),
       handleClearSelectLines: withContentStatus((contentStatus) => {

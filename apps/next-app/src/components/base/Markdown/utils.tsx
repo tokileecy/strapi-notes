@@ -1,7 +1,5 @@
 import { nanoid } from 'nanoid'
-import { MutableRefObject } from 'react'
 import { LineState } from './hooks/useContentStatus'
-import { EditorCoreRefData } from './hooks/useMarkdown'
 
 export const refreshCursorBySelection = (
   containerElement: HTMLDivElement,
@@ -90,16 +88,11 @@ export const isUnderToolbar = (element: Element) => {
   return false
 }
 
-export const getLineIndexById = (
-  editorCoreRef: MutableRefObject<EditorCoreRefData>,
-  lineId: string
-) => {
+export const getLineIndexById = (lineIds: string[], lineId: string) => {
   let targetIndex = -1
 
-  const contentLineIds = editorCoreRef.current.contentStatus.ids
-
-  for (let i = 0; i < contentLineIds.length; i++) {
-    const id = contentLineIds[i]
+  for (let i = 0; i < lineIds.length; i++) {
+    const id = lineIds[i]
 
     if (id === lineId) {
       targetIndex = i
