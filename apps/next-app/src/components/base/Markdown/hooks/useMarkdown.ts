@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react'
 import { nanoid } from 'nanoid'
-import useIndexeddb from './useIndexeddb'
 import useHandlers from './useHandlers'
 import useHistoryHandlers from './useHistoryHandlers'
 import useEditorEventManager from './useEditorEventManager'
@@ -95,19 +94,14 @@ const useMarkdown = () => {
     contentStatus: { ...initialContentStatus },
   })
 
-  const { dbRef } = useIndexeddb()
-
   const focus = useCallback(() => {
     editorDivRef.current?.focus()
-  }, [editorDivRef])
+  }, [])
 
   const historyHandlers = useHistoryHandlers(editorCoreRef)
 
   const reset = useCallback(
     ({ content: nextContext = '' }) => {
-      setContent(nextContext)
-      editorCoreRef.current.content = nextContext
-
       const initLines = () => {
         const nextLines = nextContext.split('\n')
 
@@ -134,7 +128,7 @@ const useMarkdown = () => {
 
       initLines()
     },
-    [editorDivRef, setContent]
+    [setContent]
   )
 
   const onChange = useCallback(
@@ -298,62 +292,50 @@ const useMarkdown = () => {
     }
   }
 
-  const textareaRefCallback = useCallback(
-    (element: HTMLTextAreaElement) => {
-      if (textareaRef.current !== element) {
-        textareaRef.current?.removeEventListener(
-          'keydown',
-          hanldeTextareaKeydown
-        )
-        textareaRef.current?.removeEventListener(
-          'compositionstart',
-          handleCompositionstart
-        )
+  const textareaRefCallback = useCallback((element: HTMLTextAreaElement) => {
+    if (textareaRef.current !== element) {
+      textareaRef.current?.removeEventListener('keydown', hanldeTextareaKeydown)
+      textareaRef.current?.removeEventListener(
+        'compositionstart',
+        handleCompositionstart
+      )
 
-        textareaRef.current?.removeEventListener(
-          'compositionupdate',
-          handleCompositionupdate
-        )
-        textareaRef.current?.removeEventListener(
-          'compositionend',
-          handleCompositionend
-        )
-        textareaRef.current = element
-        textareaRef.current?.addEventListener(
-          'compositionstart',
-          handleCompositionstart
-        )
-        textareaRef.current?.addEventListener(
-          'compositionupdate',
-          handleCompositionupdate
-        )
-        textareaRef.current?.addEventListener(
-          'compositionend',
-          handleCompositionend
-        )
-        textareaRef.current?.addEventListener('keydown', hanldeTextareaKeydown)
-      }
-    },
-    [textareaRef]
-  )
+      textareaRef.current?.removeEventListener(
+        'compositionupdate',
+        handleCompositionupdate
+      )
+      textareaRef.current?.removeEventListener(
+        'compositionend',
+        handleCompositionend
+      )
+      textareaRef.current = element
+      textareaRef.current?.addEventListener(
+        'compositionstart',
+        handleCompositionstart
+      )
+      textareaRef.current?.addEventListener(
+        'compositionupdate',
+        handleCompositionupdate
+      )
+      textareaRef.current?.addEventListener(
+        'compositionend',
+        handleCompositionend
+      )
+      textareaRef.current?.addEventListener('keydown', hanldeTextareaKeydown)
+    }
+  }, [])
 
-  const editorDivRefCallback = useCallback(
-    (element: HTMLDivElement) => {
-      if (editorDivRef.current !== element) {
-        editorDivRef.current = element
-      }
-    },
-    [editorDivRef]
-  )
+  const editorDivRefCallback = useCallback((element: HTMLDivElement) => {
+    if (editorDivRef.current !== element) {
+      editorDivRef.current = element
+    }
+  }, [])
 
-  const cursorRefCallback = useCallback(
-    (element: HTMLDivElement) => {
-      if (cursorRef.current !== element) {
-        cursorRef.current = element
-      }
-    },
-    [cursorRef]
-  )
+  const cursorRefCallback = useCallback((element: HTMLDivElement) => {
+    if (cursorRef.current !== element) {
+      cursorRef.current = element
+    }
+  }, [])
 
   if (editorCoreRef.current) {
     editorCoreRef.current.onChange = onChange
@@ -412,7 +394,7 @@ const useMarkdown = () => {
       document.removeEventListener('mouseup', handleMouseup)
       document.removeEventListener('selectionchange', handleSelect)
     }
-  }, [editorCoreRef, editorDivRef, dbRef])
+  }, [])
 
   useEffect(() => {
     setContent(

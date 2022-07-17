@@ -110,7 +110,7 @@ const useHandlers = (
         }
       ),
     }
-  }, [editorCoreRef, textareaRef])
+  }, [])
 }
 
 export type Handlers = ReturnType<typeof useHandlers>
