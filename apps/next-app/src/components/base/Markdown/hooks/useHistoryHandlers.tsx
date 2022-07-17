@@ -38,18 +38,22 @@ const useHistoryHandlers = (
         previousRevisionRef.current.shift()
       }
 
-      const range = window.getSelection()?.getRangeAt(0)
-      let startOffset = 0
-      let endOffset = 0
+      const selection = window.getSelection()
+      let startOffset = -1
+      let endOffset = -1
       let selectedStartLineId = ''
       let selectedEndLineId = ''
 
-      if (range) {
-        startOffset = range.startOffset
-        endOffset = range.endOffset
-        selectedStartLineId =
-          contentStatus.ids[contentStatus.selectedRange.start]
-        selectedEndLineId = contentStatus.ids[contentStatus.selectedRange.end]
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0)
+
+        if (range) {
+          startOffset = range.startOffset
+          endOffset = range.endOffset
+          selectedStartLineId =
+            contentStatus.ids[contentStatus.selectedRange.start]
+          selectedEndLineId = contentStatus.ids[contentStatus.selectedRange.end]
+        }
       }
 
       previousRevisionRef.current.push({
