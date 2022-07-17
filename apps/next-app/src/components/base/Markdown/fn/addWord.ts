@@ -1,4 +1,4 @@
-import { ContentStatus } from '../hooks/useMarkdown'
+import { ContentStatus } from '../hooks/useContentStatus'
 
 const code = (contentStatus: ContentStatus, word: string): ContentStatus => {
   let { actionHistory, selectedRange, ids, lineById } = contentStatus

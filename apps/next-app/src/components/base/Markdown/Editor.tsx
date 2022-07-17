@@ -1,6 +1,6 @@
 import React, { ChangeEventHandler, useMemo } from 'react'
 import Box from '@mui/material/Box'
-import { ContentStatus } from './hooks/useMarkdown'
+import { ContentStatus } from './hooks/useContentStatus'
 import Cursor from './Cursor'
 import Line from './Line'
 

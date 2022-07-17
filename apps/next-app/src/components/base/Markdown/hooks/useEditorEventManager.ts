@@ -8,6 +8,7 @@ import {
   refreshCursorByElement,
   refreshCursorBySelection,
 } from '../utils'
+import { DocumentStatusRef } from './useDodumentEvent'
 
 export type EditorCommend = 'bold' | 'italic' | 'strike' | 'header' | 'code'
 
@@ -25,8 +26,8 @@ export type EditorEvent = EditorCommendEvent | InputCommendEvent
 
 const useEditorEventManager = (
   commendCallbackRef: MutableRefObject<(() => void)[]>,
-  textareaRef: MutableRefObject<HTMLTextAreaElement | undefined>,
   editorDivRef: MutableRefObject<HTMLDivElement | undefined>,
+  documentStatusRef: DocumentStatusRef,
   cursorRef: MutableRefObject<HTMLDivElement | undefined>,
   editorCoreRef: EditorCoreRef,
   handlers: Handlers,
@@ -38,17 +39,17 @@ const useEditorEventManager = (
 
   useEffect(() => {
     const update = () => {
-      if (editorCoreRef.current.isSelectionChange) {
+      if (documentStatusRef.current.isSelectionChange) {
         if (
           editorDivRef?.current &&
           cursorRef.current &&
-          editorCoreRef.current.lastSelectionRange
+          documentStatusRef.current.lastSelectionRange
         ) {
           const endRange = new Range()
 
           endRange.setStart(
-            editorCoreRef.current.lastSelectionRange.endContainer,
-            editorCoreRef.current.lastSelectionRange.endOffset
+            documentStatusRef.current.lastSelectionRange.endContainer,
+            documentStatusRef.current.lastSelectionRange.endOffset
           )
 
           refreshCursorBySelection(
@@ -91,10 +92,10 @@ const useEditorEventManager = (
       }
 
       if (
-        editorCoreRef.current.isMouseDown &&
-        !editorCoreRef.current.prevIsMouseDown
+        documentStatusRef.current.isMouseDown &&
+        !documentStatusRef.current.prevIsMouseDown
       ) {
-        const lastSelectionRange = editorCoreRef.current.lastSelectionRange
+        const lastSelectionRange = documentStatusRef.current.lastSelectionRange
 
         if (lastSelectionRange) {
           commendCallbackRef.current.push(handlers.handleClearSelectLines())
@@ -102,10 +103,10 @@ const useEditorEventManager = (
       }
 
       if (
-        !editorCoreRef.current.isMouseDown &&
-        editorCoreRef.current.prevIsMouseDown
+        !documentStatusRef.current.isMouseDown &&
+        documentStatusRef.current.prevIsMouseDown
       ) {
-        const lastSelectionRange = editorCoreRef.current.lastSelectionRange
+        const lastSelectionRange = documentStatusRef.current.lastSelectionRange
 
         if (lastSelectionRange) {
           const start = lastSelectionRange.startOffset
@@ -181,9 +182,8 @@ const useEditorEventManager = (
         }
       }
 
-      editorCoreRef.current.prevIsKeyDown = editorCoreRef.current.isKeyDown
-      editorCoreRef.current.prevIsMouseDown = editorCoreRef.current.isMouseDown
-      editorCoreRef.current.isSelectionChange = false
+      documentStatusRef.current.handleAnimationFrame()
+
       frameIdRef.current = requestAnimationFrame(update)
     }
 

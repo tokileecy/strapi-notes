@@ -1,7 +1,8 @@
-import { MutableRefObject, useMemo } from 'react'
-import { ContentStatus, EditorCoreRef } from './useMarkdown'
+import { useMemo } from 'react'
 import * as fn from '../fn'
-import { ChangeSelectLinesOptions } from '../fn/changeSelectLines'
+import type { ChangeSelectLinesOptions } from '../fn/changeSelectLines'
+import type { ContentStatus } from './useContentStatus'
+import type { EditorCoreRef } from './useMarkdown'
 
 interface Config {
   cursorNeedUpdate?: boolean
@@ -13,10 +14,7 @@ const defaultConfig: Config = {
   cursorNeedUpdate: true,
 }
 
-const useHandlers = (
-  editorCoreRef: EditorCoreRef,
-  textareaRef: MutableRefObject<HTMLTextAreaElement | undefined>
-) => {
+const useHandlers = (editorCoreRef: EditorCoreRef) => {
   return useMemo(() => {
     const withContentStatus = (
       func: (contentStatus: ContentStatus) => ContentStatus
@@ -33,7 +31,7 @@ const useHandlers = (
           }
 
           if (config.textureAreaFocus) {
-            textareaRef.current?.focus()
+            editorCoreRef.current.focus()
           }
 
           if (config.finishedComposition) {
@@ -58,7 +56,7 @@ const useHandlers = (
           }
 
           if (config.textureAreaFocus) {
-            textareaRef.current?.focus()
+            editorCoreRef.current.focus()
           }
 
           if (config.finishedComposition) {

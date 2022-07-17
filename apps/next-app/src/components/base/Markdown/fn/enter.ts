@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid'
-import { EditorCoreRef, ContentStatus } from '../hooks/useMarkdown'
+import { EditorCoreRef } from '../hooks/useMarkdown'
+import { ContentStatus } from '../hooks/useContentStatus'
 import handleBackspace from './backspace'
 
 const handleEnter = (

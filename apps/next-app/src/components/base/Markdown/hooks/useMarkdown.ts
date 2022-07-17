@@ -4,146 +4,71 @@ import {
   MutableRefObject,
   useCallback,
   useEffect,
-  useReducer,
   useRef,
   useState,
 } from 'react'
-import { nanoid } from 'nanoid'
 import useHandlers from './useHandlers'
 import useHistoryHandlers from './useHistoryHandlers'
 import useEditorEventManager from './useEditorEventManager'
-import { isUnderEditor, isUnderToolbar } from '../utils'
-
-export interface LineState {
-  text: string
-  inputText: string
-  start: number
-  end: number
-}
-
-export interface ContentStatus {
-  actionHistory: string[]
-  ids: string[]
-  lineById: Record<string, LineState>
-  selectedRange: {
-    start: number
-    end: number
-  }
-}
+import { markdownToContentStatus } from '../utils'
+import useDodumentEvent from './useDodumentEvent'
+import useContentStatus, {
+  ContentStatus,
+  initialContentStatus,
+} from './useContentStatus'
 
 export interface EditorCoreRefData {
   isCompositionstart: boolean
-  prevIsKeyDown: boolean
-  prevIsMouseDown: boolean
-  isKeyDown: boolean
-  isMouseDown: boolean
-  isSelectionChange: boolean
   cursorNeedUpdate: boolean
-  lastSelectionRange?: Range
   content?: string
-  onChange?: (content: string) => void
   contentStatus: ContentStatus
   setContentStatus?: Dispatch<Partial<ContentStatus>>
+  focus: () => void
 }
 
 export type EditorCoreRef = MutableRefObject<EditorCoreRefData>
 
-export const initialContentStatus: ContentStatus = {
-  actionHistory: [],
-  ids: [],
-  lineById: {},
-  selectedRange: {
-    start: -1,
-    end: -1,
-  },
-}
-
 const useMarkdown = () => {
+  const [content, setContent] = useState('')
+  const [contentStatus, setContentStatus] = useContentStatus()
   const textareaRef = useRef<HTMLTextAreaElement>()
   const editorDivRef = useRef<HTMLDivElement>()
   const cursorRef = useRef<HTMLDivElement>()
   const commendCallbackRef = useRef<(() => void)[]>([])
 
-  const [contentStatus, setContentStatus] = useReducer(
-    (prev: ContentStatus, next: Partial<ContentStatus>) => {
-      // if (process.env.NODE_ENV === 'development') {
-      //   console.log('contentStatus updeate:', next.actionHistory, next)
-      // }
-
-      return {
-        ...prev,
-        ...next,
-        actionHistory: [] as string[],
-      }
-    },
-    {
-      ...initialContentStatus,
-    }
-  )
-
-  const [content, setContent] = useState('')
+  const documentStatusRef = useDodumentEvent()
 
   const editorCoreRef = useRef<EditorCoreRefData>({
     isCompositionstart: false,
-    prevIsKeyDown: false,
-    prevIsMouseDown: false,
-    isSelectionChange: false,
     cursorNeedUpdate: false,
-    isKeyDown: false,
-    isMouseDown: false,
     contentStatus: { ...initialContentStatus },
+    focus: () => {
+      textareaRef.current?.focus()
+    },
   })
-
-  const focus = useCallback(() => {
-    editorDivRef.current?.focus()
-  }, [])
 
   const historyHandlers = useHistoryHandlers(editorCoreRef)
 
-  const reset = useCallback(
-    ({ content: nextContext = '' }) => {
-      const initLines = () => {
-        const nextLines = nextContext.split('\n')
+  const reset = useCallback(({ content: nextContext = '' }) => {
+    const initLines = () => {
+      const { ids, lineById } = markdownToContentStatus(nextContext)
 
-        const nextIds: string[] = []
-        const nextLineById: Record<string, LineState> = {}
+      setContentStatus({
+        actionHistory: ['reset'],
+        ids,
+        lineById,
+      })
+    }
 
-        nextLines.forEach((line: string) => {
-          const id = nanoid(6)
+    initLines()
+  }, [])
 
-          nextIds.push(id)
-          nextLineById[id] = {
-            text: line,
-            inputText: '',
-            start: 0,
-            end: 0,
-          }
-        })
-        setContentStatus({
-          actionHistory: ['reset'],
-          ids: nextIds,
-          lineById: nextLineById,
-        })
-      }
-
-      initLines()
-    },
-    [setContent]
-  )
-
-  const onChange = useCallback(
-    (content: string) => {
-      setContent(content)
-    },
-    [setContent]
-  )
-
-  const handlers = useHandlers(editorCoreRef, textareaRef)
+  const handlers = useHandlers(editorCoreRef)
 
   const { pushEvent } = useEditorEventManager(
     commendCallbackRef,
-    textareaRef,
     editorDivRef,
+    documentStatusRef,
     cursorRef,
     editorCoreRef,
     handlers,
@@ -245,31 +170,35 @@ const useMarkdown = () => {
     }
   }
 
-  const handleTextareaChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-    const value = e.target.value
+  const handleTextareaChange: ChangeEventHandler<HTMLTextAreaElement> =
+    useCallback(
+      (e) => {
+        const value = e.target.value
 
-    const inputLineId = contentStatus.ids[contentStatus.selectedRange.end]
-    const nextLineById = { ...editorCoreRef.current.contentStatus.lineById }
+        const inputLineId = contentStatus.ids[contentStatus.selectedRange.end]
+        const nextLineById = { ...editorCoreRef.current.contentStatus.lineById }
 
-    nextLineById[inputLineId] = {
-      ...nextLineById[inputLineId],
-      inputText: value,
-    }
+        nextLineById[inputLineId] = {
+          ...nextLineById[inputLineId],
+          inputText: value,
+        }
 
-    if (!editorCoreRef.current.isCompositionstart) {
-      commendCallbackRef.current.push(
-        handlers.handleAddWord(value, {
-          cursorNeedUpdate: true,
-          finishedComposition: true,
-        })
-      )
-    } else {
-      setContentStatus({
-        actionHistory: ['input'],
-        lineById: nextLineById,
-      })
-    }
-  }
+        if (!editorCoreRef.current.isCompositionstart) {
+          commendCallbackRef.current.push(
+            handlers.handleAddWord(value, {
+              cursorNeedUpdate: true,
+              finishedComposition: true,
+            })
+          )
+        } else {
+          setContentStatus({
+            actionHistory: ['input'],
+            lineById: nextLineById,
+          })
+        }
+      },
+      [handlers, setContentStatus]
+    )
 
   const handleCompositionstart = () => {
     editorCoreRef.current.isCompositionstart = true
@@ -338,63 +267,10 @@ const useMarkdown = () => {
   }, [])
 
   if (editorCoreRef.current) {
-    editorCoreRef.current.onChange = onChange
     editorCoreRef.current.content = content
     editorCoreRef.current.contentStatus = contentStatus
     editorCoreRef.current.setContentStatus = setContentStatus
   }
-
-  useEffect(() => {
-    const handleKeydown = () => {
-      editorCoreRef.current.isKeyDown = true
-    }
-
-    const handleMouseup = () => {
-      editorCoreRef.current.isMouseDown = false
-    }
-
-    const handleMouseDown = (e: MouseEvent) => {
-      if (e.target) {
-        if (!isUnderToolbar(e.target as Element)) {
-          editorCoreRef.current.isMouseDown = true
-        }
-      }
-    }
-
-    const handleKeyup = () => {
-      editorCoreRef.current.isKeyDown = false
-    }
-
-    const handleSelect = () => {
-      const selection = window.getSelection()
-
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0)
-        const ancestorContainer = range.commonAncestorContainer
-
-        editorCoreRef.current.isSelectionChange = false
-
-        if (isUnderEditor(ancestorContainer)) {
-          editorCoreRef.current.isSelectionChange = true
-          editorCoreRef.current.lastSelectionRange = range
-        }
-      }
-    }
-
-    document.addEventListener('keydown', handleKeydown)
-    document.addEventListener('keyup', handleKeyup)
-    document.addEventListener('mousedown', handleMouseDown)
-    document.addEventListener('mouseup', handleMouseup)
-    document.addEventListener('selectionchange', handleSelect)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeydown)
-      document.removeEventListener('keyup', handleKeyup)
-      document.removeEventListener('mousedown', handleMouseDown)
-      document.removeEventListener('mouseup', handleMouseup)
-      document.removeEventListener('selectionchange', handleSelect)
-    }
-  }, [])
 
   useEffect(() => {
     setContent(
@@ -408,15 +284,10 @@ const useMarkdown = () => {
   return {
     textareaRefCallback,
     editorDivRefCallback,
-    editorDivRef,
-    cursorRef,
     cursorRefCallback,
     contentStatus,
     content,
-    setContent,
     reset,
-    onChange,
-    focus,
     pushEvent,
     onTextareaChange: handleTextareaChange,
   }

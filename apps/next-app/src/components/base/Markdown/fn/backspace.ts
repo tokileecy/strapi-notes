@@ -1,4 +1,5 @@
-import { ContentStatus, EditorCoreRef } from '../hooks/useMarkdown'
+import { EditorCoreRef } from '../hooks/useMarkdown'
+import { ContentStatus } from '../hooks/useContentStatus'
 import { getLineIndexById, getSelectedIdsByIndexRange } from '../utils'
 
 const handleBackspace = (

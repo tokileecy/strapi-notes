@@ -9,7 +9,7 @@ import HeaderSvg from './images/header.svg'
 import CodeSvg from './images/code.svg'
 import ToolbarIconButton from './ToolbarIconButton'
 import { EditorEvent } from './hooks/useEditorEventManager'
-import { ContentStatus, initialContentStatus } from './hooks/useMarkdown'
+import { ContentStatus, initialContentStatus } from './hooks/useContentStatus'
 import { ChangeEventHandler } from 'react'
 
 export type MarkdownProps = {

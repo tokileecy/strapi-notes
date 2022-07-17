@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react'
-import { EditorCoreRef, LineState } from './useMarkdown'
+import { LineState } from './useContentStatus'
+import { EditorCoreRef } from './useMarkdown'
 
 const maxCacheCount = 50
 

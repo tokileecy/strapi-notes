@@ -1,4 +1,6 @@
+import { nanoid } from 'nanoid'
 import { MutableRefObject } from 'react'
+import { LineState } from './hooks/useContentStatus'
 import { EditorCoreRefData } from './hooks/useMarkdown'
 
 export const refreshCursorBySelection = (
@@ -184,5 +186,29 @@ export const getSelectedIdsByIndexRange = (
 
     selectedIdsByIndexRangeCache.setCache(ids, indexRange, res)
     return res
+  }
+}
+
+export const markdownToContentStatus = (markdownContext: string) => {
+  const nextLines = markdownContext.split('\n')
+
+  const ids: string[] = []
+  const lineById: Record<string, LineState> = {}
+
+  nextLines.forEach((line: string) => {
+    const id = nanoid(6)
+
+    ids.push(id)
+    lineById[id] = {
+      text: line,
+      inputText: '',
+      start: 0,
+      end: 0,
+    }
+  })
+
+  return {
+    ids,
+    lineById,
   }
 }

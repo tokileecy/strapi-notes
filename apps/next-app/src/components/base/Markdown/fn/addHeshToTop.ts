@@ -1,4 +1,4 @@
-import { ContentStatus } from '../hooks/useMarkdown'
+import { ContentStatus } from '../hooks/useContentStatus'
 import { getSelectedIdsByIndexRange } from '../utils'
 
 const addHeshToTop = (contentStatus: ContentStatus): ContentStatus => {
