@@ -1,3 +1,4 @@
+import { ChangeEventHandler } from 'react'
 import Box from '@mui/material/Box'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -10,13 +11,12 @@ import CodeSvg from './images/code.svg'
 import ToolbarIconButton from './ToolbarIconButton'
 import { EditorEvent } from './hooks/useEditorEventManager'
 import { ContentStatus, initialContentStatus } from './hooks/useContentStatus'
-import { ChangeEventHandler } from 'react'
 
 export type MarkdownProps = {
   type?: 'editor' | 'preview' | 'both'
   content?: string
   contentStatus?: ContentStatus
-  editorDivRefCallback?: (element: HTMLDivElement) => void
+  lineContainerRefCallback?: (element: HTMLDivElement) => void
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
   onChange?: (next: string) => void
@@ -34,7 +34,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
   const {
     content = '',
     type = 'preview',
-    editorDivRefCallback,
+    lineContainerRefCallback,
     textareaRefCallback,
     cursorRefCallback,
     pushEvent,
@@ -121,15 +121,12 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
               sx={{
                 flexGrow: 1,
                 flexBasis: 0,
-                border: '1px solid white',
-                p: 2,
-                overflow: 'auto',
               }}
             >
               <Editor
                 textareaRefCallback={textareaRefCallback}
                 cursorRefCallback={cursorRefCallback}
-                editorDivRefCallback={editorDivRefCallback}
+                lineContainerRefCallback={lineContainerRefCallback}
                 contentStatus={contentStatus}
                 onTextareaChange={onTextareaChange}
               />

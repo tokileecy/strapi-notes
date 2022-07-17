@@ -41,7 +41,7 @@ const useMarkdown = () => {
     contentStatus
   )
 
-  const editorDivRefCallback = useCallback((element: HTMLDivElement) => {
+  const lineContainerRefCallback = useCallback((element: HTMLDivElement) => {
     if (editorDivRef.current !== element) {
       editorDivRef.current = element
     }
@@ -72,7 +72,7 @@ const useMarkdown = () => {
     content,
     contentStatus,
     textareaRefCallback,
-    editorDivRefCallback,
+    lineContainerRefCallback,
     cursorRefCallback,
     reset,
     pushEvent,

@@ -33,11 +33,14 @@ export const refreshCursorByElement = (
   }
 }
 
-export const isUnderEditor = (element: Node) => {
+export const isUnderLineContainer = (element: Node) => {
   let current = element
 
   for (let i = 0; i < 5; i++) {
-    if (current instanceof HTMLElement && current.dataset.type === 'editor') {
+    if (
+      current instanceof HTMLElement &&
+      current.dataset.type === 'line-container'
+    ) {
       return true
     }
 

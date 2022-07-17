@@ -7,9 +7,9 @@ import {
   refreshCursorByElement,
   refreshCursorBySelection,
 } from '../utils'
-import { DocumentStatusRef } from './useDodumentEvent'
 import { ContentStatus, initialContentStatus } from './useContentStatus'
 import { CursorStatus } from './useCursor'
+import { DocumentStatusRef } from './useDodumentEvent'
 
 export type EditorCommend = 'bold' | 'italic' | 'strike' | 'header' | 'code'
 
@@ -55,9 +55,9 @@ const useEditorEventManager = (
           cursorRef.current &&
           documentStatusRef.current.lastSelectionRange
         ) {
-          const endRange = new Range()
+          const range = new Range()
 
-          endRange.setStart(
+          range.setStart(
             documentStatusRef.current.lastSelectionRange.endContainer,
             documentStatusRef.current.lastSelectionRange.endOffset
           )
@@ -65,7 +65,7 @@ const useEditorEventManager = (
           refreshCursorBySelection(
             editorDivRef.current,
             cursorRef.current,
-            endRange
+            range
           )
         }
       }

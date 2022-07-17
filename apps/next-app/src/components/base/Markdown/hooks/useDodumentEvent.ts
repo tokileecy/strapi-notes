@@ -1,5 +1,5 @@
 import { MutableRefObject, useEffect, useRef } from 'react'
-import { isUnderEditor, isUnderToolbar } from '../utils'
+import { isUnderLineContainer, isUnderToolbar } from '../utils'
 
 interface DocumentStatus {
   prevIsKeyDown: boolean
@@ -55,7 +55,7 @@ const useDodumentEvent = () => {
 
         documentStatusRef.current.isSelectionChange = false
 
-        if (isUnderEditor(ancestorContainer)) {
+        if (isUnderLineContainer(ancestorContainer)) {
           documentStatusRef.current.isSelectionChange = true
           documentStatusRef.current.lastSelectionRange = range
         }

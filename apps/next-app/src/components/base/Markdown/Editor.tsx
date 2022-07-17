@@ -1,12 +1,13 @@
 import React, { ChangeEventHandler, useMemo } from 'react'
 import Box from '@mui/material/Box'
-import { ContentStatus } from './hooks/useContentStatus'
 import Cursor from './Cursor'
 import Line from './Line'
+import EndLine from './EndLine'
+import { ContentStatus } from './hooks/useContentStatus'
 
 export type EditorProps = {
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
-  editorDivRefCallback?: (element: HTMLDivElement) => void
+  lineContainerRefCallback?: (element: HTMLDivElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
   contentStatus: ContentStatus
   onTextareaChange?: ChangeEventHandler<HTMLTextAreaElement>
@@ -16,7 +17,7 @@ const Editor = (props: EditorProps): JSX.Element => {
   const {
     textareaRefCallback,
     cursorRefCallback,
-    editorDivRefCallback,
+    lineContainerRefCallback,
     contentStatus,
     onTextareaChange,
   } = props
@@ -43,7 +44,16 @@ const Editor = (props: EditorProps): JSX.Element => {
   }, [contentStatus])
 
   return (
-    <>
+    <Box
+      sx={{
+        height: '100%',
+        width: '100%',
+        overflow: 'auto',
+        border: '1px solid white',
+        p: 2,
+      }}
+      data-type="editor"
+    >
       <Box
         sx={{
           outline: 'none',
@@ -57,34 +67,18 @@ const Editor = (props: EditorProps): JSX.Element => {
           onTextareaChange={onTextareaChange}
         />
         <Box
-          ref={editorDivRefCallback}
+          ref={lineContainerRefCallback}
           sx={{
             outline: 'none',
             position: 'relative',
           }}
-          data-type="editor"
+          data-type="line-container"
         >
           {lines}
-          <Box
-            sx={{
-              height: 0,
-              m: 0,
-            }}
-          >
-            <Box
-              component="pre"
-              data-type="end"
-              sx={{
-                height: 0,
-                m: 0,
-              }}
-            >
-              &#8203;
-            </Box>
-          </Box>
+          <EndLine />
         </Box>
       </Box>
-    </>
+    </Box>
   )
 }
 
