@@ -1,6 +1,6 @@
+import clearSelection from './clearSelection'
 import { ContentStatus } from '../hooks/useContentStatus'
 import { getSelectedIdsByIndexRange } from '../utils'
-
 export interface ChangeSelectLinesOptions {
   selectedRange?: { start: number; end: number }
   line?: { start: number; end: number }
@@ -10,7 +10,8 @@ const changeSelectLines = (
   contentStatus: ContentStatus,
   options: ChangeSelectLinesOptions = {}
 ): ContentStatus => {
-  let { actionHistory, selectedRange, ids, lineById } = contentStatus
+  let { actionHistory, selectedRange, ids, lineById } =
+    clearSelection(contentStatus)
 
   const prevSelectedLineIds = getSelectedIdsByIndexRange(ids, selectedRange)
 

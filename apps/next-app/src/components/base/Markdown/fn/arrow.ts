@@ -21,7 +21,7 @@ const handleArrow = (
       let nextLineId = selectedEndLineId
       let nextLine = { ...selectedLine }
 
-      if (selectedLineIndex < ids.length) {
+      if (selectedLineIndex < ids.length - 1) {
         const nextLineIndex = selectedLineIndex + 1
 
         nextLineId = ids[nextLineIndex]

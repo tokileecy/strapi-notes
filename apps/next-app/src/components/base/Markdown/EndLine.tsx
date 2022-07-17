@@ -6,6 +6,7 @@ const EndLine = () => {
       sx={{
         height: 0,
         m: 0,
+        border: 'none',
       }}
     >
       <Box
@@ -14,6 +15,7 @@ const EndLine = () => {
         sx={{
           height: 0,
           m: 0,
+          border: 'none',
         }}
       >
         &#8203;

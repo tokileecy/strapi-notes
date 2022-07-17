@@ -2,8 +2,7 @@ import { MutableRefObject, useEffect, useMemo, useRef } from 'react'
 import { Handlers } from './useHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
 import {
-  getLineIdByElement,
-  getLineIndexById,
+  getChangeSelectLinesOptionsByRange,
   refreshCursorByElement,
   refreshCursorBySelection,
 } from '../utils'
@@ -87,6 +86,36 @@ const useEditorEventManager = (
                 `[data-type="line-center"]`
               ) as HTMLElement
 
+              const editorElement = document.querySelector(
+                '[data-type="editor"]'
+              )
+
+              if (editorElement && selectedEndLineElement) {
+                const scrollBottom =
+                  editorElement.scrollTop + editorElement.clientHeight
+
+                const editorStyles = window.getComputedStyle(editorElement)
+
+                const seenableBootom =
+                  selectedEndLineElement.offsetTop +
+                  selectedEndLineElement.offsetHeight +
+                  parseInt(editorStyles.paddingTop)
+
+                const seenableTop =
+                  selectedEndLineElement.offsetTop +
+                  parseInt(editorStyles.paddingTop)
+
+                const scrollTop = editorElement.scrollTop
+
+                if (seenableBootom > scrollBottom) {
+                  editorElement.scrollTop += seenableBootom - scrollBottom
+                }
+
+                if (seenableTop < scrollTop) {
+                  editorElement.scrollTop -= scrollTop - seenableTop
+                }
+              }
+
               refreshCursorByElement(
                 editorDivRef.current,
                 cursorRef.current,
@@ -108,7 +137,15 @@ const useEditorEventManager = (
         const lastSelectionRange = documentStatusRef.current.lastSelectionRange
 
         if (lastSelectionRange) {
-          handlers.handleClearSelectLines()
+          handlers.handleChangeSelectLines(
+            getChangeSelectLinesOptionsByRange(
+              contentStatusRef.current.contentStatus.ids,
+              lastSelectionRange
+            ),
+            {
+              cursorNeedUpdate: true,
+            }
+          )
         }
       }
 
@@ -119,27 +156,11 @@ const useEditorEventManager = (
         const lastSelectionRange = documentStatusRef.current.lastSelectionRange
 
         if (lastSelectionRange) {
-          const start = lastSelectionRange.startOffset
-          const end = lastSelectionRange.endOffset
-
-          const startIndex = getLineIndexById(
-            contentStatusRef.current.contentStatus.ids,
-            getLineIdByElement(lastSelectionRange.startContainer)
-          )
-
-          const endIndex = getLineIndexById(
-            contentStatusRef.current.contentStatus.ids,
-            getLineIdByElement(lastSelectionRange.endContainer)
-          )
-
           handlers.handleChangeSelectLines(
-            {
-              selectedRange: {
-                start: startIndex,
-                end: endIndex,
-              },
-              line: { start, end },
-            },
+            getChangeSelectLinesOptionsByRange(
+              contentStatusRef.current.contentStatus.ids,
+              lastSelectionRange
+            ),
             {
               cursorNeedUpdate: true,
               handleFinished: () => {

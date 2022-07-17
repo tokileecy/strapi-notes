@@ -1,7 +1,14 @@
 import { ContentStatus } from '../hooks/useContentStatus'
+import backspace from './backspace'
+import { isSelectingWord } from './utils'
 
 const code = (contentStatus: ContentStatus, word: string): ContentStatus => {
   let { actionHistory, selectedRange, ids, lineById } = contentStatus
+
+  if (isSelectingWord(contentStatus)) {
+    ;({ actionHistory, selectedRange, ids, lineById } =
+      backspace(contentStatus))
+  }
 
   selectedRange = { ...selectedRange }
   actionHistory = [...actionHistory, 'add-word']

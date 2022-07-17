@@ -33,6 +33,104 @@ export const refreshCursorByElement = (
   }
 }
 
+export const selectionDetailEditorTypes = [
+  'editor',
+  'line-container',
+  'line-wrapper',
+  'line',
+  'line-start',
+  'line-center',
+  'line-end',
+  'line-input',
+] as const
+
+export type SelectionDetailType =
+  | typeof selectionDetailEditorTypes[number]
+  | 'none'
+
+export interface SelectionDetail {
+  type: SelectionDetailType
+  isUnderEditor: boolean
+  isUnderLineContainer: boolean
+  isLine: boolean
+  id: string
+  start: number
+  end: number
+}
+
+export const getSelectionDetailByNode = (element: Node) => {
+  let current = element
+
+  const startDetail: SelectionDetail = {
+    type: 'none',
+    id: '',
+    start: -1,
+    end: -1,
+    get isLine() {
+      return (
+        this.type === 'line' ||
+        this.type === 'line-start' ||
+        this.type === 'line-center' ||
+        this.type === 'line-end' ||
+        this.type === 'line-input'
+      )
+    },
+    get isUnderLineContainer() {
+      return this.isLine || this.type === 'line-wrapper'
+    },
+    get isUnderEditor() {
+      return this.isUnderLineContainer || this.type === 'line-container'
+    },
+  }
+
+  let findEditorElement = false
+
+  for (let i = 0; i < 9; i++) {
+    if (current instanceof HTMLElement) {
+      const type = current.dataset.type
+
+      for (let j = 0; j < selectionDetailEditorTypes.length; j++) {
+        if (type === selectionDetailEditorTypes[j]) {
+          startDetail.type = type
+          findEditorElement = true
+          break
+        }
+      }
+    }
+
+    if (findEditorElement) {
+      if (
+        startDetail.type === 'line-start' ||
+        startDetail.type === 'line-center' ||
+        startDetail.type === 'line-end' ||
+        startDetail.type === 'line-input'
+      ) {
+        const lineElement = current.parentElement as HTMLElement
+
+        startDetail.id = lineElement.dataset.id ?? ''
+        startDetail.start = Number(lineElement.dataset.start) ?? -1
+        startDetail.end = Number(lineElement.dataset.end) ?? -1
+      } else if (startDetail.type === 'line') {
+        const lineElement = current as HTMLElement
+
+        startDetail.id = lineElement.dataset.id ?? ''
+        startDetail.start = Number(lineElement.dataset.start) ?? -1
+        startDetail.end = Number(lineElement.dataset.end) ?? -1
+      }
+
+      break
+    }
+
+    if (current.parentElement) {
+      current = current.parentElement
+    } else {
+      break
+    }
+  }
+
+  return startDetail
+}
+
 export const isUnderLineContainer = (element: Node) => {
   let current = element
 
@@ -111,7 +209,10 @@ export const getLineIdByElement = (element: Node) => {
   let id = ''
 
   for (let i = 0; i < 5; i++) {
-    if (current instanceof HTMLElement && current.dataset.type === 'wrapper') {
+    if (
+      current instanceof HTMLElement &&
+      current.dataset.type === 'line-wrapper'
+    ) {
       id = current.dataset.id ?? ''
       break
     }
@@ -124,6 +225,49 @@ export const getLineIdByElement = (element: Node) => {
   }
 
   return id
+}
+
+export const getChangeSelectLinesOptionsByRange = (
+  ids: string[],
+  range: Range
+) => {
+  const startDetail = getSelectionDetailByNode(range.startContainer)
+
+  const endDetail = getSelectionDetailByNode(range.endContainer)
+
+  let start = range.startOffset
+  let end = range.endOffset
+
+  const startIndex = getLineIndexById(
+    ids,
+    getLineIdByElement(range.startContainer)
+  )
+
+  const endIndex = getLineIndexById(ids, getLineIdByElement(range.endContainer))
+
+  if (startDetail.type === 'line-input') {
+    start = startDetail.start
+  } else if (startDetail.type === 'line-center') {
+    start = startDetail.start + start
+  } else if (startDetail.type === 'line-end') {
+    start = startDetail.end + start
+  }
+
+  if (endDetail.type === 'line-input') {
+    end = endDetail.start
+  } else if (endDetail.type === 'line-center') {
+    end = endDetail.start + end
+  } else if (endDetail.type === 'line-end') {
+    end = endDetail.end + end
+  }
+
+  return {
+    selectedRange: {
+      start: startIndex,
+      end: endIndex,
+    },
+    line: { start, end },
+  }
 }
 
 const selectedIdsByIndexRangeCache = (() => {
