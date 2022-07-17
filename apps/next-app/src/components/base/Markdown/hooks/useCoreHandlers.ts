@@ -1,8 +1,7 @@
-import { Dispatch, MutableRefObject, useMemo, useRef } from 'react'
+import { Dispatch, useMemo, useRef } from 'react'
 import * as fn from '../fn'
 import { ChangeSelectLinesOptions } from '../fn/changeSelectLines'
 import { ContentStatus, initialContentStatus } from './useContentStatus'
-import { CursorStatus } from './useCursor'
 
 interface Config {
   cursorNeedUpdate?: boolean
@@ -13,11 +12,59 @@ const defaultConfig: Config = {
   cursorNeedUpdate: true,
 }
 
-const useHandlers = (
-  cursorStatusRef: MutableRefObject<CursorStatus>,
+export type HandlerEvent = 'cursorchange'
+
+export interface HandlerStatus {
+  commendCallbackQueue: (() => void)[]
+  cursorNeedUpdate: boolean
+  queue: Record<HandlerEvent, Set<() => void>>
+  on: (event: HandlerEvent, callback: () => void) => void
+  off: (event: HandlerEvent, callback: () => void) => void
+  update: () => void
+  noticeCursorNeedUpdate: () => void
+}
+
+const useCoreHandlers = (
   contentStatus: ContentStatus,
   setContentStatus: Dispatch<Partial<ContentStatus>>
 ) => {
+  const handlerStatusRef = useRef<HandlerStatus>({
+    commendCallbackQueue: [],
+    cursorNeedUpdate: false,
+    queue: {
+      cursorchange: new Set(),
+    },
+    on(event: HandlerEvent, callback: () => void) {
+      this.queue[event].add(callback)
+    },
+    off(event: HandlerEvent, callback: () => void) {
+      this.queue[event].delete(callback)
+    },
+    update() {
+      if (this.cursorNeedUpdate) {
+        this.queue.cursorchange.forEach((callback) => {
+          callback()
+        })
+        this.cursorNeedUpdate = false
+      }
+
+      while (this.commendCallbackQueue.length > 0) {
+        const callback = this.commendCallbackQueue.shift()
+
+        if (callback) {
+          try {
+            callback()
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      }
+    },
+    noticeCursorNeedUpdate() {
+      this.cursorNeedUpdate = true
+    },
+  })
+
   const contentStatusRef = useRef<{
     contentStatus: ContentStatus
   }>({
@@ -26,9 +73,7 @@ const useHandlers = (
 
   contentStatusRef.current.contentStatus = contentStatus
 
-  return useMemo(() => {
-    const commendCallbackQueue: (() => void)[] = []
-
+  const handlers = useMemo(() => {
     const withContentStatus = (
       func: (contentStatus: ContentStatus) => ContentStatus
     ): ((config?: Config) => void) => {
@@ -37,9 +82,9 @@ const useHandlers = (
 
         setContentStatus?.(func(contentStatus))
 
-        commendCallbackQueue.push(() => {
+        handlerStatusRef.current.commendCallbackQueue.push(() => {
           if (config.cursorNeedUpdate) {
-            cursorStatusRef.current.cursorNeedUpdate = true
+            handlerStatusRef.current.cursorNeedUpdate = true
           }
 
           config.handleFinished?.()
@@ -55,9 +100,9 @@ const useHandlers = (
 
         setContentStatus?.(func(contentStatus, option))
 
-        commendCallbackQueue.push(() => {
+        handlerStatusRef.current.commendCallbackQueue.push(() => {
           if (config.cursorNeedUpdate) {
-            cursorStatusRef.current.cursorNeedUpdate = true
+            handlerStatusRef.current.cursorNeedUpdate = true
           }
 
           config.handleFinished?.()
@@ -66,7 +111,6 @@ const useHandlers = (
     }
 
     return {
-      commendCallbackQueue,
       handleBold: withContentStatus((contentStatus) => {
         return fn.wrapSelection(contentStatus, '**')
       }),
@@ -109,8 +153,13 @@ const useHandlers = (
       ),
     }
   }, [])
+
+  return {
+    handlerStatusRef,
+    handlers,
+  }
 }
 
-export type Handlers = ReturnType<typeof useHandlers>
+export type Handlers = ReturnType<typeof useCoreHandlers>['handlers']
 
-export default useHandlers
+export default useCoreHandlers

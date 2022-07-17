@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import Box from '@mui/material/Box'
 import Cursor from './Cursor'
 import Line from './Line'
@@ -10,7 +10,6 @@ export type EditorProps = {
   lineContainerRefCallback?: (element: HTMLDivElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
   contentStatus: ContentStatus
-  onTextareaChange?: ChangeEventHandler<HTMLTextAreaElement>
 }
 
 const Editor = (props: EditorProps): JSX.Element => {
@@ -19,7 +18,6 @@ const Editor = (props: EditorProps): JSX.Element => {
     cursorRefCallback,
     lineContainerRefCallback,
     contentStatus,
-    onTextareaChange,
   } = props
 
   const lines = useMemo(() => {
@@ -29,19 +27,6 @@ const Editor = (props: EditorProps): JSX.Element => {
       return <Line key={id} id={id} lineState={line} />
     })
   }, [contentStatus.ids, contentStatus.lineById])
-
-  const textareaValue = useMemo(() => {
-    let inputText = ''
-
-    if (contentStatus.selectedRange.end !== -1) {
-      const lineById = contentStatus.lineById
-      const lineId = contentStatus.ids[contentStatus.selectedRange.end]
-
-      inputText = lineById[lineId].inputText
-    }
-
-    return inputText
-  }, [contentStatus])
 
   return (
     <Box
@@ -63,8 +48,6 @@ const Editor = (props: EditorProps): JSX.Element => {
         <Cursor
           cursorRefCallback={cursorRefCallback}
           textareaRefCallback={textareaRefCallback}
-          textareaValue={textareaValue}
-          onTextareaChange={onTextareaChange}
         />
         <Box
           ref={lineContainerRefCallback}

@@ -1,21 +1,20 @@
 import {
-  ChangeEventHandler,
   Dispatch,
   MutableRefObject,
   useCallback,
+  useEffect,
   useRef,
 } from 'react'
 import { ContentStatus, initialContentStatus } from './useContentStatus'
-import { CursorStatus } from './useCursor'
-import { Handlers } from './useHandlers'
+import { Handlers, HandlerStatus } from './useCoreHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
 
 const useTextarea = (
   contentStatus: ContentStatus,
   handlers: Handlers,
   historyHandlers: HistoryHandlers,
-  cursorStatusRef: MutableRefObject<CursorStatus>,
-  setContentStatus: Dispatch<Partial<ContentStatus>>
+  setContentStatus: Dispatch<Partial<ContentStatus>>,
+  handlerStatusRef: MutableRefObject<HandlerStatus>
 ) => {
   const textareaStatusRef = useRef<{ isCompositionstart: boolean }>({
     isCompositionstart: false,
@@ -97,6 +96,17 @@ const useTextarea = (
 
         case 'Escape':
           historyHandlers.saveState()
+
+          if (!textareaStatusRef.current.isCompositionstart) {
+            handlers.handleAddWord(textareaRef.current?.value ?? '', {
+              cursorNeedUpdate: true,
+              handleFinished: () => {
+                textareaRef.current?.focus()
+                textareaStatusRef.current.isCompositionstart = false
+              },
+            })
+          }
+
           break
         case 'Tab':
         case 'Meta':
@@ -105,16 +115,30 @@ const useTextarea = (
         case 'Shift':
           break
         case 'ArrowUp':
-          handlers.handleArrow('UP')
+          console.log('?', textareaStatusRef.current.isCompositionstart)
+
+          if (!textareaStatusRef.current.isCompositionstart) {
+            handlers.handleArrow('UP')
+          }
+
           break
         case 'ArrowDown':
-          handlers.handleArrow('DOWN')
+          if (!textareaStatusRef.current.isCompositionstart) {
+            handlers.handleArrow('DOWN')
+          }
+
           break
         case 'ArrowLeft':
-          handlers.handleArrow('LEFT')
+          if (!textareaStatusRef.current.isCompositionstart) {
+            handlers.handleArrow('LEFT')
+          }
+
           break
         case 'ArrowRight':
-          handlers.handleArrow('RIGHT')
+          if (!textareaStatusRef.current.isCompositionstart) {
+            handlers.handleArrow('RIGHT')
+          }
+
           break
         case 'CapsLock':
           break
@@ -128,47 +152,44 @@ const useTextarea = (
     }
   }
 
-  const handleTextareaChange: ChangeEventHandler<HTMLTextAreaElement> =
-    useCallback(
-      (e) => {
-        const value = e.target.value
+  const handleTextareaChange = (e: Event) => {
+    const element = e.target as HTMLTextAreaElement
+    const value = element.value
 
-        const contentStatus = contentStatusRef.current.contentStatus
-        const inputLineId = contentStatus.ids[contentStatus.selectedRange.end]
+    const contentStatus = contentStatusRef.current.contentStatus
+    const inputLineId = contentStatus.ids[contentStatus.selectedRange.end]
 
-        const nextLineById = {
-          ...contentStatus.lineById,
-        }
+    const nextLineById = {
+      ...contentStatus.lineById,
+    }
 
-        nextLineById[inputLineId] = {
-          ...nextLineById[inputLineId],
-          inputText: value,
-        }
+    nextLineById[inputLineId] = {
+      ...nextLineById[inputLineId],
+      inputText: value,
+    }
 
-        if (!textareaStatusRef.current.isCompositionstart) {
-          handlers.handleAddWord(value, {
-            cursorNeedUpdate: true,
-            handleFinished: () => {
-              textareaRef.current?.focus()
-              textareaStatusRef.current.isCompositionstart = false
-            },
-          })
-        } else {
-          setContentStatus({
-            actionHistory: ['input'],
-            lineById: nextLineById,
-          })
-        }
-      },
-      [handlers]
-    )
+    if (!textareaStatusRef.current.isCompositionstart) {
+      handlers.handleAddWord(value, {
+        cursorNeedUpdate: true,
+        handleFinished: () => {
+          textareaRef.current?.focus()
+          textareaStatusRef.current.isCompositionstart = false
+        },
+      })
+    } else {
+      setContentStatus({
+        actionHistory: ['input'],
+        lineById: nextLineById,
+      })
+    }
+  }
 
   const handleCompositionstart = () => {
     textareaStatusRef.current.isCompositionstart = true
   }
 
   const handleCompositionupdate = () => {
-    cursorStatusRef.current.cursorNeedUpdate = true
+    handlerStatusRef.current.noticeCursorNeedUpdate()
   }
 
   const handleCompositionend = (e: CompositionEvent) => {
@@ -187,6 +208,7 @@ const useTextarea = (
 
   const textareaRefCallback = useCallback((element: HTMLTextAreaElement) => {
     if (textareaRef.current !== element) {
+      textareaRef.current?.removeEventListener('input', handleTextareaChange)
       textareaRef.current?.removeEventListener('keydown', hanldeTextareaKeydown)
       textareaRef.current?.removeEventListener(
         'compositionstart',
@@ -202,6 +224,7 @@ const useTextarea = (
         handleCompositionend
       )
       textareaRef.current = element
+      textareaRef.current?.addEventListener('input', handleTextareaChange)
       textareaRef.current?.addEventListener(
         'compositionstart',
         handleCompositionstart
@@ -218,6 +241,21 @@ const useTextarea = (
     }
   }, [])
 
+  useEffect(() => {
+    if (textareaRef.current) {
+      let inputText = ''
+
+      if (contentStatus.selectedRange.end !== -1) {
+        const lineById = contentStatus.lineById
+        const lineId = contentStatus.ids[contentStatus.selectedRange.end]
+
+        inputText = lineById[lineId].inputText
+      }
+
+      textareaRef.current.value = inputText
+    }
+  }, [contentStatus])
+
   const focus = useCallback(() => {
     textareaRef.current?.focus()
   }, [])
@@ -226,7 +264,6 @@ const useTextarea = (
     textareaRef,
     textareaStatusRef,
     textareaRefCallback,
-    handleTextareaChange,
     focus,
   }
 }

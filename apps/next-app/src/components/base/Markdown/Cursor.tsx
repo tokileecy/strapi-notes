@@ -1,20 +1,12 @@
 import Box from '@mui/material/Box'
-import { ChangeEventHandler } from 'react'
 
 export interface CursorProps {
   cursorRefCallback?: (element: HTMLDivElement) => void
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
-  textareaValue?: string
-  onTextareaChange?: ChangeEventHandler<HTMLTextAreaElement>
 }
 
 const Cursor = (props: CursorProps) => {
-  const {
-    cursorRefCallback,
-    textareaRefCallback,
-    textareaValue = '',
-    onTextareaChange,
-  } = props
+  const { cursorRefCallback, textareaRefCallback } = props
 
   return (
     <Box
@@ -64,8 +56,7 @@ const Cursor = (props: CursorProps) => {
           border: 'none',
         }}
         component="textarea"
-        value={textareaValue}
-        onChange={onTextareaChange}
+        defaultValue=""
       ></Box>
     </Box>
   )

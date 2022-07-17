@@ -1,24 +1,64 @@
 import { MutableRefObject, useEffect, useRef } from 'react'
 import { isUnderLineContainer, isUnderToolbar } from '../utils'
 
-interface DocumentStatus {
+export type DocumentEvent = 'clickdown' | 'clickup' | 'select'
+
+export interface DocumentStatus {
   prevIsKeyDown: boolean
   prevIsMouseDown: boolean
   isKeyDown: boolean
   isMouseDown: boolean
   isSelectionChange: boolean
   lastSelectionRange?: Range
-  handleAnimationFrame: () => void
+  queue: Record<DocumentEvent, Set<() => void>>
+  on: (event: DocumentEvent, callback: () => void) => void
+  off: (event: DocumentEvent, callback: () => void) => void
+  update: () => void
 }
 
-const useDodumentEvent = () => {
+const useDodumentHandler = () => {
   const documentStatusRef = useRef<DocumentStatus>({
     prevIsKeyDown: false,
     prevIsMouseDown: false,
     isKeyDown: false,
     isMouseDown: false,
     isSelectionChange: false,
-    handleAnimationFrame() {
+    queue: {
+      'clickdown': new Set(),
+      'clickup': new Set(),
+      'select': new Set(),
+    },
+    on(event: DocumentEvent, callback: () => void) {
+      this.queue[event].add(callback)
+    },
+    off(event: DocumentEvent, callback: () => void) {
+      this.queue[event].delete(callback)
+    },
+    update() {
+      if (this.isSelectionChange) {
+        this.queue.select.forEach((callback) => {
+          callback()
+        })
+      }
+
+      if (
+        documentStatusRef.current.isMouseDown &&
+        !documentStatusRef.current.prevIsMouseDown
+      ) {
+        this.queue.clickdown.forEach((callback) => {
+          callback()
+        })
+      }
+
+      if (
+        !documentStatusRef.current.isMouseDown &&
+        documentStatusRef.current.prevIsMouseDown
+      ) {
+        this.queue.clickup.forEach((callback) => {
+          callback()
+        })
+      }
+
       this.prevIsKeyDown = this.isKeyDown
       this.prevIsMouseDown = this.isMouseDown
       this.isSelectionChange = false
@@ -82,4 +122,4 @@ const useDodumentEvent = () => {
 
 export type DocumentStatusRef = MutableRefObject<DocumentStatus>
 
-export default useDodumentEvent
+export default useDodumentHandler

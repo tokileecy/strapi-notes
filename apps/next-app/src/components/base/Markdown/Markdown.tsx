@@ -9,8 +9,8 @@ import StrikeSvg from './images/strike.svg'
 import HeaderSvg from './images/header.svg'
 import CodeSvg from './images/code.svg'
 import ToolbarIconButton from './ToolbarIconButton'
-import { EditorEvent } from './hooks/useEditorEventManager'
 import { ContentStatus, initialContentStatus } from './hooks/useContentStatus'
+import { EditorCommendEvent } from './hooks/useCommendHandler'
 
 export type MarkdownProps = {
   type?: 'editor' | 'preview' | 'both'
@@ -20,13 +20,12 @@ export type MarkdownProps = {
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
   onChange?: (next: string) => void
-  pushEvent?: (event: EditorEvent) => void
+  commend?: (event: EditorCommendEvent) => void
   refreshPreview?: () => void
   saveState?: () => void
   undoEdit?: () => void
   id?: string
   updateAt?: string
-  textareaValue?: string
   onTextareaChange?: ChangeEventHandler<HTMLTextAreaElement>
 }
 
@@ -37,7 +36,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
     lineContainerRefCallback,
     textareaRefCallback,
     cursorRefCallback,
-    pushEvent,
+    commend: pushEvent,
     contentStatus = { ...initialContentStatus },
     onTextareaChange,
   } = props
@@ -63,46 +62,31 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
         <ToolbarIconButton
           component={BoldSvg}
           onClick={() => {
-            pushEvent?.({
-              type: 'commend',
-              commend: 'bold',
-            })
+            pushEvent?.('bold')
           }}
         />
         <ToolbarIconButton
           component={ItalicSvg}
           onClick={() => {
-            pushEvent?.({
-              type: 'commend',
-              commend: 'italic',
-            })
+            pushEvent?.('italic')
           }}
         />
         <ToolbarIconButton
           component={StrikeSvg}
           onClick={() => {
-            pushEvent?.({
-              type: 'commend',
-              commend: 'strike',
-            })
+            pushEvent?.('strike')
           }}
         />
         <ToolbarIconButton
           component={HeaderSvg}
           onClick={() => {
-            pushEvent?.({
-              type: 'commend',
-              commend: 'header',
-            })
+            pushEvent?.('header')
           }}
         />
         <ToolbarIconButton
           component={CodeSvg}
           onClick={() => {
-            pushEvent?.({
-              type: 'commend',
-              commend: 'code',
-            })
+            pushEvent?.('code')
           }}
         />
       </Box>
