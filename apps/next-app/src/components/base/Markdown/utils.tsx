@@ -1,5 +1,5 @@
 import { MutableRefObject } from 'react'
-import { EditorCoreRefData } from './useMarkdown'
+import { EditorCoreRefData } from './hooks/useMarkdown'
 
 export const refreshCursorBySelection = (
   containerElement: HTMLDivElement,

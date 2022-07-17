@@ -1,4 +1,4 @@
-import { ContentStatus } from '../../useMarkdown'
+import { ContentStatus } from '../hooks/useMarkdown'
 
 const wrapSelection = (
   contentStatus: ContentStatus,

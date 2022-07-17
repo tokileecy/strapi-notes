@@ -1,4 +1,4 @@
-import { ContentStatus, EditorCoreRef } from '../../useMarkdown'
+import { ContentStatus, EditorCoreRef } from '../hooks/useMarkdown'
 
 export type ArrowDirection = 'UP' | 'DOWN' | 'RIGHT' | 'LEFT'
 

@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
-import { ContentStatus, EditorCoreRef } from '../../useMarkdown'
-import { getLineIndexById } from '../../utils'
+import { ContentStatus, EditorCoreRef } from '../hooks/useMarkdown'
+import { getLineIndexById } from '../utils'
 
 const code = (
   contentStatus: ContentStatus,

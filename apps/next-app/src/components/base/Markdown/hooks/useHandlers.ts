@@ -1,7 +1,7 @@
 import { MutableRefObject, useMemo } from 'react'
-import { ContentStatus, EditorCoreRef } from '../useMarkdown'
-import * as fn from './fn'
-import { ChangeSelectLinesOptions } from './fn/changeSelectLines'
+import { ContentStatus, EditorCoreRef } from './useMarkdown'
+import * as fn from '../fn'
+import { ChangeSelectLinesOptions } from '../fn/changeSelectLines'
 
 interface Config {
   cursorNeedUpdate?: boolean

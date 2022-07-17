@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import Box from '@mui/material/Box'
-import { LineState } from './useMarkdown'
+import { LineState } from './hooks/useMarkdown'
 
 export interface LineProps {
   id: string

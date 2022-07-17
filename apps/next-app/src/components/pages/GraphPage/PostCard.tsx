@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
 import { Post } from '@/types'
 import Markdown from '@/components/base/Markdown'
-import useMarkdown from '@/components/base/Markdown/useMarkdown'
+import useMarkdown from '@/components/base/Markdown/hooks/useMarkdown'
 import { useEffect } from 'react'
 export interface PostCardProps {
   post: Post

@@ -8,8 +8,8 @@ import StrikeSvg from './images/strike.svg'
 import HeaderSvg from './images/header.svg'
 import CodeSvg from './images/code.svg'
 import ToolbarIconButton from './ToolbarIconButton'
-import { EditorEvent } from './useEditorEventManager'
-import { ContentStatus, initialContentStatus } from './useMarkdown'
+import { EditorEvent } from './hooks/useEditorEventManager'
+import { ContentStatus, initialContentStatus } from './hooks/useMarkdown'
 import { ChangeEventHandler } from 'react'
 
 export type MarkdownProps = {

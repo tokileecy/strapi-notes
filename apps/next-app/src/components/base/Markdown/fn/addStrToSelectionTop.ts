@@ -1,5 +1,5 @@
-import { ContentStatus } from '../../useMarkdown'
-import { getSelectedIdsByIndexRange } from '../../utils'
+import { ContentStatus } from '../hooks/useMarkdown'
+import { getSelectedIdsByIndexRange } from '../utils'
 
 const addStrToTop = (
   contentStatus: ContentStatus,

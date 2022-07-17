@@ -13,7 +13,7 @@ import useIndexeddb from './useIndexeddb'
 import useHandlers from './useHandlers'
 import useHistoryHandlers from './useHistoryHandlers'
 import useEditorEventManager from './useEditorEventManager'
-import { isUnderEditor, isUnderToolbar } from './utils'
+import { isUnderEditor, isUnderToolbar } from '../utils'
 
 export interface LineState {
   text: string

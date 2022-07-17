@@ -7,7 +7,7 @@ import {
   getLineIndexById,
   refreshCursorByElement,
   refreshCursorBySelection,
-} from './utils'
+} from '../utils'
 
 export type EditorCommend = 'bold' | 'italic' | 'strike' | 'header' | 'code'
 
