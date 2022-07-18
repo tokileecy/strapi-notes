@@ -5,9 +5,12 @@ export type EditorCommendEvent =
   | 'bold'
   | 'italic'
   | 'strike'
+  | 'quote'
   | 'header'
   | 'code'
   | 'html'
+  | 'list-bullet'
+  | 'list-number'
 
 export interface CommendHandler {
   commendQueue: EditorCommendEvent[]
@@ -34,6 +37,15 @@ const useCommendHandler = (handlers: Handlers) => {
             break
           case 'header':
             handlers.handleHeader()
+            break
+          case 'quote':
+            handlers.handleQuote()
+            break
+          case 'list-bullet':
+            handlers.handleListBullet()
+            break
+          case 'list-number':
+            handlers.handleListNumber()
             break
           case 'code':
             handlers.handleCode()

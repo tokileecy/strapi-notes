@@ -126,6 +126,15 @@ const useCoreHandlers = (
       handleHeader: withContentStatus((contentStatus) => {
         return fn.addHeshToTop(contentStatus)
       }),
+      handleQuote: withContentStatus((contentStatus) => {
+        return fn.addStrToSelectionTop(contentStatus, '> ')
+      }),
+      handleListBullet: withContentStatus((contentStatus) => {
+        return fn.addStrToSelectionTop(contentStatus, '* ')
+      }),
+      handleListNumber: withContentStatus((contentStatus) => {
+        return fn.addStrToSelectionTop(contentStatus, '1. ')
+      }),
       handleCode: withContentStatus((contentStatus) => {
         return fn.code(contentStatus)
       }),

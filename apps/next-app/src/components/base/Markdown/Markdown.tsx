@@ -10,10 +10,14 @@ import StrikeSvg from './images/strike.svg'
 import HeaderSvg from './images/header.svg'
 import CodeSvg from './images/code.svg'
 import HTMLSvg from './images/html.svg'
+import QuoteSvg from './images/quote.svg'
+import ListBulletSvg from './images/list-bullet.svg'
+import ListNumberSvg from './images/list-number.svg'
 import ToolbarIconButton from './ToolbarIconButton'
 import { ContentStatus, initialContentStatus } from './hooks/useContentStatus'
 import { EditorCommendEvent } from './hooks/useCommendHandler'
 import { MarkdownContentDetail } from './hooks/useMarkdown'
+import { Divider } from '@mui/material'
 
 export type MarkdownProps = {
   type?: 'editor' | 'preview' | 'both'
@@ -79,6 +83,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
             pushEvent?.('strike')
           }}
         />
+
         <ToolbarIconButton
           component={HeaderSvg}
           onClick={() => {
@@ -86,10 +91,33 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
           }}
         />
         <ToolbarIconButton
+          component={QuoteSvg}
+          onClick={() => {
+            pushEvent?.('quote')
+          }}
+        />
+        <ToolbarIconButton
+          component={ListBulletSvg}
+          onClick={() => {
+            pushEvent?.('list-bullet')
+          }}
+        />
+        <ToolbarIconButton
+          component={ListNumberSvg}
+          onClick={() => {
+            pushEvent?.('list-number')
+          }}
+        />
+        <ToolbarIconButton
           component={CodeSvg}
           onClick={() => {
             pushEvent?.('code')
           }}
+        />
+        <Divider
+          sx={{ borderColor: 'white' }}
+          orientation="vertical"
+          flexItem
         />
         <ToolbarIconButton
           component={HTMLSvg}
