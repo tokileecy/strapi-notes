@@ -18,6 +18,11 @@ import useCursor from './useCursor'
 import useCommendHandler from './useCommendHandler'
 import useElementCallback from './useElementCallback'
 
+export interface MarkdownContentDetail {
+  enableHtml: boolean
+  text: string
+}
+
 const useMarkdown = () => {
   const [contentStatus, setContentStatus] = useContentStatus()
 
@@ -71,11 +76,28 @@ const useMarkdown = () => {
     commendHandlerRef.current.commend(event)
   }, [])
 
-  const content = useMemo(() => {
+  const markdownContentDetails = useMemo(() => {
     return contentStatus.ids
       .map((id) => contentStatus.lineById[id].text)
+
       .join('\n')
       .replace('\\*', '&ast;')
+      .split('<>')
+      .reduce<MarkdownContentDetail[]>((acc, section, index) => {
+        if (index % 2 === 0) {
+          acc.push({
+            enableHtml: false,
+            text: section,
+          })
+        } else {
+          acc.push({
+            enableHtml: true,
+            text: section,
+          })
+        }
+
+        return acc
+      }, [])
   }, [contentStatus.ids, contentStatus.lineById])
 
   useEffect(() => {
@@ -222,7 +244,7 @@ const useMarkdown = () => {
   }, [])
 
   return {
-    content,
+    markdownContentDetails,
     contentStatus,
     textareaRefCallback,
     lineContainerRefCallback,

@@ -120,6 +120,9 @@ const useCoreHandlers = (
       handleStrike: withContentStatus((contentStatus) => {
         return fn.wrapSelection(contentStatus, '~~')
       }),
+      handleHtml: withContentStatus((contentStatus) => {
+        return fn.scope(contentStatus, '<>')
+      }),
       handleHeader: withContentStatus((contentStatus) => {
         return fn.addHeshToTop(contentStatus)
       }),

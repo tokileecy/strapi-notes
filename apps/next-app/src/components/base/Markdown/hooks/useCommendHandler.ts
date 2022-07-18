@@ -7,6 +7,7 @@ export type EditorCommendEvent =
   | 'strike'
   | 'header'
   | 'code'
+  | 'html'
 
 export interface CommendHandler {
   commendQueue: EditorCommendEvent[]
@@ -36,6 +37,9 @@ const useCommendHandler = (handlers: Handlers) => {
             break
           case 'code':
             handlers.handleCode()
+            break
+          case 'html':
+            handlers.handleHtml()
             break
           default:
             break

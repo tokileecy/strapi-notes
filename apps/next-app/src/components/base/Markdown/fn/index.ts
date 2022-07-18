@@ -8,5 +8,6 @@ export { default as code } from './code'
 export { default as changeSelectLines } from './changeSelectLines'
 export { default as clearSelection } from './clearSelection'
 export { default as addWord } from './addWord'
+export { default as scope } from './scope'
 
 export type { ArrowDirection } from './arrow'

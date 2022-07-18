@@ -2,19 +2,22 @@ import { ChangeEventHandler } from 'react'
 import Box from '@mui/material/Box'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
 import Editor from './Editor'
 import BoldSvg from './images/bold.svg'
 import ItalicSvg from './images/italic.svg'
 import StrikeSvg from './images/strike.svg'
 import HeaderSvg from './images/header.svg'
 import CodeSvg from './images/code.svg'
+import HTMLSvg from './images/html.svg'
 import ToolbarIconButton from './ToolbarIconButton'
 import { ContentStatus, initialContentStatus } from './hooks/useContentStatus'
 import { EditorCommendEvent } from './hooks/useCommendHandler'
+import { MarkdownContentDetail } from './hooks/useMarkdown'
 
 export type MarkdownProps = {
   type?: 'editor' | 'preview' | 'both'
-  content?: string
+  markdownContentDetails?: MarkdownContentDetail[]
   contentStatus?: ContentStatus
   lineContainerRefCallback?: (element: HTMLDivElement) => void
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
@@ -31,14 +34,13 @@ export type MarkdownProps = {
 
 const Markdown = (props: MarkdownProps): JSX.Element => {
   const {
-    content = '',
+    markdownContentDetails = [],
     type = 'preview',
     lineContainerRefCallback,
     textareaRefCallback,
     cursorRefCallback,
     commend: pushEvent,
     contentStatus = { ...initialContentStatus },
-    onTextareaChange,
   } = props
 
   return (
@@ -89,6 +91,12 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
             pushEvent?.('code')
           }}
         />
+        <ToolbarIconButton
+          component={HTMLSvg}
+          onClick={() => {
+            pushEvent?.('html')
+          }}
+        />
       </Box>
       <Box sx={{ 'position': 'relative', 'flexGrow': 1 }}>
         <Box
@@ -112,7 +120,6 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
                 cursorRefCallback={cursorRefCallback}
                 lineContainerRefCallback={lineContainerRefCallback}
                 contentStatus={contentStatus}
-                onTextareaChange={onTextareaChange}
               />
             </Box>
           )}
@@ -126,9 +133,23 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
                 overflow: 'auto',
               }}
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {content}
-              </ReactMarkdown>
+              {markdownContentDetails.map((markdownContentDetail, index) => {
+                const rehypePlugins = []
+
+                if (markdownContentDetail.enableHtml) {
+                  rehypePlugins.push(rehypeRaw)
+                }
+
+                return (
+                  <ReactMarkdown
+                    key={index}
+                    rehypePlugins={rehypePlugins}
+                    remarkPlugins={[remarkGfm]}
+                  >
+                    {markdownContentDetail.text}
+                  </ReactMarkdown>
+                )
+              })}
             </Box>
           )}
         </Box>
