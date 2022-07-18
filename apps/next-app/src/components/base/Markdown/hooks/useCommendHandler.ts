@@ -11,6 +11,8 @@ export type EditorCommendEvent =
   | 'html'
   | 'list-bullet'
   | 'list-number'
+  | 'checkbox'
+  | 'horizon'
 
 export interface CommendHandler {
   commendQueue: EditorCommendEvent[]
@@ -47,8 +49,14 @@ const useCommendHandler = (handlers: Handlers) => {
           case 'list-number':
             handlers.handleListNumber()
             break
+          case 'checkbox':
+            handlers.handleCheckbox()
+            break
           case 'code':
             handlers.handleCode()
+            break
+          case 'horizon':
+            handlers.handleHorizon()
             break
           case 'html':
             handlers.handleHtml()

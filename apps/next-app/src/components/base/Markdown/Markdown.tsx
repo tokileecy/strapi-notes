@@ -13,6 +13,8 @@ import HTMLSvg from './images/html.svg'
 import QuoteSvg from './images/quote.svg'
 import ListBulletSvg from './images/list-bullet.svg'
 import ListNumberSvg from './images/list-number.svg'
+import CheckboxSvg from './images/checkbox.svg'
+import HorizonSvg from './images/horizon.svg'
 import ToolbarIconButton from './ToolbarIconButton'
 import { ContentStatus, initialContentStatus } from './hooks/useContentStatus'
 import { EditorCommendEvent } from './hooks/useCommendHandler'
@@ -112,6 +114,18 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
           component={CodeSvg}
           onClick={() => {
             pushEvent?.('code')
+          }}
+        />
+        <ToolbarIconButton
+          component={HorizonSvg}
+          onClick={() => {
+            pushEvent?.('horizon')
+          }}
+        />
+        <ToolbarIconButton
+          component={CheckboxSvg}
+          onClick={() => {
+            pushEvent?.('checkbox')
           }}
         />
         <Divider

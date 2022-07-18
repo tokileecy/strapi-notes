@@ -135,8 +135,16 @@ const useCoreHandlers = (
       handleListNumber: withContentStatus((contentStatus) => {
         return fn.addStrToSelectionTop(contentStatus, '1. ')
       }),
+      handleCheckbox: withContentStatus((contentStatus) => {
+        return fn.addStrToSelectionTop(contentStatus, '- [ ] ')
+      }),
       handleCode: withContentStatus((contentStatus) => {
         return fn.code(contentStatus)
+      }),
+      handleHorizon: withContentStatus((contentStatus) => {
+        return fn.backspace(
+          fn.addWord(fn.wrapSelection(contentStatus, '\n\n'), '---')
+        )
       }),
       handleBackspace: withContentStatus((contentStatus) => {
         return fn.backspace(contentStatus)
