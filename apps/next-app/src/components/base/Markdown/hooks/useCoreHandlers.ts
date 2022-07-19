@@ -1,7 +1,7 @@
 import { Dispatch, useMemo, useRef } from 'react'
 import * as fn from '../fn'
 import { ChangeSelectLinesOptions } from '../fn/changeSelectLines'
-import { ContentStatus, initialContentStatus } from './useContentStatus'
+import { ContentStatus, SetContentStatusAction } from './useContentStatus'
 
 interface Config {
   cursorNeedUpdate?: boolean
@@ -25,8 +25,7 @@ export interface HandlerStatus {
 }
 
 const useCoreHandlers = (
-  contentStatus: ContentStatus,
-  setContentStatus: Dispatch<Partial<ContentStatus>>
+  setContentStatus: Dispatch<SetContentStatusAction>
 ) => {
   const handlerStatusRef = useRef<HandlerStatus>({
     commendCallbackQueue: [],
@@ -65,22 +64,12 @@ const useCoreHandlers = (
     },
   })
 
-  const contentStatusRef = useRef<{
-    contentStatus: ContentStatus
-  }>({
-    contentStatus: { ...initialContentStatus },
-  })
-
-  contentStatusRef.current.contentStatus = contentStatus
-
   const handlers = useMemo(() => {
     const withContentStatus = (
       func: (contentStatus: ContentStatus) => ContentStatus
     ): ((config?: Config) => void) => {
       return (config: Config = defaultConfig) => {
-        const contentStatus = contentStatusRef.current.contentStatus
-
-        setContentStatus?.(func(contentStatus))
+        setContentStatus((prev) => func(prev))
 
         handlerStatusRef.current.commendCallbackQueue.push(() => {
           if (config.cursorNeedUpdate) {
@@ -96,9 +85,7 @@ const useCoreHandlers = (
       func: (contentStatus: ContentStatus, option: T) => ContentStatus
     ): ((option: T, config?: Config) => void) => {
       return (option: T, config: Config = defaultConfig) => {
-        const contentStatus = contentStatusRef.current.contentStatus
-
-        setContentStatus?.(func(contentStatus, option))
+        setContentStatus((prev) => func(prev, option))
 
         handlerStatusRef.current.commendCallbackQueue.push(() => {
           if (config.cursorNeedUpdate) {

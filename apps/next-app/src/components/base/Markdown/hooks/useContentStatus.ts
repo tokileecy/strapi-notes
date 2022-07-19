@@ -27,21 +27,50 @@ export const initialContentStatus: ContentStatus = {
   },
 }
 
+const instanceOfActionFunc = <T>(object: any): object is (prev: T) => T => {
+  if (typeof object === 'function') {
+    return true
+  }
+
+  return false
+}
+
+export type SetContentStatusAction =
+  | Partial<ContentStatus>
+  | ((S: ContentStatus) => Partial<ContentStatus>)
+
 const useContentStatus = () => {
   return useReducer(
-    (prev: ContentStatus, next: Partial<ContentStatus>) => {
+    (prev: ContentStatus, value: SetContentStatusAction) => {
       // if (process.env.NODE_ENV === 'development') {
       //   console.log('contentStatus updeate:', next.actionHistory, next)
       // }
 
-      return {
-        ...prev,
-        ...next,
-        actionHistory: [] as string[],
+      if (instanceOfActionFunc<ContentStatus>(value)) {
+        return {
+          ...prev,
+          ...value(prev),
+          actionHistory: [] as string[],
+        }
+      } else {
+        return {
+          ...prev,
+          ...value,
+          actionHistory: [] as string[],
+        }
       }
     },
-    {
-      ...initialContentStatus,
+    null,
+    () => {
+      return {
+        actionHistory: [],
+        ids: [],
+        lineById: {},
+        selectedRange: {
+          start: -1,
+          end: -1,
+        },
+      }
     }
   )
 }

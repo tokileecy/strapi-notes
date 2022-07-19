@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid'
+import { getLineIndexById } from './fn/utils'
 import { LineState } from './hooks/useContentStatus'
 
 export const refreshCursorBySelection = (
@@ -189,21 +190,6 @@ export const isUnderToolbar = (element: Element) => {
   return false
 }
 
-export const getLineIndexById = (lineIds: string[], lineId: string) => {
-  let targetIndex = -1
-
-  for (let i = 0; i < lineIds.length; i++) {
-    const id = lineIds[i]
-
-    if (id === lineId) {
-      targetIndex = i
-      break
-    }
-  }
-
-  return targetIndex
-}
-
 export const getLineIdByElement = (element: Node) => {
   let current = element
   let id = ''
@@ -267,65 +253,6 @@ export const getChangeSelectLinesOptionsByRange = (
       end: endIndex,
     },
     line: { start, end },
-  }
-}
-
-const selectedIdsByIndexRangeCache = (() => {
-  let lastIds: string[] = []
-  let lastIndexRange = { start: -1, end: -1 }
-  let lastRes: string[] = []
-
-  return {
-    getCache: (
-      ids: string[],
-      indexRange: {
-        start: number
-        end: number
-      }
-    ) => {
-      if (lastIds === ids && indexRange === lastIndexRange) {
-        return lastRes
-      } else {
-        return null
-      }
-    },
-    setCache: (
-      ids: string[],
-      indexRange: {
-        start: number
-        end: number
-      },
-      res: string[]
-    ) => {
-      lastIds = ids
-      lastIndexRange = indexRange
-      lastRes = res
-    },
-  }
-})()
-
-export const getSelectedIdsByIndexRange = (
-  ids: string[],
-  indexRange: {
-    start: number
-    end: number
-  }
-) => {
-  const cache = selectedIdsByIndexRangeCache.getCache(ids, indexRange)
-
-  if (cache) {
-    return cache
-  } else {
-    const res = []
-
-    if (indexRange.start !== -1 && indexRange.end !== -1) {
-      for (let i = indexRange.start; i <= indexRange.end; i++) {
-        res.push(ids[i])
-      }
-    }
-
-    selectedIdsByIndexRangeCache.setCache(ids, indexRange, res)
-    return res
   }
 }
 

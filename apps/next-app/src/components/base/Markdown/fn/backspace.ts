@@ -1,5 +1,5 @@
 import { ContentStatus } from '../hooks/useContentStatus'
-import { getLineIndexById, getSelectedIdsByIndexRange } from '../utils'
+import { getLineIndexById, getSelectedIdsByIndexRange } from './utils'
 
 const handleBackspace = (contentStatus: ContentStatus): ContentStatus => {
   let { actionHistory, selectedRange, ids, lineById } = contentStatus

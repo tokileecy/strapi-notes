@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid'
 import { ContentStatus } from '../hooks/useContentStatus'
 import handleBackspace from './backspace'
+import { isSelectingWord } from './utils'
 
 const handleEnter = (contentStatus: ContentStatus): ContentStatus => {
   let { actionHistory, ids, lineById, selectedRange } = contentStatus
@@ -10,10 +11,7 @@ const handleEnter = (contentStatus: ContentStatus): ContentStatus => {
 
   let startLineId = ids[selectedRange.start]
 
-  if (
-    selectedRange.end - selectedRange.start > 0 ||
-    lineById[startLineId].start !== lineById[startLineId].end
-  ) {
+  if (isSelectingWord(contentStatus)) {
     ;({ ids, lineById, selectedRange } = handleBackspace({
       actionHistory,
       ids,
@@ -42,6 +40,9 @@ const handleEnter = (contentStatus: ContentStatus): ContentStatus => {
     } else {
       const newLineId = nanoid(6)
 
+      ids = [...ids]
+      lineById = { ...lineById }
+
       const selectedId = ids[selectedRange.end]
       const selectedLine = lineById[selectedId]
 
@@ -55,7 +56,6 @@ const handleEnter = (contentStatus: ContentStatus): ContentStatus => {
         selectedLine.text.length
       )
 
-      ids = [...ids]
       ids.splice(selectedRange.end + 1, 0, newLineId)
 
       lineById[newLineId] = {
@@ -67,7 +67,6 @@ const handleEnter = (contentStatus: ContentStatus): ContentStatus => {
 
       lineById[startLineId] = {
         text: nextSelectedLineText,
-        // input: false,
         inputText: '',
         start: 0,
         end: 0,

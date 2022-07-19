@@ -1,5 +1,5 @@
 import { ContentStatus } from '../hooks/useContentStatus'
-import { getSelectedIdsByIndexRange } from '../utils'
+import { getSelectedIdsByIndexRange } from './utils'
 
 const addHeshToTop = (contentStatus: ContentStatus): ContentStatus => {
   let { actionHistory, selectedRange, ids, lineById } = contentStatus

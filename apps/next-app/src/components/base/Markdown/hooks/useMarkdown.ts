@@ -42,10 +42,7 @@ const useMarkdown = () => {
 
   const frameLoopStatusRef = useFrameLoop()
 
-  const { handlerStatusRef, handlers } = useCoreHandlers(
-    contentStatus,
-    setContentStatus
-  )
+  const { handlerStatusRef, handlers } = useCoreHandlers(setContentStatus)
 
   const historyHandlers = useHistoryHandlers(contentStatus, setContentStatus)
   const commendHandlerRef = useCommendHandler(handlers)

@@ -1,6 +1,7 @@
 import clearSelection from './clearSelection'
 import { ContentStatus } from '../hooks/useContentStatus'
-import { getSelectedIdsByIndexRange } from '../utils'
+import { getSelectedIdsByIndexRange } from './utils'
+
 export interface ChangeSelectLinesOptions {
   selectedRange?: { start: number; end: number }
   line?: { start: number; end: number }

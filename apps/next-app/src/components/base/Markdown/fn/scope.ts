@@ -1,21 +1,20 @@
 import { nanoid } from 'nanoid'
 import { ContentStatus } from '../hooks/useContentStatus'
-import { getLineIndexById } from '../utils'
+import { getLineIndexById } from './utils'
 
 const scope = (contentStatus: ContentStatus, str: string): ContentStatus => {
   let { actionHistory, selectedRange, ids, lineById } = contentStatus
 
   actionHistory = [...actionHistory, 'scope']
-  lineById = { ...lineById }
 
   const startSelectedLineId = ids[selectedRange.start]
-
   const endSelectedLineId = ids[selectedRange.end]
-
   const startIndex = getLineIndexById(ids, startSelectedLineId)
   const endIndex = getLineIndexById(ids, endSelectedLineId)
 
   if (startIndex !== undefined && endIndex !== undefined) {
+    ids = [...ids]
+    lineById = { ...lineById }
     selectedRange = { ...selectedRange }
 
     const topId = nanoid(6)
@@ -35,7 +34,6 @@ const scope = (contentStatus: ContentStatus, str: string): ContentStatus => {
       inputText: '',
     }
 
-    ids = [...ids]
     ids.splice(startIndex, 0, topId)
     ids.splice(endIndex + 2, 0, bottomId)
     selectedRange.end += 2

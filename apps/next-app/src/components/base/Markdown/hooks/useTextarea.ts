@@ -5,7 +5,11 @@ import {
   useEffect,
   useRef,
 } from 'react'
-import { ContentStatus, initialContentStatus } from './useContentStatus'
+import {
+  ContentStatus,
+  initialContentStatus,
+  SetContentStatusAction,
+} from './useContentStatus'
 import { Handlers, HandlerStatus } from './useCoreHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
 
@@ -13,7 +17,7 @@ const useTextarea = (
   contentStatus: ContentStatus,
   handlers: Handlers,
   historyHandlers: HistoryHandlers,
-  setContentStatus: Dispatch<Partial<ContentStatus>>,
+  setContentStatus: Dispatch<SetContentStatusAction>,
   handlerStatusRef: MutableRefObject<HandlerStatus>
 ) => {
   const textareaStatusRef = useRef<{ isCompositionstart: boolean }>({

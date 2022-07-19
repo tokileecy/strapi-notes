@@ -3,6 +3,7 @@ import {
   ContentStatus,
   initialContentStatus,
   LineState,
+  SetContentStatusAction,
 } from './useContentStatus'
 
 const maxCacheCount = 50
@@ -18,7 +19,7 @@ export interface Revision {
 
 const useHistoryHandlers = (
   contentStatus: ContentStatus,
-  setContentStatus: Dispatch<Partial<ContentStatus>>
+  setContentStatus: Dispatch<SetContentStatusAction>
 ) => {
   const previousRevisionRef = useRef<Revision[]>([])
 
