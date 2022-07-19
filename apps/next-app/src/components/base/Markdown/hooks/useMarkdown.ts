@@ -4,9 +4,10 @@ import useHistoryHandlers from './useHistoryHandlers'
 import useFrameLoop from './useFrameLoop'
 import {
   getChangeSelectLinesOptionsByRange,
+  getSelectionDetailByNode,
   markdownToContentStatus,
   refreshCursorByElement,
-  refreshCursorBySelection,
+  refreshCursorByPosition,
 } from '../utils'
 import useDodumentHandler from './useDodumentEvent'
 import useContentStatus, {
@@ -104,18 +105,71 @@ const useMarkdown = () => {
         cursorRef.current &&
         documentStatusRef.current.lastSelectionRange
       ) {
-        const range = new Range()
+        const containerRect = lineContainerRef.current.getBoundingClientRect()
 
-        range.setStart(
+        const currentCharRange = new Range()
+
+        currentCharRange.setStart(
+          documentStatusRef.current.lastSelectionRange.endContainer,
+          documentStatusRef.current.lastSelectionRange.endOffset
+        )
+        currentCharRange.setEnd(
           documentStatusRef.current.lastSelectionRange.endContainer,
           documentStatusRef.current.lastSelectionRange.endOffset
         )
 
-        refreshCursorBySelection(
-          lineContainerRef.current,
-          cursorRef.current,
-          range
+        const endNodeDetail = getSelectionDetailByNode(
+          documentStatusRef.current.lastSelectionRange.endContainer
         )
+
+        const currentCharRect = currentCharRange.getBoundingClientRect()
+
+        if (
+          endNodeDetail.id !== '' &&
+          documentStatusRef.current.lastSelectionRange.endOffset ===
+            documentStatusRef.current.lastSelectionRange.startOffset
+        ) {
+          const nextCharRange = new Range()
+
+          const lineEndElement = document.querySelector(
+            `[data-id="${endNodeDetail.id}"] [data-type="line-end"]`
+          ) as Element
+
+          if ((lineEndElement.textContent?.length ?? 0) > 0) {
+            nextCharRange.setStart(lineEndElement.childNodes[0], 0)
+            nextCharRange.setEnd(lineEndElement.childNodes[0], 1)
+
+            const nextCharRect = nextCharRange.getBoundingClientRect()
+
+            const clickY = documentStatusRef.current.lastClickPos.y
+
+            if (clickY > currentCharRect.y + currentCharRect.height) {
+              refreshCursorByPosition(
+                cursorRef.current,
+                nextCharRect.x - containerRect.x,
+                nextCharRect.y - containerRect.y
+              )
+            } else {
+              refreshCursorByPosition(
+                cursorRef.current,
+                currentCharRect.x - containerRect.x + currentCharRect.width,
+                currentCharRect.y - containerRect.y
+              )
+            }
+          } else {
+            refreshCursorByPosition(
+              cursorRef.current,
+              currentCharRect.x - containerRect.x + currentCharRect.width,
+              currentCharRect.y - containerRect.y
+            )
+          }
+        } else {
+          refreshCursorByPosition(
+            cursorRef.current,
+            currentCharRect.x - containerRect.x + currentCharRect.width,
+            currentCharRect.y - containerRect.y
+          )
+        }
       }
     }
 
@@ -129,7 +183,7 @@ const useMarkdown = () => {
               contentStatus.ids[contentStatus.selectedRange.end]
 
             const selectedEndLineElement = document.querySelector(
-              `[data-id="${selectedEndLineId}"] pre`
+              `[data-id="${selectedEndLineId}"]`
             ) as HTMLElement
 
             const centerElement = selectedEndLineElement.querySelector(
@@ -187,6 +241,10 @@ const useMarkdown = () => {
           ),
           {
             cursorNeedUpdate: true,
+            handleFinished: () => {
+              textareaRef.current?.focus()
+              documentStatusRef.current.lastSelectionRange = undefined
+            },
           }
         )
       }

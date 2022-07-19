@@ -1,5 +1,5 @@
 import { MutableRefObject, useEffect, useRef } from 'react'
-import { isUnderLineContainer, isUnderToolbar } from '../utils'
+import { getSelectionDetailByNode, isUnderToolbar } from '../utils'
 
 export type DocumentEvent = 'clickdown' | 'clickup' | 'select'
 
@@ -10,6 +10,7 @@ export interface DocumentStatus {
   isMouseDown: boolean
   isSelectionChange: boolean
   lastSelectionRange?: Range
+  lastClickPos: { x: number; y: number }
   queue: Record<DocumentEvent, Set<() => void>>
   on: (event: DocumentEvent, callback: () => void) => void
   off: (event: DocumentEvent, callback: () => void) => void
@@ -23,6 +24,7 @@ const useDodumentHandler = () => {
     isKeyDown: false,
     isMouseDown: false,
     isSelectionChange: false,
+    lastClickPos: { x: -1, y: -1 },
     queue: {
       'clickdown': new Set(),
       'clickup': new Set(),
@@ -78,6 +80,10 @@ const useDodumentHandler = () => {
       if (e.target) {
         if (!isUnderToolbar(e.target as Element)) {
           documentStatusRef.current.isMouseDown = true
+          documentStatusRef.current.lastClickPos = {
+            x: e.x,
+            y: e.y,
+          }
         }
       }
     }
@@ -91,11 +97,14 @@ const useDodumentHandler = () => {
 
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0)
-        const ancestorContainer = range.commonAncestorContainer
+
+        const nodeDetail = getSelectionDetailByNode(
+          range.commonAncestorContainer
+        )
 
         documentStatusRef.current.isSelectionChange = false
 
-        if (isUnderLineContainer(ancestorContainer)) {
+        if (nodeDetail.isUnderLineContainer) {
           documentStatusRef.current.isSelectionChange = true
           documentStatusRef.current.lastSelectionRange = range
         }

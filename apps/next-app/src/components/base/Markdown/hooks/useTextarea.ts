@@ -3,8 +3,11 @@ import {
   MutableRefObject,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
 } from 'react'
+import { isSelectingWord } from '../fn/utils'
+import { getLineElementsById } from '../utils'
 import {
   ContentStatus,
   initialContentStatus,
@@ -12,6 +15,333 @@ import {
 } from './useContentStatus'
 import { Handlers, HandlerStatus } from './useCoreHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
+
+const useTextareaHandlers = (
+  textareaStatusRef: MutableRefObject<{
+    isCompositionstart: boolean
+  }>,
+  textareaRef: MutableRefObject<HTMLTextAreaElement | undefined>,
+  contentStatusRef: MutableRefObject<{
+    contentStatus: ContentStatus
+  }>,
+  historyHandlers: HistoryHandlers,
+  handlers: Handlers,
+  setContentStatus: Dispatch<SetContentStatusAction>,
+  handlerStatusRef: MutableRefObject<HandlerStatus>
+) => {
+  return useMemo(() => {
+    const hanldeTextareaKeydown = (e: KeyboardEvent) => {
+      const contentStatus = contentStatusRef.current.contentStatus
+
+      if (e.key === 'Enter') {
+        e.preventDefault()
+      }
+
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'z') {
+          historyHandlers.handleUndo()
+        }
+      } else {
+        switch (e.key) {
+          case 'Enter': {
+            if (contentStatus.selectedRange.end === -1) {
+              historyHandlers.saveState()
+
+              handlers.handleEnter()
+              e.preventDefault()
+            } else {
+              const inputLineId =
+                contentStatus.ids[contentStatus.selectedRange.end]
+
+              const inputText = contentStatus.lineById[inputLineId].inputText
+
+              if (inputText.length === 0) {
+                historyHandlers.saveState()
+                handlers.handleEnter()
+                e.preventDefault()
+              }
+            }
+
+            break
+          }
+
+          case 'Backspace': {
+            if (contentStatus.selectedRange.end === -1) {
+              historyHandlers.saveState()
+              handlers.handleBackspace()
+              e.preventDefault()
+            } else {
+              const inputLineId =
+                contentStatus.ids[contentStatus.selectedRange.end]
+
+              const inputText = contentStatus.lineById[inputLineId].inputText
+
+              if (inputText.length === 0) {
+                historyHandlers.saveState()
+                handlers.handleBackspace()
+                e.preventDefault()
+              }
+            }
+
+            break
+          }
+
+          case 'Escape':
+            historyHandlers.saveState()
+
+            if (!textareaStatusRef.current.isCompositionstart) {
+              handlers.handleAddWord(textareaRef.current?.value ?? '', {
+                cursorNeedUpdate: true,
+                handleFinished: () => {
+                  textareaRef.current?.focus()
+                  textareaStatusRef.current.isCompositionstart = false
+                },
+              })
+            }
+
+            break
+          case 'Tab':
+          case 'Meta':
+          case 'Alt':
+          case 'Control':
+          case 'Shift':
+            break
+
+          case 'ArrowUp': {
+            if (!textareaStatusRef.current.isCompositionstart) {
+              const selectedLineId =
+                contentStatus.ids[contentStatus.selectedRange.start]
+
+              const selectedLine = contentStatus.lineById[selectedLineId]
+
+              const { lineStartElement } = getLineElementsById(selectedLineId)
+
+              if (isSelectingWord(contentStatus)) {
+                handlers.handleChangeSelectLines({
+                  selectedRange: {
+                    start: contentStatus.selectedRange.start,
+                    end: contentStatus.selectedRange.start,
+                  },
+                  line: {
+                    start: selectedLine.start,
+                    end: selectedLine.start,
+                  },
+                })
+              } else if (lineStartElement && selectedLine.start !== 0) {
+                const originRange = new Range()
+
+                originRange.setStart(
+                  lineStartElement.childNodes[0],
+                  selectedLine.start
+                )
+                originRange.setEnd(
+                  lineStartElement.childNodes[0],
+                  selectedLine.start
+                )
+
+                const originRect = originRange.getBoundingClientRect()
+                let notFound = true
+
+                for (let i = selectedLine.start - 1; i >= 0; i--) {
+                  const range = new Range()
+
+                  range.setStart(lineStartElement.childNodes[0], i)
+                  range.setEnd(lineStartElement.childNodes[0], i)
+
+                  const rect = range.getBoundingClientRect()
+
+                  if (
+                    originRect.y > rect.y &&
+                    Math.abs(originRect.x - rect.x) < 16
+                  ) {
+                    notFound = false
+
+                    handlers.handleChangeSelectLines({
+                      selectedRange: {
+                        start: contentStatus.selectedRange.start,
+                        end: contentStatus.selectedRange.start,
+                      },
+                      line: {
+                        start: i,
+                        end: i,
+                      },
+                    })
+                    break
+                  }
+                }
+
+                if (notFound) {
+                  handlers.handleArrow('UP')
+                }
+              } else {
+                handlers.handleArrow('UP')
+              }
+            }
+
+            break
+          }
+
+          case 'ArrowDown': {
+            if (!textareaStatusRef.current.isCompositionstart) {
+              const selectedLineId =
+                contentStatus.ids[contentStatus.selectedRange.start]
+
+              const selectedLine = contentStatus.lineById[selectedLineId]
+
+              const { lineEndElement } = getLineElementsById(selectedLineId)
+
+              if (isSelectingWord(contentStatus)) {
+                handlers.handleChangeSelectLines({
+                  selectedRange: {
+                    start: contentStatus.selectedRange.end,
+                    end: contentStatus.selectedRange.end,
+                  },
+                  line: {
+                    start: selectedLine.end,
+                    end: selectedLine.end,
+                  },
+                })
+              } else if (
+                lineEndElement &&
+                selectedLine.end !== selectedLine.text.length
+              ) {
+                const originRange = new Range()
+
+                originRange.setStart(lineEndElement.childNodes[0], 0)
+                originRange.setEnd(lineEndElement.childNodes[0], 0)
+
+                const originRect = originRange.getBoundingClientRect()
+                let notFound = true
+
+                for (
+                  let i = 1;
+                  i < selectedLine.text.length - selectedLine.end;
+                  i++
+                ) {
+                  const range = new Range()
+
+                  range.setStart(lineEndElement.childNodes[0], i)
+                  range.setEnd(lineEndElement.childNodes[0], i)
+
+                  const rect = range.getBoundingClientRect()
+
+                  if (
+                    originRect.y < rect.y &&
+                    Math.abs(originRect.x - rect.x) < 16
+                  ) {
+                    notFound = false
+                    handlers.handleChangeSelectLines({
+                      selectedRange: {
+                        start: contentStatus.selectedRange.end,
+                        end: contentStatus.selectedRange.end,
+                      },
+                      line: {
+                        start: selectedLine.end + i,
+                        end: selectedLine.end + i,
+                      },
+                    })
+                    break
+                  }
+                }
+
+                if (notFound) {
+                  handlers.handleArrow('DOWN')
+                }
+              } else {
+                handlers.handleArrow('DOWN')
+              }
+            }
+
+            break
+          }
+
+          case 'ArrowLeft':
+            if (!textareaStatusRef.current.isCompositionstart) {
+              handlers.handleArrow('LEFT')
+            }
+
+            break
+          case 'ArrowRight':
+            if (!textareaStatusRef.current.isCompositionstart) {
+              handlers.handleArrow('RIGHT')
+            }
+
+            break
+          case 'CapsLock':
+            break
+          case 'Space':
+            break
+
+          default: {
+            break
+          }
+        }
+      }
+    }
+
+    const handleTextareaChange = (e: Event) => {
+      const element = e.target as HTMLTextAreaElement
+      const value = element.value
+
+      const contentStatus = contentStatusRef.current.contentStatus
+      const inputLineId = contentStatus.ids[contentStatus.selectedRange.end]
+
+      const nextLineById = {
+        ...contentStatus.lineById,
+      }
+
+      nextLineById[inputLineId] = {
+        ...nextLineById[inputLineId],
+        inputText: value,
+      }
+
+      if (!textareaStatusRef.current.isCompositionstart) {
+        handlers.handleAddWord(value, {
+          cursorNeedUpdate: true,
+          handleFinished: () => {
+            textareaRef.current?.focus()
+            textareaStatusRef.current.isCompositionstart = false
+          },
+        })
+      } else {
+        setContentStatus({
+          actionHistory: ['input'],
+          lineById: nextLineById,
+        })
+      }
+    }
+
+    const handleCompositionstart = () => {
+      textareaStatusRef.current.isCompositionstart = true
+    }
+
+    const handleCompositionupdate = () => {
+      handlerStatusRef.current.noticeCursorNeedUpdate()
+    }
+
+    const handleCompositionend = (e: CompositionEvent) => {
+      const value = e.data
+
+      if (textareaStatusRef.current.isCompositionstart) {
+        handlers.handleAddWord(value, {
+          cursorNeedUpdate: true,
+          handleFinished: () => {
+            textareaRef.current?.focus()
+            textareaStatusRef.current.isCompositionstart = false
+          },
+        })
+      }
+    }
+
+    return {
+      hanldeTextareaKeydown,
+      handleTextareaChange,
+      handleCompositionstart,
+      handleCompositionupdate,
+      handleCompositionend,
+    }
+  }, [historyHandlers, handlers])
+}
 
 const useTextarea = (
   contentStatus: ContentStatus,
@@ -36,179 +366,21 @@ const useTextarea = (
     contentStatusRef.current.contentStatus = contentStatus
   }
 
-  const hanldeTextareaKeydown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-    }
-
-    if (e.ctrlKey || e.metaKey) {
-      if (e.key === 'z') {
-        historyHandlers.handleUndo()
-      }
-    } else {
-      switch (e.key) {
-        case 'Enter': {
-          if (contentStatusRef.current.contentStatus.selectedRange.end === -1) {
-            historyHandlers.saveState()
-
-            handlers.handleEnter()
-            e.preventDefault()
-          } else {
-            const inputLineId =
-              contentStatusRef.current.contentStatus.ids[
-                contentStatusRef.current.contentStatus.selectedRange.end
-              ]
-
-            const inputText =
-              contentStatusRef.current.contentStatus.lineById[inputLineId]
-                .inputText
-
-            if (inputText.length === 0) {
-              historyHandlers.saveState()
-              handlers.handleEnter()
-              e.preventDefault()
-            }
-          }
-
-          break
-        }
-
-        case 'Backspace': {
-          if (contentStatusRef.current.contentStatus.selectedRange.end === -1) {
-            historyHandlers.saveState()
-            handlers.handleBackspace()
-            e.preventDefault()
-          } else {
-            const inputLineId =
-              contentStatusRef.current.contentStatus.ids[
-                contentStatusRef.current.contentStatus.selectedRange.end
-              ]
-
-            const inputText =
-              contentStatusRef.current.contentStatus.lineById[inputLineId]
-                .inputText
-
-            if (inputText.length === 0) {
-              historyHandlers.saveState()
-              handlers.handleBackspace()
-              e.preventDefault()
-            }
-          }
-
-          break
-        }
-
-        case 'Escape':
-          historyHandlers.saveState()
-
-          if (!textareaStatusRef.current.isCompositionstart) {
-            handlers.handleAddWord(textareaRef.current?.value ?? '', {
-              cursorNeedUpdate: true,
-              handleFinished: () => {
-                textareaRef.current?.focus()
-                textareaStatusRef.current.isCompositionstart = false
-              },
-            })
-          }
-
-          break
-        case 'Tab':
-        case 'Meta':
-        case 'Alt':
-        case 'Control':
-        case 'Shift':
-          break
-        case 'ArrowUp':
-          console.log('?', textareaStatusRef.current.isCompositionstart)
-
-          if (!textareaStatusRef.current.isCompositionstart) {
-            handlers.handleArrow('UP')
-          }
-
-          break
-        case 'ArrowDown':
-          if (!textareaStatusRef.current.isCompositionstart) {
-            handlers.handleArrow('DOWN')
-          }
-
-          break
-        case 'ArrowLeft':
-          if (!textareaStatusRef.current.isCompositionstart) {
-            handlers.handleArrow('LEFT')
-          }
-
-          break
-        case 'ArrowRight':
-          if (!textareaStatusRef.current.isCompositionstart) {
-            handlers.handleArrow('RIGHT')
-          }
-
-          break
-        case 'CapsLock':
-          break
-        case 'Space':
-          break
-
-        default: {
-          break
-        }
-      }
-    }
-  }
-
-  const handleTextareaChange = (e: Event) => {
-    const element = e.target as HTMLTextAreaElement
-    const value = element.value
-
-    const contentStatus = contentStatusRef.current.contentStatus
-    const inputLineId = contentStatus.ids[contentStatus.selectedRange.end]
-
-    const nextLineById = {
-      ...contentStatus.lineById,
-    }
-
-    nextLineById[inputLineId] = {
-      ...nextLineById[inputLineId],
-      inputText: value,
-    }
-
-    if (!textareaStatusRef.current.isCompositionstart) {
-      handlers.handleAddWord(value, {
-        cursorNeedUpdate: true,
-        handleFinished: () => {
-          textareaRef.current?.focus()
-          textareaStatusRef.current.isCompositionstart = false
-        },
-      })
-    } else {
-      setContentStatus({
-        actionHistory: ['input'],
-        lineById: nextLineById,
-      })
-    }
-  }
-
-  const handleCompositionstart = () => {
-    textareaStatusRef.current.isCompositionstart = true
-  }
-
-  const handleCompositionupdate = () => {
-    handlerStatusRef.current.noticeCursorNeedUpdate()
-  }
-
-  const handleCompositionend = (e: CompositionEvent) => {
-    const value = e.data
-
-    if (textareaStatusRef.current.isCompositionstart) {
-      handlers.handleAddWord(value, {
-        cursorNeedUpdate: true,
-        handleFinished: () => {
-          textareaRef.current?.focus()
-          textareaStatusRef.current.isCompositionstart = false
-        },
-      })
-    }
-  }
+  const {
+    hanldeTextareaKeydown,
+    handleTextareaChange,
+    handleCompositionstart,
+    handleCompositionupdate,
+    handleCompositionend,
+  } = useTextareaHandlers(
+    textareaStatusRef,
+    textareaRef,
+    contentStatusRef,
+    historyHandlers,
+    handlers,
+    setContentStatus,
+    handlerStatusRef
+  )
 
   const textareaRefCallback = useCallback((element: HTMLTextAreaElement) => {
     if (textareaRef.current !== element) {

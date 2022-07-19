@@ -87,8 +87,6 @@ const Line = (props: LineProps) => {
 
   return (
     <Box
-      key={id}
-      data-id={id}
       data-type="line-wrapper"
       sx={{
         'lineHeight': '1.25',
@@ -107,6 +105,8 @@ const Line = (props: LineProps) => {
       <Box
         component="pre"
         data-type="line"
+        key={id}
+        data-id={id}
         data-start={lineState.start ?? ''}
         data-end={lineState.end ?? ''}
         sx={{

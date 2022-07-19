@@ -14,6 +14,7 @@ export interface ContentStatus {
   selectedRange: {
     start: number
     end: number
+    location: 'up' | 'down'
   }
 }
 
@@ -24,6 +25,7 @@ export const initialContentStatus: ContentStatus = {
   selectedRange: {
     start: -1,
     end: -1,
+    location: 'up',
   },
 }
 
@@ -42,35 +44,33 @@ export type SetContentStatusAction =
 const useContentStatus = () => {
   return useReducer(
     (prev: ContentStatus, value: SetContentStatusAction) => {
-      // if (process.env.NODE_ENV === 'development') {
-      //   console.log('contentStatus updeate:', next.actionHistory, next)
-      // }
+      let next
 
       if (instanceOfActionFunc<ContentStatus>(value)) {
-        return {
-          ...prev,
-          ...value(prev),
-          actionHistory: [] as string[],
-        }
+        next = value(prev)
       } else {
-        return {
-          ...prev,
-          ...value,
-          actionHistory: [] as string[],
-        }
+        next = value
+      }
+
+      // if (process.env.NODE_ENV === 'development') {
+      //   console.log('contentStatus updeate:', next, value)
+      // }
+
+      return {
+        ...prev,
+        ...next,
+        actionHistory: [] as string[],
       }
     },
-    null,
-    () => {
-      return {
-        actionHistory: [],
-        ids: [],
-        lineById: {},
-        selectedRange: {
-          start: -1,
-          end: -1,
-        },
-      }
+    {
+      actionHistory: [],
+      ids: [],
+      lineById: {},
+      selectedRange: {
+        start: -1,
+        end: -1,
+        location: 'up',
+      },
     }
   )
 }

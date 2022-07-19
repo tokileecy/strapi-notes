@@ -3,7 +3,7 @@ import { ContentStatus } from '../hooks/useContentStatus'
 import { getSelectedIdsByIndexRange } from './utils'
 
 export interface ChangeSelectLinesOptions {
-  selectedRange?: { start: number; end: number }
+  selectedRange?: { start: number; end: number; location?: 'up' | 'down' }
   line?: { start: number; end: number }
 }
 
@@ -21,8 +21,8 @@ const changeSelectLines = (
 
   if (options.selectedRange) {
     selectedRange = {
-      start: options.selectedRange.start,
-      end: options.selectedRange.end,
+      ...selectedRange,
+      ...options.selectedRange,
     }
 
     const nextSelectedLineIds = getSelectedIdsByIndexRange(ids, selectedRange)

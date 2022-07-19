@@ -18,6 +18,15 @@ export const refreshCursorBySelection = (
   }
 }
 
+export const refreshCursorByPosition = (
+  cursorElement: HTMLDivElement,
+  x: number,
+  y: number
+) => {
+  cursorElement.style.left = `${x}px`
+  cursorElement.style.top = `${y}px`
+}
+
 export const refreshCursorByElement = (
   containerElement: HTMLDivElement,
   cursorElement: HTMLDivElement,
@@ -59,6 +68,25 @@ export interface SelectionDetail {
   end: number
 }
 
+export const getLineElementsById = (id: string) => {
+  const lineElement = document.querySelector(
+    `[data-type="line"][data-id="${id}"]`
+  )
+
+  const lineStartElement = lineElement?.childNodes[0] ?? null
+  const lineCenterElement = lineElement?.childNodes[1] ?? null
+  const lineInputElement = lineElement?.childNodes[2] ?? null
+  const lineEndElement = lineElement?.childNodes[3] ?? null
+
+  return {
+    lineElement,
+    lineStartElement,
+    lineCenterElement,
+    lineInputElement,
+    lineEndElement,
+  }
+}
+
 export const getSelectionDetailByNode = (element: Node) => {
   let current = element
 
@@ -85,6 +113,7 @@ export const getSelectionDetailByNode = (element: Node) => {
   }
 
   let findEditorElement = false
+  let findOuteElement = null
 
   for (let i = 0; i < 9; i++) {
     if (current instanceof HTMLElement) {
@@ -94,25 +123,26 @@ export const getSelectionDetailByNode = (element: Node) => {
         if (type === selectionDetailEditorTypes[j]) {
           startDetail.type = type
           findEditorElement = true
+          findOuteElement = current
           break
         }
       }
     }
 
-    if (findEditorElement) {
+    if (findEditorElement && findOuteElement) {
       if (
         startDetail.type === 'line-start' ||
         startDetail.type === 'line-center' ||
         startDetail.type === 'line-end' ||
         startDetail.type === 'line-input'
       ) {
-        const lineElement = current.parentElement as HTMLElement
+        const lineElement = findOuteElement.parentElement as HTMLElement
 
         startDetail.id = lineElement.dataset.id ?? ''
         startDetail.start = Number(lineElement.dataset.start) ?? -1
         startDetail.end = Number(lineElement.dataset.end) ?? -1
       } else if (startDetail.type === 'line') {
-        const lineElement = current as HTMLElement
+        const lineElement = findOuteElement as HTMLElement
 
         startDetail.id = lineElement.dataset.id ?? ''
         startDetail.start = Number(lineElement.dataset.start) ?? -1
@@ -195,10 +225,7 @@ export const getLineIdByElement = (element: Node) => {
   let id = ''
 
   for (let i = 0; i < 5; i++) {
-    if (
-      current instanceof HTMLElement &&
-      current.dataset.type === 'line-wrapper'
-    ) {
+    if (current instanceof HTMLElement && current.dataset.type === 'line') {
       id = current.dataset.id ?? ''
       break
     }
@@ -247,10 +274,36 @@ export const getChangeSelectLinesOptionsByRange = (
     end = endDetail.end + end
   }
 
+  let location: 'up' | 'down' = 'up'
+
+  if (
+    endDetail.id !== '' &&
+    end === start &&
+    (range.endContainer.textContent?.length ?? 0) < 0
+  ) {
+    const currentCharRange = new Range()
+
+    currentCharRange.setStart(range.endContainer, end)
+    currentCharRange.setEnd(range.endContainer, end)
+
+    const currentCharRect = currentCharRange.getBoundingClientRect()
+    const nextCharRange = new Range()
+
+    nextCharRange.setStart(range.endContainer, end + 1)
+    nextCharRange.setEnd(range.endContainer, end + 1)
+
+    const nextCharRect = nextCharRange.getBoundingClientRect()
+
+    if (currentCharRect.y !== nextCharRect.y) {
+      location = 'down'
+    }
+  }
+
   return {
     selectedRange: {
       start: startIndex,
       end: endIndex,
+      location,
     },
     line: { start, end },
   }

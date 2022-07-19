@@ -103,11 +103,11 @@ const useHistoryHandlers = (
 
               if (range) {
                 const startContainer = document.querySelector(
-                  `[data-id="${prevContext.selectedStartLineId}"] pre`
+                  `[data-id="${prevContext.selectedStartLineId}"]`
                 )
 
                 const endContainer = document.querySelector(
-                  `[data-id="${prevContext.selectedEndLineId}"] pre`
+                  `[data-id="${prevContext.selectedEndLineId}"]`
                 )
 
                 if (
