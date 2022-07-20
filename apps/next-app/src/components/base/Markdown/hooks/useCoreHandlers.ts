@@ -92,7 +92,7 @@ const useCoreHandlers = (
       }),
       handleHorizon: withContentStatus((contentStatus) => {
         return fn.backspace(
-          fn.addWord(fn.wrapSelection(contentStatus, '\n\n'), '---')
+          fn.addWord(fn.wrapSelection(contentStatus, '\n\n'), '------')
         )
       }),
       handleBackspace: withContentStatus((contentStatus) => {
