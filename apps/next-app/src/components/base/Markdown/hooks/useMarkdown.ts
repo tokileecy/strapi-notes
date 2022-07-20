@@ -7,7 +7,7 @@ import {
   getSelectionDetailByNode,
   markdownToContentStatus,
 } from '../utils'
-import useDodumentHandler from './useDodumentEvent'
+import useDocumentHandler from './useDocumentEvent'
 import useContentStatus, {
   ContentStatus,
   initialContentStatus,
@@ -38,7 +38,7 @@ const useMarkdown = () => {
   const [selectAreaRef, selectAreaRefCallback] =
     useElementCallback<HTMLDivElement>()
 
-  const documentStatusRef = useDodumentHandler()
+  const documentStatusRef = useDocumentHandler()
 
   const frameLoopStatusRef = useFrameLoop()
 

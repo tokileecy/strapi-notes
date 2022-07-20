@@ -17,7 +17,7 @@ export interface DocumentStatus {
   update: () => void
 }
 
-const useDodumentHandler = () => {
+const useDocumentHandler = () => {
   const documentStatusRef = useRef<DocumentStatus>({
     prevIsKeyDown: false,
     prevIsMouseDown: false,
@@ -134,4 +134,4 @@ const useDodumentHandler = () => {
 
 export type DocumentStatusRef = MutableRefObject<DocumentStatus>
 
-export default useDodumentHandler
+export default useDocumentHandler
