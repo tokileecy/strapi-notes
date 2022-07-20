@@ -27,6 +27,7 @@ export type MarkdownProps = {
   contentStatus?: ContentStatus
   lineContainerRefCallback?: (element: HTMLDivElement) => void
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
+  selectAreaRefCallback?: (element: HTMLDivElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
   onChange?: (next: string) => void
   commend?: (event: EditorCommendEvent) => void
@@ -44,6 +45,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
     type = 'preview',
     lineContainerRefCallback,
     textareaRefCallback,
+    selectAreaRefCallback,
     cursorRefCallback,
     commend: pushEvent,
     contentStatus = { ...initialContentStatus },
@@ -159,6 +161,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
             >
               <Editor
                 textareaRefCallback={textareaRefCallback}
+                selectAreaRefCallback={selectAreaRefCallback}
                 cursorRefCallback={cursorRefCallback}
                 lineContainerRefCallback={lineContainerRefCallback}
                 contentStatus={contentStatus}

@@ -1,12 +1,14 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Cursor from './Cursor'
 import Line from './Line'
 import EndLine from './EndLine'
 import { ContentStatus } from './hooks/useContentStatus'
+import SelectArea from './SelectArea'
 
 export type EditorProps = {
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
+  selectAreaRefCallback?: (element: HTMLDivElement) => void
   lineContainerRefCallback?: (element: HTMLDivElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
   contentStatus: ContentStatus
@@ -15,10 +17,12 @@ export type EditorProps = {
 const Editor = (props: EditorProps): JSX.Element => {
   const {
     textareaRefCallback,
-    cursorRefCallback,
+    selectAreaRefCallback,
     lineContainerRefCallback,
     contentStatus,
   } = props
+
+  const ref = useRef<HTMLDivElement>(document.createElement('div'))
 
   const lines = useMemo(() => {
     return contentStatus.ids.map((id) => {
@@ -26,7 +30,7 @@ const Editor = (props: EditorProps): JSX.Element => {
 
       return <Line key={id} id={id} lineState={line} />
     })
-  }, [contentStatus.ids, contentStatus.lineById])
+  }, [contentStatus])
 
   return (
     <Box
@@ -40,14 +44,21 @@ const Editor = (props: EditorProps): JSX.Element => {
       data-type="editor"
     >
       <Box
+        ref={ref}
         sx={{
           outline: 'none',
           position: 'relative',
         }}
       >
         <Cursor
-          cursorRefCallback={cursorRefCallback}
+          contentStatus={contentStatus}
+          containerRef={ref}
           textareaRefCallback={textareaRefCallback}
+        />
+        <SelectArea
+          containerRef={ref}
+          contentStatus={contentStatus}
+          selectAreaRefCallback={selectAreaRefCallback}
         />
         <Box
           ref={lineContainerRefCallback}

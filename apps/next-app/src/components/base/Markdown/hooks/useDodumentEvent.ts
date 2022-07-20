@@ -104,7 +104,10 @@ const useDodumentHandler = () => {
 
         documentStatusRef.current.isSelectionChange = false
 
-        if (nodeDetail.isUnderLineContainer) {
+        if (
+          nodeDetail.isUnderLineContainer ||
+          nodeDetail.type === 'line-container'
+        ) {
           documentStatusRef.current.isSelectionChange = true
           documentStatusRef.current.lastSelectionRange = range
         }

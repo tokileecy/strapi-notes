@@ -6,8 +6,6 @@ import {
   getChangeSelectLinesOptionsByRange,
   getSelectionDetailByNode,
   markdownToContentStatus,
-  refreshCursorByElement,
-  refreshCursorByPosition,
 } from '../utils'
 import useDodumentHandler from './useDodumentEvent'
 import useContentStatus, {
@@ -15,7 +13,6 @@ import useContentStatus, {
   initialContentStatus,
 } from './useContentStatus'
 import useTextarea from './useTextarea'
-import useCursor from './useCursor'
 import useCommendHandler from './useCommendHandler'
 import useElementCallback from './useElementCallback'
 
@@ -38,8 +35,10 @@ const useMarkdown = () => {
   const [lineContainerRef, lineContainerRefCallback] =
     useElementCallback<HTMLDivElement>()
 
+  const [selectAreaRef, selectAreaRefCallback] =
+    useElementCallback<HTMLDivElement>()
+
   const documentStatusRef = useDodumentHandler()
-  const { cursorRef, cursorRefCallback } = useCursor()
 
   const frameLoopStatusRef = useFrameLoop()
 
@@ -52,8 +51,7 @@ const useMarkdown = () => {
     contentStatus,
     handlers,
     historyHandlers,
-    setContentStatus,
-    handlerStatusRef
+    setContentStatus
   )
 
   const reset = useCallback(({ content: nextContext = '' }) => {
@@ -100,133 +98,26 @@ const useMarkdown = () => {
 
   useEffect(() => {
     const handleSelect = () => {
-      if (
-        lineContainerRef?.current &&
-        cursorRef.current &&
-        documentStatusRef.current.lastSelectionRange
-      ) {
-        const containerRect = lineContainerRef.current.getBoundingClientRect()
+      const lastSelectionRange = documentStatusRef.current.lastSelectionRange
 
-        const currentCharRange = new Range()
-
-        currentCharRange.setStart(
-          documentStatusRef.current.lastSelectionRange.endContainer,
-          documentStatusRef.current.lastSelectionRange.endOffset
-        )
-        currentCharRange.setEnd(
-          documentStatusRef.current.lastSelectionRange.endContainer,
-          documentStatusRef.current.lastSelectionRange.endOffset
-        )
-
+      if (lineContainerRef?.current && lastSelectionRange) {
         const endNodeDetail = getSelectionDetailByNode(
-          documentStatusRef.current.lastSelectionRange.endContainer
+          lastSelectionRange.endContainer
         )
 
-        const currentCharRect = currentCharRange.getBoundingClientRect()
-
-        if (
-          endNodeDetail.id !== '' &&
-          documentStatusRef.current.lastSelectionRange.endOffset ===
-            documentStatusRef.current.lastSelectionRange.startOffset
-        ) {
-          const nextCharRange = new Range()
-
-          const lineEndElement = document.querySelector(
-            `[data-id="${endNodeDetail.id}"] [data-type="line-end"]`
-          ) as Element
-
-          if ((lineEndElement.textContent?.length ?? 0) > 0) {
-            nextCharRange.setStart(lineEndElement.childNodes[0], 0)
-            nextCharRange.setEnd(lineEndElement.childNodes[0], 1)
-
-            const nextCharRect = nextCharRange.getBoundingClientRect()
-
-            const clickY = documentStatusRef.current.lastClickPos.y
-
-            if (clickY > currentCharRect.y + currentCharRect.height) {
-              refreshCursorByPosition(
-                cursorRef.current,
-                nextCharRect.x - containerRect.x,
-                nextCharRect.y - containerRect.y
-              )
-            } else {
-              refreshCursorByPosition(
-                cursorRef.current,
-                currentCharRect.x - containerRect.x + currentCharRect.width,
-                currentCharRect.y - containerRect.y
-              )
+        if (endNodeDetail.isUnderLineContainer) {
+          handlers.handleChangeSelectLines(
+            getChangeSelectLinesOptionsByRange(
+              contentStatusRef.current.contentStatus.ids,
+              lastSelectionRange
+            ),
+            {
+              handleFinished: () => {
+                // documentStatusRef.current.lastSelectionRange = undefined
+              },
             }
-          } else {
-            refreshCursorByPosition(
-              cursorRef.current,
-              currentCharRect.x - containerRect.x + currentCharRect.width,
-              currentCharRect.y - containerRect.y
-            )
-          }
-        } else {
-          refreshCursorByPosition(
-            cursorRef.current,
-            currentCharRect.x - containerRect.x + currentCharRect.width,
-            currentCharRect.y - containerRect.y
           )
         }
-      }
-    }
-
-    const handleCursorchange = () => {
-      try {
-        if (lineContainerRef.current && cursorRef.current) {
-          const contentStatus = contentStatusRef.current.contentStatus
-
-          if (contentStatus.selectedRange.end !== -1) {
-            const selectedEndLineId =
-              contentStatus.ids[contentStatus.selectedRange.end]
-
-            const selectedEndLineElement = document.querySelector(
-              `[data-id="${selectedEndLineId}"]`
-            ) as HTMLElement
-
-            const centerElement = selectedEndLineElement.querySelector(
-              `[data-type="line-center"]`
-            ) as HTMLElement
-
-            const editorElement = document.querySelector('[data-type="editor"]')
-
-            if (editorElement && selectedEndLineElement) {
-              const scrollBottom =
-                editorElement.scrollTop + editorElement.clientHeight
-
-              const editorStyles = window.getComputedStyle(editorElement)
-
-              const seenableBootom =
-                selectedEndLineElement.offsetTop +
-                selectedEndLineElement.offsetHeight +
-                parseInt(editorStyles.paddingTop)
-
-              const seenableTop =
-                selectedEndLineElement.offsetTop +
-                parseInt(editorStyles.paddingTop)
-
-              const scrollTop = editorElement.scrollTop
-
-              if (seenableBootom > scrollBottom) {
-                editorElement.scrollTop += seenableBootom - scrollBottom
-              }
-
-              if (seenableTop < scrollTop) {
-                editorElement.scrollTop -= scrollTop - seenableTop
-              }
-            }
-
-            refreshCursorByElement(
-              lineContainerRef.current,
-              cursorRef.current,
-              centerElement
-            )
-          }
-        }
-      } catch (error) {
-        console.error(error)
       }
     }
 
@@ -240,9 +131,7 @@ const useMarkdown = () => {
             lastSelectionRange
           ),
           {
-            cursorNeedUpdate: true,
             handleFinished: () => {
-              textareaRef.current?.focus()
               documentStatusRef.current.lastSelectionRange = undefined
             },
           }
@@ -260,12 +149,13 @@ const useMarkdown = () => {
             lastSelectionRange
           ),
           {
-            cursorNeedUpdate: true,
             handleFinished: () => {
               textareaRef.current?.focus()
             },
           }
         )
+      } else {
+        textareaRef.current?.focus()
       }
     }
 
@@ -277,8 +167,6 @@ const useMarkdown = () => {
 
     documentStatusRef.current.on('select', handleSelect)
 
-    handlerStatusRef.current.on('cursorchange', handleCursorchange)
-
     documentStatusRef.current.on('clickdown', handleClickdown)
 
     documentStatusRef.current.on('clickup', handleClickup)
@@ -287,8 +175,6 @@ const useMarkdown = () => {
 
     return () => {
       documentStatusRef.current.off('select', handleSelect)
-
-      handlerStatusRef.current.off('cursorchange', handleCursorchange)
 
       documentStatusRef.current.off('clickdown', handleClickdown)
 
@@ -303,7 +189,7 @@ const useMarkdown = () => {
     contentStatus,
     textareaRefCallback,
     lineContainerRefCallback,
-    cursorRefCallback,
+    selectAreaRefCallback,
     reset,
     commend,
   }

@@ -13,7 +13,7 @@ import {
   initialContentStatus,
   SetContentStatusAction,
 } from './useContentStatus'
-import { Handlers, HandlerStatus } from './useCoreHandlers'
+import { Handlers } from './useCoreHandlers'
 import { HistoryHandlers } from './useHistoryHandlers'
 
 const useTextareaHandlers = (
@@ -26,8 +26,7 @@ const useTextareaHandlers = (
   }>,
   historyHandlers: HistoryHandlers,
   handlers: Handlers,
-  setContentStatus: Dispatch<SetContentStatusAction>,
-  handlerStatusRef: MutableRefObject<HandlerStatus>
+  setContentStatus: Dispatch<SetContentStatusAction>
 ) => {
   return useMemo(() => {
     const hanldeTextareaKeydown = (e: KeyboardEvent) => {
@@ -91,7 +90,6 @@ const useTextareaHandlers = (
 
             if (!textareaStatusRef.current.isCompositionstart) {
               handlers.handleAddWord(textareaRef.current?.value ?? '', {
-                cursorNeedUpdate: true,
                 handleFinished: () => {
                   textareaRef.current?.focus()
                   textareaStatusRef.current.isCompositionstart = false
@@ -114,7 +112,7 @@ const useTextareaHandlers = (
 
               const selectedLine = contentStatus.lineById[selectedLineId]
 
-              const { lineStartElement } = getLineElementsById(selectedLineId)
+              const { lineElement } = getLineElementsById(selectedLineId)
 
               if (isSelectingWord(contentStatus)) {
                 handlers.handleChangeSelectLines({
@@ -127,15 +125,15 @@ const useTextareaHandlers = (
                     end: selectedLine.start,
                   },
                 })
-              } else if (lineStartElement && selectedLine.start !== 0) {
+              } else if (lineElement && selectedLine.start !== 0) {
                 const originRange = new Range()
 
                 originRange.setStart(
-                  lineStartElement.childNodes[0],
+                  lineElement.childNodes[0],
                   selectedLine.start
                 )
                 originRange.setEnd(
-                  lineStartElement.childNodes[0],
+                  lineElement.childNodes[0],
                   selectedLine.start
                 )
 
@@ -145,8 +143,8 @@ const useTextareaHandlers = (
                 for (let i = selectedLine.start - 1; i >= 0; i--) {
                   const range = new Range()
 
-                  range.setStart(lineStartElement.childNodes[0], i)
-                  range.setEnd(lineStartElement.childNodes[0], i)
+                  range.setStart(lineElement.childNodes[0], i)
+                  range.setEnd(lineElement.childNodes[0], i)
 
                   const rect = range.getBoundingClientRect()
 
@@ -188,7 +186,7 @@ const useTextareaHandlers = (
 
               const selectedLine = contentStatus.lineById[selectedLineId]
 
-              const { lineEndElement } = getLineElementsById(selectedLineId)
+              const { lineElement } = getLineElementsById(selectedLineId)
 
               if (isSelectingWord(contentStatus)) {
                 handlers.handleChangeSelectLines({
@@ -202,13 +200,13 @@ const useTextareaHandlers = (
                   },
                 })
               } else if (
-                lineEndElement &&
+                lineElement &&
                 selectedLine.end !== selectedLine.text.length
               ) {
                 const originRange = new Range()
 
-                originRange.setStart(lineEndElement.childNodes[0], 0)
-                originRange.setEnd(lineEndElement.childNodes[0], 0)
+                originRange.setStart(lineElement.childNodes[0], 0)
+                originRange.setEnd(lineElement.childNodes[0], 0)
 
                 const originRect = originRange.getBoundingClientRect()
                 let notFound = true
@@ -220,8 +218,8 @@ const useTextareaHandlers = (
                 ) {
                   const range = new Range()
 
-                  range.setStart(lineEndElement.childNodes[0], i)
-                  range.setEnd(lineEndElement.childNodes[0], i)
+                  range.setStart(lineElement.childNodes[0], i)
+                  range.setEnd(lineElement.childNodes[0], i + 1)
 
                   const rect = range.getBoundingClientRect()
 
@@ -297,7 +295,6 @@ const useTextareaHandlers = (
 
       if (!textareaStatusRef.current.isCompositionstart) {
         handlers.handleAddWord(value, {
-          cursorNeedUpdate: true,
           handleFinished: () => {
             textareaRef.current?.focus()
             textareaStatusRef.current.isCompositionstart = false
@@ -316,7 +313,7 @@ const useTextareaHandlers = (
     }
 
     const handleCompositionupdate = () => {
-      handlerStatusRef.current.noticeCursorNeedUpdate()
+      // handlerStatusRef.current.noticeCursorNeedUpdate()
     }
 
     const handleCompositionend = (e: CompositionEvent) => {
@@ -324,7 +321,6 @@ const useTextareaHandlers = (
 
       if (textareaStatusRef.current.isCompositionstart) {
         handlers.handleAddWord(value, {
-          cursorNeedUpdate: true,
           handleFinished: () => {
             textareaRef.current?.focus()
             textareaStatusRef.current.isCompositionstart = false
@@ -347,8 +343,7 @@ const useTextarea = (
   contentStatus: ContentStatus,
   handlers: Handlers,
   historyHandlers: HistoryHandlers,
-  setContentStatus: Dispatch<SetContentStatusAction>,
-  handlerStatusRef: MutableRefObject<HandlerStatus>
+  setContentStatus: Dispatch<SetContentStatusAction>
 ) => {
   const textareaStatusRef = useRef<{ isCompositionstart: boolean }>({
     isCompositionstart: false,
@@ -378,8 +373,7 @@ const useTextarea = (
     contentStatusRef,
     historyHandlers,
     handlers,
-    setContentStatus,
-    handlerStatusRef
+    setContentStatus
   )
 
   const textareaRefCallback = useCallback((element: HTMLTextAreaElement) => {

@@ -35,7 +35,7 @@ const BaseLineContent = (props: {
 const Line = (props: LineProps) => {
   const { id, lineState } = props
 
-  const { lineCenter, lineEnd, lineStart, lineInput, selectAll } =
+  const { startText, centerText, endText, inputText, selectAll } =
     useMemo(() => {
       let startText = ''
       let centerText = ''
@@ -82,6 +82,10 @@ const Line = (props: LineProps) => {
         lineCenter,
         lineInput,
         lineEnd,
+        startText,
+        centerText,
+        endText,
+        inputText: lineState.inputText,
       }
     }, [lineState])
 
@@ -120,10 +124,7 @@ const Line = (props: LineProps) => {
               : 'transparent',
         }}
       >
-        {lineStart}
-        {lineCenter}
-        {lineInput}
-        {lineEnd}
+        {`${startText}${centerText}${inputText}${endText}`}
       </Box>
     </Box>
   )

@@ -4,24 +4,14 @@ import { ChangeSelectLinesOptions } from '../fn/changeSelectLines'
 import { ContentStatus, SetContentStatusAction } from './useContentStatus'
 
 interface Config {
-  cursorNeedUpdate?: boolean
   handleFinished?: () => void
 }
 
-const defaultConfig: Config = {
-  cursorNeedUpdate: true,
-}
-
-export type HandlerEvent = 'cursorchange'
+const defaultConfig: Config = {}
 
 export interface HandlerStatus {
   commendCallbackQueue: (() => void)[]
-  cursorNeedUpdate: boolean
-  queue: Record<HandlerEvent, Set<() => void>>
-  on: (event: HandlerEvent, callback: () => void) => void
-  off: (event: HandlerEvent, callback: () => void) => void
   update: () => void
-  noticeCursorNeedUpdate: () => void
 }
 
 const useCoreHandlers = (
@@ -29,24 +19,7 @@ const useCoreHandlers = (
 ) => {
   const handlerStatusRef = useRef<HandlerStatus>({
     commendCallbackQueue: [],
-    cursorNeedUpdate: false,
-    queue: {
-      cursorchange: new Set(),
-    },
-    on(event: HandlerEvent, callback: () => void) {
-      this.queue[event].add(callback)
-    },
-    off(event: HandlerEvent, callback: () => void) {
-      this.queue[event].delete(callback)
-    },
     update() {
-      if (this.cursorNeedUpdate) {
-        this.queue.cursorchange.forEach((callback) => {
-          callback()
-        })
-        this.cursorNeedUpdate = false
-      }
-
       while (this.commendCallbackQueue.length > 0) {
         const callback = this.commendCallbackQueue.shift()
 
@@ -59,9 +32,6 @@ const useCoreHandlers = (
         }
       }
     },
-    noticeCursorNeedUpdate() {
-      this.cursorNeedUpdate = true
-    },
   })
 
   const handlers = useMemo(() => {
@@ -72,10 +42,6 @@ const useCoreHandlers = (
         setContentStatus((prev) => func(prev))
 
         handlerStatusRef.current.commendCallbackQueue.push(() => {
-          if (config.cursorNeedUpdate) {
-            handlerStatusRef.current.cursorNeedUpdate = true
-          }
-
           config.handleFinished?.()
         })
       }
@@ -88,10 +54,6 @@ const useCoreHandlers = (
         setContentStatus((prev) => func(prev, option))
 
         handlerStatusRef.current.commendCallbackQueue.push(() => {
-          if (config.cursorNeedUpdate) {
-            handlerStatusRef.current.cursorNeedUpdate = true
-          }
-
           config.handleFinished?.()
         })
       }
