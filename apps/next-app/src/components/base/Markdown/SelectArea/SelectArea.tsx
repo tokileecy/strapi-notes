@@ -1,6 +1,12 @@
 import Box from '@mui/material/Box'
-import { MutableRefObject, useEffect, useMemo, useState } from 'react'
-import { ContentStatus } from '../hooks/useContentStatus'
+import {
+  MutableRefObject,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import { MarkdownContext } from '../MarkdownProvider'
 import { getLineElementsById } from '../utils'
 import SelectLine, { SelectLineProps } from './SelectLine'
 import {
@@ -10,13 +16,13 @@ import {
 } from './utils'
 
 export interface SelectAreaProps {
-  contentStatus: ContentStatus
   containerRef: MutableRefObject<HTMLDivElement>
 }
 
 // TODO refactor
 const SelectArea = (props: SelectAreaProps) => {
-  const { contentStatus, containerRef } = props
+  const { containerRef } = props
+  const { contentStatus } = useContext(MarkdownContext)
   // TODO selected range need wating for DOM update, find other solution
   const [nextFrameUpdate, setNextFrameUpdate] = useState(0)
 

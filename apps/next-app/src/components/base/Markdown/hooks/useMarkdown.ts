@@ -13,7 +13,7 @@ import useContentStatus, {
   initialContentStatus,
 } from './useContentStatus'
 import useTextarea from './useTextarea'
-import useCommendHandler from './useCommendHandler'
+import useCommendHandler, { EditorCommendEvent } from './useCommendHandler'
 import useElementCallback from './useElementCallback'
 
 export interface MarkdownContentDetail {
@@ -21,7 +21,16 @@ export interface MarkdownContentDetail {
   text: string
 }
 
-const useMarkdown = () => {
+export interface MarkdownStatus {
+  markdownContentDetails: MarkdownContentDetail[]
+  contentStatus: ContentStatus
+  textareaRefCallback: (element: HTMLTextAreaElement) => void
+  lineContainerRefCallback: (element: HTMLDivElement) => void
+  reset: (value: { content?: string }) => void
+  commend: (event: EditorCommendEvent) => void
+}
+
+const useMarkdown = (): MarkdownStatus => {
   const [contentStatus, setContentStatus] = useContentStatus()
 
   const contentStatusRef = useRef<{

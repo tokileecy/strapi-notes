@@ -1,20 +1,14 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useContext, useMemo, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Cursor from './Cursor'
 import Line from './Line'
 import EndLine from './EndLine'
-import { ContentStatus } from './hooks/useContentStatus'
 import SelectArea from './SelectArea'
+import { MarkdownContext } from './MarkdownProvider'
 
-export type EditorProps = {
-  textareaRefCallback?: (element: HTMLTextAreaElement) => void
-  lineContainerRefCallback?: (element: HTMLDivElement) => void
-  cursorRefCallback?: (element: HTMLDivElement) => void
-  contentStatus: ContentStatus
-}
-
-const Editor = (props: EditorProps): JSX.Element => {
-  const { textareaRefCallback, lineContainerRefCallback, contentStatus } = props
+const Editor = (): JSX.Element => {
+  const { lineContainerRefCallback, contentStatus } =
+    useContext(MarkdownContext)
 
   const ref = useRef<HTMLDivElement>(document.createElement('div'))
 
@@ -44,12 +38,8 @@ const Editor = (props: EditorProps): JSX.Element => {
           position: 'relative',
         }}
       >
-        <Cursor
-          contentStatus={contentStatus}
-          containerRef={ref}
-          textareaRefCallback={textareaRefCallback}
-        />
-        <SelectArea containerRef={ref} contentStatus={contentStatus} />
+        <Cursor containerRef={ref} />
+        <SelectArea containerRef={ref} />
         <Box
           ref={lineContainerRefCallback}
           sx={{

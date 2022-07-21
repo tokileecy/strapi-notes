@@ -12,14 +12,11 @@ import ListNumberSvg from './images/list-number.svg'
 import CheckboxSvg from './images/checkbox.svg'
 import HorizonSvg from './images/horizon.svg'
 import ToolbarIconButton from './ToolbarIconButton'
-import { EditorCommendEvent } from './hooks/useCommendHandler'
+import { useContext } from 'react'
+import { MarkdownContext } from './MarkdownProvider'
 
-export interface ToolbarProps {
-  commend?: (event: EditorCommendEvent) => void
-}
-
-const Toolbar = (props: ToolbarProps) => {
-  const { commend } = props
+const Toolbar = () => {
+  const { commend } = useContext(MarkdownContext)
 
   return (
     <Box

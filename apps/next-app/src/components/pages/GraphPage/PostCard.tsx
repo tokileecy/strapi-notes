@@ -37,7 +37,7 @@ const PostCard = (props: PostCardProps): JSX.Element => {
   })
 
   useEffect(() => {
-    markdown.reset({ id: post.id, content: targetContent })
+    markdown.reset({ content: targetContent })
   }, [targetContent])
 
   return (
@@ -79,7 +79,7 @@ const PostCard = (props: PostCardProps): JSX.Element => {
             'wordBreak': 'break-all',
           }}
         >
-          {post.id && <Markdown type="both" {...markdown} />}
+          {post.id && <Markdown type="both" markdownStatus={markdown} />}
         </Box>
       </CardContent>
     </Card>

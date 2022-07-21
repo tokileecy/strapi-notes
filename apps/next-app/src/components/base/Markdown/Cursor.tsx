@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
-import { MutableRefObject, useEffect } from 'react'
-import { ContentStatus } from './hooks/useContentStatus'
+import { MutableRefObject, useContext, useEffect } from 'react'
 import useElementCallback from './hooks/useElementCallback'
+import { MarkdownContext } from './MarkdownProvider'
 import { getLineElementsById } from './utils'
 
 const refreshCursorBySelection = (
@@ -22,12 +22,11 @@ const refreshCursorBySelection = (
 
 export interface CursorProps {
   containerRef: MutableRefObject<HTMLDivElement>
-  textareaRefCallback?: (element: HTMLTextAreaElement) => void
-  contentStatus: ContentStatus
 }
 
 const Cursor = (props: CursorProps) => {
-  const { containerRef, contentStatus, textareaRefCallback } = props
+  const { containerRef } = props
+  const { textareaRefCallback, contentStatus } = useContext(MarkdownContext)
 
   const [cursorRef, cursorRefCallback] = useElementCallback<HTMLDivElement>()
 
