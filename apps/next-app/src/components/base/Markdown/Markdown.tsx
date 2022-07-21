@@ -1,25 +1,12 @@
-import { ChangeEventHandler } from 'react'
 import Box from '@mui/material/Box'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import Editor from './Editor'
-import BoldSvg from './images/bold.svg'
-import ItalicSvg from './images/italic.svg'
-import StrikeSvg from './images/strike.svg'
-import HeaderSvg from './images/header.svg'
-import CodeSvg from './images/code.svg'
-import HTMLSvg from './images/html.svg'
-import QuoteSvg from './images/quote.svg'
-import ListBulletSvg from './images/list-bullet.svg'
-import ListNumberSvg from './images/list-number.svg'
-import CheckboxSvg from './images/checkbox.svg'
-import HorizonSvg from './images/horizon.svg'
-import ToolbarIconButton from './ToolbarIconButton'
+import Toolbar from './Toolbar'
 import { ContentStatus, initialContentStatus } from './hooks/useContentStatus'
 import { EditorCommendEvent } from './hooks/useCommendHandler'
 import { MarkdownContentDetail } from './hooks/useMarkdown'
-import { Divider } from '@mui/material'
 
 export type MarkdownProps = {
   type?: 'editor' | 'preview' | 'both'
@@ -27,16 +14,8 @@ export type MarkdownProps = {
   contentStatus?: ContentStatus
   lineContainerRefCallback?: (element: HTMLDivElement) => void
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
-  selectAreaRefCallback?: (element: HTMLDivElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
-  onChange?: (next: string) => void
   commend?: (event: EditorCommendEvent) => void
-  refreshPreview?: () => void
-  saveState?: () => void
-  undoEdit?: () => void
-  id?: string
-  updateAt?: string
-  onTextareaChange?: ChangeEventHandler<HTMLTextAreaElement>
 }
 
 const Markdown = (props: MarkdownProps): JSX.Element => {
@@ -45,9 +24,8 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
     type = 'preview',
     lineContainerRefCallback,
     textareaRefCallback,
-    selectAreaRefCallback,
     cursorRefCallback,
-    commend: pushEvent,
+    commend,
     contentStatus = { ...initialContentStatus },
   } = props
 
@@ -60,88 +38,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
         'height': '100%',
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 1,
-          border: '1px solid white',
-          p: 1,
-        }}
-        data-type="tool-bar"
-      >
-        <ToolbarIconButton
-          component={BoldSvg}
-          onClick={() => {
-            pushEvent?.('bold')
-          }}
-        />
-        <ToolbarIconButton
-          component={ItalicSvg}
-          onClick={() => {
-            pushEvent?.('italic')
-          }}
-        />
-        <ToolbarIconButton
-          component={StrikeSvg}
-          onClick={() => {
-            pushEvent?.('strike')
-          }}
-        />
-
-        <ToolbarIconButton
-          component={HeaderSvg}
-          onClick={() => {
-            pushEvent?.('header')
-          }}
-        />
-        <ToolbarIconButton
-          component={QuoteSvg}
-          onClick={() => {
-            pushEvent?.('quote')
-          }}
-        />
-        <ToolbarIconButton
-          component={ListBulletSvg}
-          onClick={() => {
-            pushEvent?.('list-bullet')
-          }}
-        />
-        <ToolbarIconButton
-          component={ListNumberSvg}
-          onClick={() => {
-            pushEvent?.('list-number')
-          }}
-        />
-        <ToolbarIconButton
-          component={CodeSvg}
-          onClick={() => {
-            pushEvent?.('code')
-          }}
-        />
-        <ToolbarIconButton
-          component={HorizonSvg}
-          onClick={() => {
-            pushEvent?.('horizon')
-          }}
-        />
-        <ToolbarIconButton
-          component={CheckboxSvg}
-          onClick={() => {
-            pushEvent?.('checkbox')
-          }}
-        />
-        <Divider
-          sx={{ borderColor: 'white' }}
-          orientation="vertical"
-          flexItem
-        />
-        <ToolbarIconButton
-          component={HTMLSvg}
-          onClick={() => {
-            pushEvent?.('html')
-          }}
-        />
-      </Box>
+      <Toolbar commend={commend} />
       <Box sx={{ 'position': 'relative', 'flexGrow': 1 }}>
         <Box
           sx={{
@@ -161,7 +58,6 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
             >
               <Editor
                 textareaRefCallback={textareaRefCallback}
-                selectAreaRefCallback={selectAreaRefCallback}
                 cursorRefCallback={cursorRefCallback}
                 lineContainerRefCallback={lineContainerRefCallback}
                 contentStatus={contentStatus}

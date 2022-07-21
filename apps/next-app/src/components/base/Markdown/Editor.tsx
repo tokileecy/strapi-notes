@@ -8,19 +8,13 @@ import SelectArea from './SelectArea'
 
 export type EditorProps = {
   textareaRefCallback?: (element: HTMLTextAreaElement) => void
-  selectAreaRefCallback?: (element: HTMLDivElement) => void
   lineContainerRefCallback?: (element: HTMLDivElement) => void
   cursorRefCallback?: (element: HTMLDivElement) => void
   contentStatus: ContentStatus
 }
 
 const Editor = (props: EditorProps): JSX.Element => {
-  const {
-    textareaRefCallback,
-    selectAreaRefCallback,
-    lineContainerRefCallback,
-    contentStatus,
-  } = props
+  const { textareaRefCallback, lineContainerRefCallback, contentStatus } = props
 
   const ref = useRef<HTMLDivElement>(document.createElement('div'))
 
@@ -55,11 +49,7 @@ const Editor = (props: EditorProps): JSX.Element => {
           containerRef={ref}
           textareaRefCallback={textareaRefCallback}
         />
-        <SelectArea
-          containerRef={ref}
-          contentStatus={contentStatus}
-          selectAreaRefCallback={selectAreaRefCallback}
-        />
+        <SelectArea containerRef={ref} contentStatus={contentStatus} />
         <Box
           ref={lineContainerRefCallback}
           sx={{

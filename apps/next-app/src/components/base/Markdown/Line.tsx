@@ -1,35 +1,10 @@
-import React, { ReactNode, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import Box from '@mui/material/Box'
 import { LineState } from './hooks/useContentStatus'
 
 export interface LineProps {
   id: string
   lineState: LineState
-}
-
-const BaseLineContent = (props: {
-  type: 'start' | 'center' | 'end' | 'input'
-  children: ReactNode
-}) => {
-  const { type, children } = props
-
-  return (
-    <Box
-      component="span"
-      sx={{
-        background:
-          type === 'input'
-            ? '#4e4e4e'
-            : type === 'center'
-            ? '#191919'
-            : 'transparent',
-        lineHeight: 'inherit',
-      }}
-      data-type={`line-${type}`}
-    >
-      {children}
-    </Box>
-  )
 }
 
 const Line = (props: LineProps) => {
@@ -62,26 +37,8 @@ const Line = (props: LineProps) => {
         centerText = '\u200b'
       }
 
-      const lineStart = (
-        <BaseLineContent type="start">{startText}</BaseLineContent>
-      )
-
-      const lineCenter = (
-        <BaseLineContent type="center">{centerText}</BaseLineContent>
-      )
-
-      const lineInput = (
-        <BaseLineContent type="input">{lineState.inputText}</BaseLineContent>
-      )
-
-      const lineEnd = <BaseLineContent type="end">{endText}</BaseLineContent>
-
       return {
         selectAll: startText === '' && endText === '',
-        lineStart,
-        lineCenter,
-        lineInput,
-        lineEnd,
         startText,
         centerText,
         endText,

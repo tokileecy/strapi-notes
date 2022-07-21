@@ -79,14 +79,7 @@ const PostCard = (props: PostCardProps): JSX.Element => {
             'wordBreak': 'break-all',
           }}
         >
-          {post.id && (
-            <Markdown
-              type="both"
-              {...markdown}
-              id={post.id}
-              updateAt={post.updated_at}
-            />
-          )}
+          {post.id && <Markdown type="both" {...markdown} />}
         </Box>
       </CardContent>
     </Card>

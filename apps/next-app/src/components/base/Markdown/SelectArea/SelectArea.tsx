@@ -12,12 +12,11 @@ import {
 export interface SelectAreaProps {
   contentStatus: ContentStatus
   containerRef: MutableRefObject<HTMLDivElement>
-  selectAreaRefCallback?: (element: HTMLDivElement) => void
 }
 
 // TODO refactor
 const SelectArea = (props: SelectAreaProps) => {
-  const { contentStatus, selectAreaRefCallback, containerRef } = props
+  const { contentStatus, containerRef } = props
   // TODO selected range need wating for DOM update, find other solution
   const [nextFrameUpdate, setNextFrameUpdate] = useState(0)
 
@@ -290,7 +289,6 @@ const SelectArea = (props: SelectAreaProps) => {
 
   return (
     <Box
-      ref={selectAreaRefCallback}
       sx={{
         'position': 'absolute',
         'width': '100%',

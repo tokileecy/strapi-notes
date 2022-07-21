@@ -35,9 +35,6 @@ const useMarkdown = () => {
   const [lineContainerRef, lineContainerRefCallback] =
     useElementCallback<HTMLDivElement>()
 
-  const [selectAreaRef, selectAreaRefCallback] =
-    useElementCallback<HTMLDivElement>()
-
   const documentStatusRef = useDocumentHandler()
 
   const frameLoopStatusRef = useFrameLoop()
@@ -189,7 +186,6 @@ const useMarkdown = () => {
     contentStatus,
     textareaRefCallback,
     lineContainerRefCallback,
-    selectAreaRefCallback,
     reset,
     commend,
   }
