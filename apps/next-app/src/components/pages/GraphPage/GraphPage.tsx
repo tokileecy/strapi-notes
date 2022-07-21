@@ -74,64 +74,105 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
           position: 'relative',
           width: '100%',
           height: '100%',
-          overflow: 'hidden',
         }}
       >
         <Box
           sx={{
             position: 'absolute',
-            width: '300px',
-            zIndex: 2,
-            left: 0,
-            p: 2,
-            m: 2,
-            height: '80%',
-            mt: 12,
-            borderRadius: 2,
-            backgroundColor: 'rgba(15, 108, 176, 0.24)',
-          }}
-        >
-          <Hierarchy />
-        </Box>
-        <Box
-          sx={{
-            position: 'absolute',
-            zIndex: 3,
-            top: 0,
-            left: '50%',
-            transform: 'translateX(-70%)',
-            p: 2,
-            m: 2,
-            borderRadius: 2,
-            backgroundColor: 'rgba(15, 108, 176, 0.24)',
-          }}
-        >
-          <TagsBlock
-            tags={relativeTags}
-            onAllSelected={() => {
-              dispatch(clearTags())
-            }}
-            onTagSelected={(isSelected, id) => {
-              if (isSelected) {
-                dispatch(removeTags([id]))
-              } else {
-                dispatch(addTags([id]))
-              }
-            }}
-          />
-        </Box>
-        <Box
-          sx={{
-            position: 'absolute',
             zIndex: 1,
-            right: 0,
-            height: '80%',
-            p: 2,
-            mt: 12,
-            backgroundColor: 'rgba(15, 108, 176, 0.24)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            height: '100%',
+            width: '100%',
           }}
         >
-          {selectedPost && <PostCard post={selectedPost} />}
+          <Box
+            sx={{
+              p: 2,
+              m: 2,
+              borderRadius: 2,
+              backgroundColor: 'rgba(15, 108, 176, 0.24)',
+            }}
+          >
+            <TagsBlock
+              tags={relativeTags}
+              onAllSelected={() => {
+                dispatch(clearTags())
+              }}
+              onTagSelected={(isSelected, id) => {
+                if (isSelected) {
+                  dispatch(removeTags([id]))
+                } else {
+                  dispatch(addTags([id]))
+                }
+              }}
+            />
+          </Box>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: 'flex',
+              justifyContent: { lg: 'space-between' },
+              alignItems: { lg: 'center' },
+              flexDirection: {
+                xs: 'column',
+                lg: 'row',
+              },
+            }}
+          >
+            <Box
+              sx={{
+                m: 2,
+                height: {
+                  xs: `35%`,
+                  lg: `80%`,
+                },
+                width: {
+                  lg: `300px`,
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  p: 2,
+                  height: '100%',
+                  borderRadius: 2,
+                  backgroundColor: 'rgba(15, 108, 176, 0.24)',
+                }}
+              >
+                <Hierarchy />
+              </Box>
+            </Box>
+
+            {selectedPost && (
+              <Box
+                sx={{
+                  m: 2,
+                  flexGrow: 1,
+                  height: {
+                    xs: `35%`,
+                    lg: `80%`,
+                  },
+
+                  maxWidth: {
+                    lg: `900px`,
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    p: 2,
+                    height: '100%',
+                    borderRadius: 2,
+                    backgroundColor: 'rgba(15, 108, 176, 0.24)',
+                  }}
+                >
+                  <PostCard post={selectedPost} />
+                </Box>
+              </Box>
+            )}
+          </Box>
         </Box>
         <Box
           sx={{

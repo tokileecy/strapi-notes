@@ -154,7 +154,7 @@ const Folder = (props: FolderProps) => {
           onSelectedPathChange?.(node.absolutePath)
         }}
       >
-        {node.path}
+        {node.path.replace(/\//g, '')}
       </Box>
       {subFolders}
     </Box>

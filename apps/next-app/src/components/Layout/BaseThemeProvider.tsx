@@ -18,6 +18,15 @@ declare module '@mui/material/styles/createPalette' {
 }
 
 const theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 640,
+      md: 900,
+      lg: 1280,
+      xl: 1440,
+    },
+  },
   palette: {
     primary: {
       main: 'rgb(3, 147, 187)',

@@ -1,4 +1,4 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Box from '@mui/material/Box'
 import { SvgIcon } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
@@ -11,6 +11,7 @@ import useHierarchy from '@/hooks/useHierarchy'
 import { setPosts } from '@/redux/features/posts/postSlice'
 import api from '@/lib/api'
 import { Post } from '@/types'
+import { RootState } from '@/redux/store'
 import Folder from './Folder'
 
 const Workspace = (props: {
@@ -18,6 +19,7 @@ const Workspace = (props: {
   onSelectedPathChange?: (path: string) => void
 }) => {
   const { node, onSelectedPathChange } = props
+  const isAuth = useSelector((state: RootState) => state.auth.isAuth)
 
   const { selectedNode } = useHierarchy()
   const dispatch = useDispatch()
@@ -79,23 +81,28 @@ const Workspace = (props: {
           }}
         >{`Workspace`}</Box>
         <Box>
-          <IconButton sx={{ p: 0.25 }} onClick={handleCreatingFile}>
-            <SvgIcon
-              component={AddFileSvg}
-              sx={{ width: '20px', height: '20px', color: 'white' }}
-            ></SvgIcon>
-          </IconButton>
-          <IconButton sx={{ p: 0.25 }} onClick={handleDeleteFile}>
-            <SvgIcon
-              component={DeleteSvg}
-              sx={{
-                width: '20px',
-                height: '20px',
-                color: 'white',
-                opacity: selectedNode?.data ? 1 : 0.5,
-              }}
-            ></SvgIcon>
-          </IconButton>
+          {isAuth && (
+            <IconButton sx={{ p: 0.25 }} onClick={handleCreatingFile}>
+              <SvgIcon
+                component={AddFileSvg}
+                sx={{ width: '20px', height: '20px', color: 'white' }}
+              ></SvgIcon>
+            </IconButton>
+          )}
+
+          {isAuth && (
+            <IconButton sx={{ p: 0.25 }} onClick={handleDeleteFile}>
+              <SvgIcon
+                component={DeleteSvg}
+                sx={{
+                  width: '20px',
+                  height: '20px',
+                  color: 'white',
+                  opacity: selectedNode?.data ? 1 : 0.5,
+                }}
+              ></SvgIcon>
+            </IconButton>
+          )}
           <IconButton sx={{ p: 0.25 }} onClick={handleRefresh}>
             <SvgIcon
               component={RefreshSvg}

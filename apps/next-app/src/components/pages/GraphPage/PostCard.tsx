@@ -6,6 +6,8 @@ import { Post } from '@/types'
 import Markdown from '@/components/base/Markdown'
 import useMarkdown from '@/components/base/Markdown/hooks/useMarkdown'
 import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
 export interface PostCardProps {
   post: Post
   onClick?: CardProps['onClick']
@@ -14,6 +16,7 @@ export interface PostCardProps {
 const PostCard = (props: PostCardProps): JSX.Element => {
   const { post, onClick } = props
 
+  const isAuth = useSelector((state: RootState) => state.auth.isAuth)
   const { content } = post
 
   const markdown = useMarkdown()
@@ -46,7 +49,6 @@ const PostCard = (props: PostCardProps): JSX.Element => {
         {
           height: '100%',
           overflow: 'auto',
-          width: '900px',
           p: 0,
           m: 0,
           backgroundColor: 'transparent',
@@ -79,7 +81,10 @@ const PostCard = (props: PostCardProps): JSX.Element => {
             'wordBreak': 'break-all',
           }}
         >
-          {post.id && <Markdown type="both" markdownStatus={markdown} />}
+          <Markdown
+            type={isAuth ? 'both' : 'preview'}
+            markdownStatus={markdown}
+          />
         </Box>
       </CardContent>
     </Card>

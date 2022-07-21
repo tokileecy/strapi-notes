@@ -5,7 +5,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { setAuth } from '@/redux/features/auth/authSlice'
+import { logout } from '@/redux/features/auth/authSlice'
 import { RootState } from '@/redux/store'
 import LoginDialog from '../LoginDialog'
 
@@ -23,7 +23,7 @@ const Header = (props: { text?: string }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('jwt')
-    dispatch(setAuth({ jwt: undefined }))
+    dispatch(logout())
   }
 
   const handleClose = () => {
