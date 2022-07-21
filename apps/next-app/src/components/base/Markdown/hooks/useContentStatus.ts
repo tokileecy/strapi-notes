@@ -47,14 +47,18 @@ const useContentStatus = () => {
       let next
 
       if (instanceOfActionFunc<ContentStatus>(value)) {
-        next = value(prev)
+        try {
+          next = value(prev)
+        } catch (error) {
+          console.error(error)
+        }
       } else {
         next = value
       }
 
-      // if (process.env.NODE_ENV === 'development') {
-      //   console.log('contentStatus updeate:', next, value)
-      // }
+      if (process.env.NODE_ENV === 'development') {
+        console.log('contentStatus updeate:', next, value)
+      }
 
       return {
         ...prev,

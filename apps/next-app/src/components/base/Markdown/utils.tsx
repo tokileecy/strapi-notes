@@ -214,8 +214,6 @@ export const getChangeSelectLinesOptionsByRange = (
   ids: string[],
   range: Range
 ) => {
-  const startDetail = getSelectionDetailByNode(range.startContainer)
-
   const endDetail = getSelectionDetailByNode(range.endContainer)
 
   const start = range.startOffset

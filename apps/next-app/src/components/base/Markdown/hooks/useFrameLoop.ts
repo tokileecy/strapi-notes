@@ -26,17 +26,16 @@ const useFrameLoop = () => {
   useEffect(() => {
     const update = () => {
       frameUpdateStatusRef.current.queue.frame.forEach((callback) => {
-        callback()
+        try {
+          callback()
+        } catch (error) {
+          console.error(error)
+        }
       })
-
       frameIdRef.current = requestAnimationFrame(update)
     }
 
-    try {
-      update()
-    } catch (error) {
-      console.error(error)
-    }
+    update()
 
     return () => {
       if (frameIdRef.current) {
