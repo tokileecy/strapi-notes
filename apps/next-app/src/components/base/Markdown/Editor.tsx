@@ -10,7 +10,7 @@ const Editor = (): JSX.Element => {
   const { lineContainerRefCallback, contentStatus } =
     useContext(MarkdownContext)
 
-  const ref = useRef<HTMLDivElement>(document.createElement('div'))
+  const ref = useRef<HTMLDivElement>()
 
   const lines = useMemo(() => {
     return contentStatus.ids.map((id) => {

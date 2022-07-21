@@ -16,7 +16,7 @@ import {
 } from './utils'
 
 export interface SelectAreaProps {
-  containerRef: MutableRefObject<HTMLDivElement>
+  containerRef: MutableRefObject<HTMLDivElement | undefined>
 }
 
 // TODO refactor
@@ -54,240 +54,244 @@ const SelectArea = (props: SelectAreaProps) => {
       height: 0,
     }
 
-    const containerRect = containerRef.current.getBoundingClientRect()
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect()
 
-    const isSelectingMultiLines =
-      contentStatus.selectedRange.start !== contentStatus.selectedRange.end
+      const isSelectingMultiLines =
+        contentStatus.selectedRange.start !== contentStatus.selectedRange.end
 
-    try {
-      if (!isSelectingMultiLines) {
-        const endLineId = contentStatus.ids[contentStatus.selectedRange.end]
-        const endLine = contentStatus.lineById[endLineId]
-        const endLineElements = getLineElementsById(endLineId)
+      try {
+        if (!isSelectingMultiLines) {
+          const endLineId = contentStatus.ids[contentStatus.selectedRange.end]
+          const endLine = contentStatus.lineById[endLineId]
+          const endLineElements = getLineElementsById(endLineId)
 
-        if (endLineElements.lineElement) {
-          const endTextNode = endLineElements.lineElement.childNodes[0]
+          if (endLineElements.lineElement) {
+            const endTextNode = endLineElements.lineElement.childNodes[0]
 
-          const { firstLineHasMultiViewLine, firstLineViewLineBreakPoint } =
-            getFirstLineDetail(endTextNode, endLine)
+            const { firstLineHasMultiViewLine, firstLineViewLineBreakPoint } =
+              getFirstLineDetail(endTextNode, endLine)
 
-          if (firstLineHasMultiViewLine) {
-            if (firstLineViewLineBreakPoint !== endLine.end) {
-              const { lastLineViewLineBreakPoint } = getLastLineDetail(
-                endTextNode,
-                endLine
-              )
+            if (firstLineHasMultiViewLine) {
+              if (firstLineViewLineBreakPoint !== endLine.end) {
+                const { lastLineViewLineBreakPoint } = getLastLineDetail(
+                  endTextNode,
+                  endLine
+                )
 
-              start = getSelectLineStatus(
-                containerRect,
-                endTextNode,
-                endTextNode,
-                endLine.start,
-                firstLineViewLineBreakPoint
-              )
+                start = getSelectLineStatus(
+                  containerRect,
+                  endTextNode,
+                  endTextNode,
+                  endLine.start,
+                  firstLineViewLineBreakPoint
+                )
 
+                center = getSelectLineStatus(
+                  containerRect,
+                  endTextNode,
+                  endTextNode,
+                  firstLineViewLineBreakPoint,
+                  lastLineViewLineBreakPoint
+                )
+
+                end = getSelectLineStatus(
+                  containerRect,
+                  endTextNode,
+                  endTextNode,
+                  lastLineViewLineBreakPoint,
+                  endLine.end
+                )
+              } else {
+                start = getSelectLineStatus(
+                  containerRect,
+                  endTextNode,
+                  endTextNode,
+                  endLine.start,
+                  firstLineViewLineBreakPoint
+                )
+
+                end = getSelectLineStatus(
+                  containerRect,
+                  endTextNode,
+                  endTextNode,
+                  firstLineViewLineBreakPoint,
+                  endLine.end
+                )
+              }
+            } else {
               center = getSelectLineStatus(
                 containerRect,
                 endTextNode,
                 endTextNode,
-                firstLineViewLineBreakPoint,
-                lastLineViewLineBreakPoint
-              )
-
-              end = getSelectLineStatus(
-                containerRect,
-                endTextNode,
-                endTextNode,
-                lastLineViewLineBreakPoint,
+                endLine.start,
                 endLine.end
+              )
+            }
+          }
+        } else {
+          const startLineId =
+            contentStatus.ids[contentStatus.selectedRange.start]
+
+          const startLine = contentStatus.lineById[startLineId]
+          const startLineElements = getLineElementsById(startLineId)
+
+          const endLineId = contentStatus.ids[contentStatus.selectedRange.end]
+          const endLine = contentStatus.lineById[endLineId]
+          const endLineElements = getLineElementsById(endLineId)
+
+          let firstLineHasMultiViewLine = false
+          let firstLineViewLineBreakPoint = 0
+          let lastLineHasMultiViewLine = false
+          let lastLineViewLineBreakPoint = 0
+
+          if (startLineElements.lineElement) {
+            const textNode = startLineElements.lineElement.childNodes[0]
+            const range = new Range()
+
+            range.setStart(textNode, startLine.start)
+            range.setEnd(textNode, startLine.text.length)
+            ;({ firstLineHasMultiViewLine, firstLineViewLineBreakPoint } =
+              getFirstLineDetail(textNode, startLine))
+
+            if (firstLineHasMultiViewLine) {
+              start = getSelectLineStatus(
+                containerRect,
+                textNode,
+                textNode,
+                startLine.start,
+                firstLineViewLineBreakPoint
               )
             } else {
               start = getSelectLineStatus(
                 containerRect,
-                endTextNode,
-                endTextNode,
-                endLine.start,
-                firstLineViewLineBreakPoint
+                textNode,
+                textNode,
+                startLine.start,
+                startLine.text.length
               )
+            }
+          }
 
+          if (endLineElements.lineElement) {
+            const textNode = endLineElements.lineElement.childNodes[0]
+
+            ;({ lastLineHasMultiViewLine, lastLineViewLineBreakPoint } =
+              getLastLineDetail(textNode, endLine))
+
+            if (lastLineHasMultiViewLine) {
               end = getSelectLineStatus(
                 containerRect,
+                textNode,
+                textNode,
+                lastLineViewLineBreakPoint,
+                endLine.end
+              )
+            } else {
+              end = getSelectLineStatus(
+                containerRect,
+                textNode,
+                textNode,
+                0,
+                endLine.end
+              )
+            }
+          }
+
+          if (lastLineHasMultiViewLine && firstLineHasMultiViewLine) {
+            const startLineId =
+              contentStatus.ids[contentStatus.selectedRange.start]
+
+            const endLineId = contentStatus.ids[contentStatus.selectedRange.end]
+
+            const startLineElements = getLineElementsById(startLineId)
+            const endLineElements = getLineElementsById(endLineId)
+
+            if (startLineElements.lineElement && endLineElements.lineElement) {
+              const startTextNode = startLineElements.lineElement.childNodes[0]
+              const endTextNode = endLineElements.lineElement.childNodes[0]
+
+              center = getSelectLineStatus(
+                containerRect,
+                startTextNode,
                 endTextNode,
+                firstLineViewLineBreakPoint,
+                lastLineViewLineBreakPoint
+              )
+            }
+          } else if (lastLineHasMultiViewLine) {
+            const startLineId =
+              contentStatus.ids[contentStatus.selectedRange.start + 1]
+
+            const endLineId = contentStatus.ids[contentStatus.selectedRange.end]
+
+            const startLineElements = getLineElementsById(startLineId)
+            const endLine = contentStatus.lineById[endLineId]
+            const endLineElements = getLineElementsById(endLineId)
+
+            if (startLineElements.lineElement && endLineElements.lineElement) {
+              const startTextNode = startLineElements.lineElement.childNodes[0]
+              const endTextNode = endLineElements.lineElement.childNodes[0]
+
+              center = getSelectLineStatus(
+                containerRect,
+                startTextNode,
+                endTextNode,
+                endLine.start,
+                lastLineViewLineBreakPoint
+              )
+            }
+          } else if (firstLineHasMultiViewLine) {
+            const startLineId =
+              contentStatus.ids[contentStatus.selectedRange.start]
+
+            const endLineId =
+              contentStatus.ids[contentStatus.selectedRange.end - 1]
+
+            const startLineElements = getLineElementsById(startLineId)
+            const endLine = contentStatus.lineById[endLineId]
+            const endLineElements = getLineElementsById(endLineId)
+
+            if (startLineElements.lineElement && endLineElements.lineElement) {
+              const startTextNode = startLineElements.lineElement.childNodes[0]
+              const endTextNode = endLineElements.lineElement.childNodes[0]
+
+              center = getSelectLineStatus(
+                containerRect,
+                startTextNode,
                 endTextNode,
                 firstLineViewLineBreakPoint,
                 endLine.end
               )
             }
           } else {
-            center = getSelectLineStatus(
-              containerRect,
-              endTextNode,
-              endTextNode,
-              endLine.start,
-              endLine.end
-            )
+            const startLineId =
+              contentStatus.ids[contentStatus.selectedRange.start + 1]
+
+            const endLineId =
+              contentStatus.ids[contentStatus.selectedRange.end - 1]
+
+            const startLineElements = getLineElementsById(startLineId)
+            const endLine = contentStatus.lineById[endLineId]
+            const endLineElements = getLineElementsById(endLineId)
+
+            if (startLineElements.lineElement && endLineElements.lineElement) {
+              const startTextNode = startLineElements.lineElement.childNodes[0]
+              const endTextNode = endLineElements.lineElement.childNodes[0]
+
+              center = getSelectLineStatus(
+                containerRect,
+                startTextNode,
+                endTextNode,
+                0,
+                endLine.end
+              )
+            }
           }
         }
-      } else {
-        const startLineId = contentStatus.ids[contentStatus.selectedRange.start]
-        const startLine = contentStatus.lineById[startLineId]
-        const startLineElements = getLineElementsById(startLineId)
-
-        const endLineId = contentStatus.ids[contentStatus.selectedRange.end]
-        const endLine = contentStatus.lineById[endLineId]
-        const endLineElements = getLineElementsById(endLineId)
-
-        let firstLineHasMultiViewLine = false
-        let firstLineViewLineBreakPoint = 0
-        let lastLineHasMultiViewLine = false
-        let lastLineViewLineBreakPoint = 0
-
-        if (startLineElements.lineElement) {
-          const textNode = startLineElements.lineElement.childNodes[0]
-          const range = new Range()
-
-          range.setStart(textNode, startLine.start)
-          range.setEnd(textNode, startLine.text.length)
-          ;({ firstLineHasMultiViewLine, firstLineViewLineBreakPoint } =
-            getFirstLineDetail(textNode, startLine))
-
-          if (firstLineHasMultiViewLine) {
-            start = getSelectLineStatus(
-              containerRect,
-              textNode,
-              textNode,
-              startLine.start,
-              firstLineViewLineBreakPoint
-            )
-          } else {
-            start = getSelectLineStatus(
-              containerRect,
-              textNode,
-              textNode,
-              startLine.start,
-              startLine.text.length
-            )
-          }
-        }
-
-        if (endLineElements.lineElement) {
-          const textNode = endLineElements.lineElement.childNodes[0]
-
-          ;({ lastLineHasMultiViewLine, lastLineViewLineBreakPoint } =
-            getLastLineDetail(textNode, endLine))
-
-          if (lastLineHasMultiViewLine) {
-            end = getSelectLineStatus(
-              containerRect,
-              textNode,
-              textNode,
-              lastLineViewLineBreakPoint,
-              endLine.end
-            )
-          } else {
-            end = getSelectLineStatus(
-              containerRect,
-              textNode,
-              textNode,
-              0,
-              endLine.end
-            )
-          }
-        }
-
-        if (lastLineHasMultiViewLine && firstLineHasMultiViewLine) {
-          const startLineId =
-            contentStatus.ids[contentStatus.selectedRange.start]
-
-          const endLineId = contentStatus.ids[contentStatus.selectedRange.end]
-
-          const startLineElements = getLineElementsById(startLineId)
-          const endLineElements = getLineElementsById(endLineId)
-
-          if (startLineElements.lineElement && endLineElements.lineElement) {
-            const startTextNode = startLineElements.lineElement.childNodes[0]
-            const endTextNode = endLineElements.lineElement.childNodes[0]
-
-            center = getSelectLineStatus(
-              containerRect,
-              startTextNode,
-              endTextNode,
-              firstLineViewLineBreakPoint,
-              lastLineViewLineBreakPoint
-            )
-          }
-        } else if (lastLineHasMultiViewLine) {
-          const startLineId =
-            contentStatus.ids[contentStatus.selectedRange.start + 1]
-
-          const endLineId = contentStatus.ids[contentStatus.selectedRange.end]
-
-          const startLineElements = getLineElementsById(startLineId)
-          const endLine = contentStatus.lineById[endLineId]
-          const endLineElements = getLineElementsById(endLineId)
-
-          if (startLineElements.lineElement && endLineElements.lineElement) {
-            const startTextNode = startLineElements.lineElement.childNodes[0]
-            const endTextNode = endLineElements.lineElement.childNodes[0]
-
-            center = getSelectLineStatus(
-              containerRect,
-              startTextNode,
-              endTextNode,
-              endLine.start,
-              lastLineViewLineBreakPoint
-            )
-          }
-        } else if (firstLineHasMultiViewLine) {
-          const startLineId =
-            contentStatus.ids[contentStatus.selectedRange.start]
-
-          const endLineId =
-            contentStatus.ids[contentStatus.selectedRange.end - 1]
-
-          const startLineElements = getLineElementsById(startLineId)
-          const endLine = contentStatus.lineById[endLineId]
-          const endLineElements = getLineElementsById(endLineId)
-
-          if (startLineElements.lineElement && endLineElements.lineElement) {
-            const startTextNode = startLineElements.lineElement.childNodes[0]
-            const endTextNode = endLineElements.lineElement.childNodes[0]
-
-            center = getSelectLineStatus(
-              containerRect,
-              startTextNode,
-              endTextNode,
-              firstLineViewLineBreakPoint,
-              endLine.end
-            )
-          }
-        } else {
-          const startLineId =
-            contentStatus.ids[contentStatus.selectedRange.start + 1]
-
-          const endLineId =
-            contentStatus.ids[contentStatus.selectedRange.end - 1]
-
-          const startLineElements = getLineElementsById(startLineId)
-          const endLine = contentStatus.lineById[endLineId]
-          const endLineElements = getLineElementsById(endLineId)
-
-          if (startLineElements.lineElement && endLineElements.lineElement) {
-            const startTextNode = startLineElements.lineElement.childNodes[0]
-            const endTextNode = endLineElements.lineElement.childNodes[0]
-
-            center = getSelectLineStatus(
-              containerRect,
-              startTextNode,
-              endTextNode,
-              0,
-              endLine.end
-            )
-          }
-        }
+      } catch (error) {
+        console.error(error)
       }
-    } catch (error) {
-      console.error(error)
     }
 
     return { start, center, end }

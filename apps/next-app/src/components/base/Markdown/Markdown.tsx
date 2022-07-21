@@ -37,8 +37,9 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
             {(type === 'editor' || type === 'both') && (
               <Box
                 sx={{
-                  flexGrow: 1,
-                  flexBasis: 0,
+                  'color': 'white',
+                  'flexGrow': 1,
+                  'flexBasis': 0,
                 }}
               >
                 <Editor />
@@ -47,11 +48,12 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
             {(type === 'preview' || type === 'both') && (
               <Box
                 sx={{
-                  flexGrow: 1,
-                  flexBasis: 0,
-                  border: '1px solid white',
-                  p: 2,
-                  overflow: 'auto',
+                  'color': 'white',
+                  'flexGrow': 1,
+                  'flexBasis': 0,
+                  'border': '1px solid white',
+                  'p': 2,
+                  'overflow': 'auto',
                 }}
               >
                 <Preview />

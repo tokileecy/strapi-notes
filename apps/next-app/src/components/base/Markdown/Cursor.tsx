@@ -21,7 +21,7 @@ const refreshCursorBySelection = (
 }
 
 export interface CursorProps {
-  containerRef: MutableRefObject<HTMLDivElement>
+  containerRef: MutableRefObject<HTMLDivElement | undefined>
 }
 
 const Cursor = (props: CursorProps) => {
@@ -37,7 +37,11 @@ const Cursor = (props: CursorProps) => {
       const line = contentStatus.lineById[lineId]
       const lineElements = getLineElementsById(lineId)
 
-      if (lineElements.lineElement && cursorRef.current) {
+      if (
+        lineElements.lineElement &&
+        containerRef.current &&
+        cursorRef.current
+      ) {
         const textNode = lineElements.lineElement.childNodes[0]
 
         range.setStart(textNode, line.end)
