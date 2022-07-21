@@ -124,6 +124,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
             <Box
               sx={{
                 m: 2,
+
                 height: {
                   xs: `35%`,
                   lg: `80%`,
@@ -136,6 +137,7 @@ const GraphPage = (props: GraphPageProps): JSX.Element => {
               <Box
                 sx={{
                   p: 2,
+                  overflow: 'auto',
                   height: '100%',
                   borderRadius: 2,
                   backgroundColor: 'rgba(15, 108, 176, 0.24)',

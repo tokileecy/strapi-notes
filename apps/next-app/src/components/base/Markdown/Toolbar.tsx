@@ -21,6 +21,7 @@ const Toolbar = () => {
   return (
     <Box
       sx={{
+        overflow: 'auto',
         display: 'flex',
         gap: 1,
         border: '1px solid white',
