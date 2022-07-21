@@ -23,7 +23,7 @@ const Markdown = (props: MarkdownProps): JSX.Element => {
           'height': '100%',
         }}
       >
-        <Toolbar />
+        {(type === 'editor' || type === 'both') && <Toolbar />}
         <Box sx={{ 'position': 'relative', 'flexGrow': 1 }}>
           <Box
             sx={{

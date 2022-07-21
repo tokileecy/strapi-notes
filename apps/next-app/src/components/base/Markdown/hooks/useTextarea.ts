@@ -418,8 +418,11 @@ const useTextarea = (
       if (contentStatus.selectedRange.end !== -1) {
         const lineById = contentStatus.lineById
         const lineId = contentStatus.ids[contentStatus.selectedRange.end]
+        const line = lineById[lineId]
 
-        inputText = lineById[lineId].inputText
+        if (line) {
+          inputText = line.inputText
+        }
       }
 
       textareaRef.current.value = inputText
