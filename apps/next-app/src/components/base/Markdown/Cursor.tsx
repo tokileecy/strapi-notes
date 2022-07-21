@@ -17,18 +17,22 @@ const Cursor = (props: CursorProps) => {
   // const range = useMemo(() => {}, [contentStatus])
 
   useEffect(() => {
-    const range = new Range()
-    const lineId = contentStatus.ids[contentStatus.selectedRange.end]
-    const line = contentStatus.lineById[lineId]
-    const lineElements = getLineElementsById(lineId)
+    try {
+      const range = new Range()
+      const lineId = contentStatus.ids[contentStatus.selectedRange.end]
+      const line = contentStatus.lineById[lineId]
+      const lineElements = getLineElementsById(lineId)
 
-    if (lineElements.lineElement && cursorRef.current) {
-      const textNode = lineElements.lineElement.childNodes[0]
+      if (lineElements.lineElement && cursorRef.current) {
+        const textNode = lineElements.lineElement.childNodes[0]
 
-      range.setStart(textNode, line.end)
-      range.setEnd(textNode, line.end)
+        range.setStart(textNode, line.end)
+        range.setEnd(textNode, line.end)
 
-      refreshCursorBySelection(containerRef.current, cursorRef.current, range)
+        refreshCursorBySelection(containerRef.current, cursorRef.current, range)
+      }
+    } catch (error) {
+      console.error(error)
     }
   }, [contentStatus])
 

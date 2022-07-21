@@ -56,9 +56,9 @@ const useContentStatus = () => {
         next = value
       }
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log('contentStatus updeate:', next, value)
-      }
+      // if (process.env.NODE_ENV === 'development') {
+      //   console.log('contentStatus updeate:', next, value)
+      // }
 
       return {
         ...prev,
