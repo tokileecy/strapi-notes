@@ -2,47 +2,6 @@ import { nanoid } from 'nanoid'
 import { getLineIndexById } from './fn/utils'
 import { LineState } from './hooks/useContentStatus'
 
-export const refreshCursorBySelection = (
-  containerElement: HTMLDivElement,
-  cursorElement: HTMLDivElement,
-  endRange: Range
-) => {
-  const endRect = endRange.getBoundingClientRect()
-  const containerRect = containerElement.getBoundingClientRect()
-
-  if (endRect && cursorElement) {
-    cursorElement.style.transform = `translate(
-      ${endRect.x - containerRect.x + endRect.width}px, 
-      ${endRect.y - containerRect.y}px
-    )`
-  }
-}
-
-export const refreshCursorByPosition = (
-  cursorElement: HTMLDivElement,
-  x: number,
-  y: number
-) => {
-  cursorElement.style.left = `${x}px`
-  cursorElement.style.top = `${y}px`
-}
-
-export const refreshCursorByElement = (
-  containerElement: HTMLDivElement,
-  cursorElement: HTMLDivElement,
-  element: HTMLElement
-) => {
-  const endRect = element.getBoundingClientRect()
-  const containerRect = containerElement.getBoundingClientRect()
-
-  if (endRect && cursorElement) {
-    cursorElement.style.left = `${
-      endRect.x - containerRect.x + endRect.width
-    }px`
-    cursorElement.style.top = `${endRect.y - containerRect.y}px`
-  }
-}
-
 export const selectionDetailEditorTypes = [
   'editor',
   'line-container',

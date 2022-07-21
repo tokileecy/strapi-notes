@@ -2,7 +2,23 @@ import Box from '@mui/material/Box'
 import { MutableRefObject, useEffect } from 'react'
 import { ContentStatus } from './hooks/useContentStatus'
 import useElementCallback from './hooks/useElementCallback'
-import { getLineElementsById, refreshCursorBySelection } from './utils'
+import { getLineElementsById } from './utils'
+
+const refreshCursorBySelection = (
+  containerElement: HTMLDivElement,
+  cursorElement: HTMLDivElement,
+  endRange: Range
+) => {
+  const endRect = endRange.getBoundingClientRect()
+  const containerRect = containerElement.getBoundingClientRect()
+
+  if (endRect && cursorElement) {
+    cursorElement.style.transform = `translate(
+      ${endRect.x - containerRect.x + endRect.width}px, 
+      ${endRect.y - containerRect.y}px
+    )`
+  }
+}
 
 export interface CursorProps {
   containerRef: MutableRefObject<HTMLDivElement>
@@ -14,7 +30,6 @@ const Cursor = (props: CursorProps) => {
   const { containerRef, contentStatus, textareaRefCallback } = props
 
   const [cursorRef, cursorRefCallback] = useElementCallback<HTMLDivElement>()
-  // const range = useMemo(() => {}, [contentStatus])
 
   useEffect(() => {
     try {
