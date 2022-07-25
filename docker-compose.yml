@@ -18,6 +18,7 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD:-strapi}
       - APP_KEYS=${APP_KEYS:-someSecret,anotherSecret}
       - JWT_SECRET=${JWT_SECRET:-JWT_SECRET==}
+      - API_TOKEN_SALT=${API_TOKEN_SALT:-API_TOKEN_SALT}
     working_dir: /srv/app
     command: >
       /bin/sh -c "
@@ -41,7 +42,7 @@ services:
     ports:
       - "${DATABASE_PORT}:5432"
     volumes:
-      - ./dbs/postgres:/var/lib/postgresql/data
+      - ${DATABASE_VOLUME:-./dbs/postgres}:/var/lib/postgresql/data
   next-app:
     image: node:16
     user: '1000:1000'
