@@ -2,7 +2,7 @@ version: '3'
 
 services:
   strapi-app:
-    image: ghcr.io/tokileecy/strapi-notes-strapi-app:latest
+    image: ghcr.io/tokileecy/strapi-notes-strapi-app:v0.3.0
     user: '1000:1000'
     container_name: strapi-app
     restart: unless-stopped
@@ -40,7 +40,7 @@ services:
     ports:
       - "${DATABASE_PORT}:5432"
   next-app:
-    image: ghcr.io/tokileecy/strapi-notes-next-app:latest
+    image: ghcr.io/tokileecy/strapi-notes-next-app:v0.3.0
     user: '1000:1000'
     environment:
       - NODE_ENV=${APP_ENV:-development}
