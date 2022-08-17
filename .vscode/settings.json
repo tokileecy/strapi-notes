@@ -3,7 +3,8 @@
 		"source.fixAll.eslint": true,
 	},
 	"eslint.workingDirectories": [
-        "./apps/next-app",
-        "./apps/strapi-app"
-    ]
+		"./apps/next-app",
+		"./apps/strapi-app"
+	],
+	"editor.tabSize": 2
 }
