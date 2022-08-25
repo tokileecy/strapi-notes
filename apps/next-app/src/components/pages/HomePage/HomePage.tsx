@@ -44,7 +44,9 @@ const HomePage = (props: HomePageProps): JSX.Element => {
       let posts: Post[]
 
       try {
-        const response = await api.listPosts({})
+        const response = await api.listPosts({
+          tags: Array.from(Object.keys(selectedTags)),
+        })
 
         posts = response.data
       } catch (error) {
