@@ -53,8 +53,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
       - uses: actions/delete-package-versions@v2
         with: 
-          package-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-strapi-app
-          token: ${{ secrets.NPM_TOKEN }}
+          package-name: ${{ github.event.repository.name }}-strapi-app
           min-versions-to-keep: 3
           delete-only-pre-release-versions: "true"
   build-and-push-next-app-image:
@@ -93,7 +92,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
       - uses: actions/delete-package-versions@v2
         with: 
-          package-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-next-app
-          token: ${{ secrets.NPM_TOKEN }}
+          package-name: ${{ github.event.repository.name }}-next-app
           min-versions-to-keep: 3
           delete-only-pre-release-versions: "true"
