@@ -2,11 +2,10 @@ version: '3'
 
 services:
   strapi-app:
-    image: ghcr.io/tokileecy/strapi-notes-strapi-app:v0.3.2
+    image: ghcr.io/tokileecy/strapi-notes-strapi-app:v0.3.3
     user: '1000:1000'
     container_name: strapi-app
     restart: unless-stopped
-    env_file: .env
     environment:
       - NODE_OPTIONS=--max_old_space_size=2048
       - NODE_ENV=${APP_ENV:-development}
@@ -28,8 +27,7 @@ services:
     depends_on:
       - postgres
   postgres:
-    image: postgres
-    env_file: .env
+    image: postgres:14
     container_name: postgres
     environment:
       - POSTGRES_DB=${DATABASE_NAME:-strapi}
@@ -40,7 +38,7 @@ services:
     ports:
       - "${DATABASE_PORT}:5432"
   next-app:
-    image: ghcr.io/tokileecy/strapi-notes-next-app:v0.3.2
+    image: ghcr.io/tokileecy/strapi-notes-next-app:v0.3.3
     user: '1000:1000'
     environment:
       - NODE_ENV=${APP_ENV:-development}
@@ -51,5 +49,7 @@ services:
       /bin/sh -c "
         if [ ${APP_ENV:-development} = \"production\" ]; then yarn build && yarn start; else yarn dev; fi
       "
+    depends_on:
+      - strapi-app
     ports:
       - "${NEXT_PORT:-3000}:3000"
