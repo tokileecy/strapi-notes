@@ -51,6 +51,12 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - uses: actions/delete-package-versions@v2
+        with: 
+          package-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-strapi-app
+          token: ${{ secrets.NPM_TOKEN }}
+          min-versions-to-keep: 3
+          delete-only-pre-release-versions: "true"
   build-and-push-next-app-image:
     runs-on: ubuntu-latest
     permissions:
@@ -85,3 +91,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - uses: actions/delete-package-versions@v2
+        with: 
+          package-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-next-app
+          token: ${{ secrets.NPM_TOKEN }}
+          min-versions-to-keep: 3
+          delete-only-pre-release-versions: "true"
