@@ -29,6 +29,7 @@ services:
   postgres:
     image: postgres:14
     container_name: postgres
+    restart: unless-stopped
     environment:
       - POSTGRES_DB=${DATABASE_NAME:-strapi}
       - POSTGRES_USER=${DATABASE_USERNAME:-strapi}
@@ -40,6 +41,7 @@ services:
   next-app:
     image: ghcr.io/tokileecy/strapi-notes-next-app:v0.3.4
     user: '1000:1000'
+    restart: unless-stopped
     environment:
       - NODE_ENV=${APP_ENV:-development}
       - SERVER_STRAPI_URL=http://strapi-app:1337/
